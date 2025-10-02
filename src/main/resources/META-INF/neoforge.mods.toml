@@ -1,13 +1,13 @@
 modLoader="javafml"
-loaderVersion="[1,)"
-logoFile="logo.png"
+loaderVersion="[21,)"
 license="See GitHub repository for details"
 issueTrackerURL="https://github.com/AppliedEnergistics/Applied-Energistics-2/issues"
+logoFile="logo.png"
 
 [[mods]]
 modId="ae2"
-version="${version}"
-displayName="Applied Energistics 2"
+version="${file.jarVersion}"
+displayName="Applied Energistics 2 (NeoForge)"
 description="A Mod about Matter, Energy and using them to conquer the world..."
 authors="Team AppliedEnergistics"
 displayURL="https://appliedenergistics.org"
@@ -54,7 +54,6 @@ config="ae2.mixins.json"
     versionRange="${jade_version_range}"
     ordering="AFTER"
     side="BOTH"
-
 
 # VanillaFix caused us grief in the past
 # https://github.com/AppliedEnergistics/Applied-Energistics-2/issues/8034

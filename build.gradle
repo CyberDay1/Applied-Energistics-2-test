@@ -36,6 +36,7 @@ sourceSets {
     main {
         resources {
             srcDir 'src/generated/resources'
+            exclude 'META-INF/neoforge.mods.toml'
         }
     }
     buildtools
@@ -54,6 +55,7 @@ configurations {
 
 import appengbuild.*
 import com.diffplug.gradle.spotless.JsonExtension
+import net.neoforged.gradle.common.tasks.ApplyAccessTransformers
 
 dependencies {
     // Used for the guide export
@@ -187,17 +189,8 @@ neoForge {
     }
 }
 
-Class<?> applyAccessTransformersType
-try {
-    applyAccessTransformersType = Class.forName('net.neoforged.gradle.common.tasks.ApplyAccessTransformers')
-} catch (Throwable ignored) {
-    applyAccessTransformersType = null
-}
-
-if (applyAccessTransformersType != null) {
-    tasks.withType(applyAccessTransformersType).configureEach {
-        onlyIf { file("src/main/resources/META-INF/accesstransformer.cfg").exists() }
-    }
+tasks.withType(ApplyAccessTransformers).configureEach {
+    onlyIf { file("src/main/resources/META-INF/accesstransformer.cfg").exists() }
 }
 
 configurations.additionalRuntimeClasspath.extendsFrom configurations.guideExportOnly
@@ -206,10 +199,8 @@ configurations.additionalRuntimeClasspath.extendsFrom configurations.guideExport
 // Artifacts
 final generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
     group = 'build'
-    from('src/main/neoforge.mods.toml') {
-        rename '(.*)', 'META-INF/$1'
-    }
-    into 'build/generated/modMetadata'
+    from('src/main/resources/META-INF/neoforge.mods.toml')
+    into 'build/generated/modMetadata/META-INF'
 
     // Exposed project properties
     Map<String, String> projectProperties = [
