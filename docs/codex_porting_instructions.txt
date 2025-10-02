@@ -1,0 +1,31 @@
+Codex Patch Template — Porting Workflow (No Builds Until Later)
+===============================================================
+
+Non‑negotiables for Codex
+-------------------------
+1) If a timeout is imminent, commit all staged changes to a NEW branch and open a PR with a short summary of progress and TODOs. Do not lose progress.
+2) Do NOT look for or depend on an agents.md or agents file — it will not exist.
+3) Do NOT attempt to run ./gradlew build or related Gradle commands unless explicitly instructed. Editing, scaffolding, and configuration updates come first. Build validation will be done later, once configs and sources are stable.
+
+Existing Rules (keep applying)
+------------------------------
+- Use ${MC} and ${NEOFORGE} constants from Stonecutter in gradle.properties and build.gradle.
+- Maintain multi‑version targets in stonecutter.json (1.21.4 default, 1.21.5–1.21.9 betas included).
+- Ensure neoforge.mods.toml matches the current mod namespace and dependency ranges.
+- Provide empty or stubbed accesstransformer.cfg if no real entries exist, and guard ApplyAccessTransformers in Gradle.
+- When editing mixins or bootstrap code, enforce Java 21 compatibility using MixinCompatBootstrap.
+- For every change, prefer small, atomic commits; if interrupted, push partial work in a PR.
+
+Testing Guidance (for later only)
+---------------------------------
+- ./gradlew --version is acceptable anytime to verify Gradle toolchain resolves.
+- ./gradlew clean build is deferred until configs are fully stabilized.
+- Runtime testing (runClient, runServer) will come after configs + code compile without errors.
+
+Re‑use of This Template
+------------------------
+- Place this block at the top of any Codex .txt instruction file during the porting phase.
+- It applies globally until explicit instruction to resume builds.
+- Safe default: Codex edits configs and code only, then opens PRs without builds.
+
+End of Codex patch template.
