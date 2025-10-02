@@ -187,6 +187,19 @@ neoForge {
     }
 }
 
+Class<?> applyAccessTransformersType
+try {
+    applyAccessTransformersType = Class.forName('net.neoforged.gradle.common.tasks.ApplyAccessTransformers')
+} catch (Throwable ignored) {
+    applyAccessTransformersType = null
+}
+
+if (applyAccessTransformersType != null) {
+    tasks.withType(applyAccessTransformersType).configureEach {
+        onlyIf { file("src/main/resources/META-INF/accesstransformer.cfg").exists() }
+    }
+}
+
 configurations.additionalRuntimeClasspath.extendsFrom configurations.guideExportOnly
 
 //////////////
