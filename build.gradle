@@ -60,6 +60,7 @@ dependencies {
     guideExportOnly("org.bytedeco:ffmpeg-platform:${ffmpeg_version}")
 
     implementation("org.appliedenergistics:guideme:${guideme_version}")
+    implementation "net.neoforged:neoforge:${neoforge_version}"
 
     // compile against provided APIs
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
@@ -108,7 +109,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core")
     testImplementation("com.google.guava:guava-testlib:21.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
-    testImplementation("net.neoforged:testframework:${project.neoforge_version}")
+    testImplementation "net.neoforged:testframework:${neoforge_version}"
 }
 
 test {
