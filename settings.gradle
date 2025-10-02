@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.gradle.api.initialization.resolve.RepositoriesMode
 import org.gradle.api.initialization.resolve.RulesMode
 
@@ -17,11 +19,46 @@ plugins {
     id 'dev.kikugie.stonecutter'
 }
 
-stonecutter.create(rootProject, file("stonecutter.json"))
+def scConfig = new JsonSlurper().parse(file("stonecutter.json"))
+def scLegacyVersions = scConfig.versions.findAll { it.name == scConfig.default }
+def scLegacyRoadmap = scConfig.versions.findAll { it.name != scConfig.default }
+
+def scLegacy = [
+        vcs     : scConfig.default,
+        versions: scLegacyVersions.collect { version ->
+            [
+                    project   : version.name,
+                    version   : version.name,
+                    properties: version.properties
+            ]
+        },
+        roadmap : scLegacyRoadmap.collect { version ->
+            [
+                    project   : version.name,
+                    version   : version.name,
+                    properties: version.properties
+            ]
+        }
+]
+
+def scLegacyFile = new File(settingsDir, ".gradle/stonecutter.generated.json")
+scLegacyFile.parentFile.mkdirs()
+scLegacyFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(scLegacy))
+
+stonecutter.create(rootProject, scLegacyFile)
+
+def scDefault = scConfig.versions.find { it.name == scConfig.default } ?: scConfig.versions.first()
 
 gradle.rootProject {
     def mcVersion = providers.gradleProperty("MC").getOrElse(findProperty("minecraft_version") ?: "")
+    if (!mcVersion || mcVersion.contains('$')) {
+        mcVersion = scDefault?.properties?.MC ?: ""
+    }
+
     def neoForgeVersion = providers.gradleProperty("NEOFORGE").getOrElse(findProperty("neoforge_version") ?: "")
+    if (!neoForgeVersion || neoForgeVersion.contains('$')) {
+        neoForgeVersion = scDefault?.properties?.NEOFORGE ?: ""
+    }
 
     allprojects { proj ->
         if (mcVersion) {
