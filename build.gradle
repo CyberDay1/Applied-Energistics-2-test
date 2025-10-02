@@ -134,11 +134,11 @@ neoForge {
 
     runs {
         configureEach {
-            gameDirectory = project.file('run')
+            gameDirectory = rootProject.file('run')
             systemProperty('appeng.tests', 'true')
             // systemProperty('mixin.debug.export', 'true')
             logLevel = org.slf4j.event.Level.INFO
-            systemProperty('guideme.ae2.guide.sources', file('guidebook').absolutePath)
+            systemProperty('guideme.ae2.guide.sources', rootProject.file('guidebook').absolutePath)
         }
         client {
             client()
@@ -164,19 +164,19 @@ neoForge {
             programArguments = [
                     '--mod', 'ae2',
                     '--all',
-                    '--output', file('src/generated/resources/').absolutePath,
-                    '--existing', file('src/main/resources').absolutePath
+                    '--output', rootProject.file('src/generated/resources/').absolutePath,
+                    '--existing', rootProject.file('src/main/resources').absolutePath
             ]
         }
         guideexport {
             client()
             systemProperty('appeng.runGuideExportAndExit', 'true')
-            systemProperty('appeng.guideExportFolder', file('build/guide').absolutePath)
+            systemProperty('appeng.guideExportFolder', rootProject.file('build/guide').absolutePath)
         }
         // Use to run the tests
         gametest {
             type = 'gameTestServer'
-            gameDirectory = project.file('build/gametest')
+            gameDirectory = rootProject.file('build/gametest')
         }
     }
 
@@ -312,8 +312,8 @@ spotless {
         indentWithSpaces()
         removeUnusedImports()
         toggleOffOn()
-        eclipse().configFile 'codeformat/codeformat.xml'
-        importOrderFile 'codeformat/ae2.importorder'
+        eclipse().configFile rootProject.file('codeformat/codeformat.xml')
+        importOrderFile rootProject.file('codeformat/ae2.importorder')
 
         // courtesy of diffplug/spotless#240
         // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606

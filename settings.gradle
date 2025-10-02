@@ -7,12 +7,33 @@ pluginManagement {
         // https://projects.neoforged.net/neoforged/ModDevGradle
         id 'net.neoforged.moddev' version '2.0.74'
         id 'net.neoforged.moddev.repositories' version '2.0.74'
+        id 'dev.kikugie.stonecutter' version '0.7.10'
     }
 }
 
 plugins {
     id 'net.neoforged.moddev.repositories'
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.9.0'
+    id 'dev.kikugie.stonecutter'
+}
+
+stonecutter.create(rootProject, file("stonecutter.json"))
+
+gradle.rootProject {
+    def mcVersion = providers.gradleProperty("MC").getOrElse(findProperty("minecraft_version") ?: "")
+    def neoForgeVersion = providers.gradleProperty("NEOFORGE").getOrElse(findProperty("neoforge_version") ?: "")
+
+    allprojects { proj ->
+        if (mcVersion) {
+            proj.extensions.extraProperties.set("MC", mcVersion)
+            proj.extensions.extraProperties.set("minecraft_version", mcVersion)
+        }
+        if (neoForgeVersion) {
+            proj.extensions.extraProperties.set("NEOFORGE", neoForgeVersion)
+            proj.extensions.extraProperties.set("neoforge_version", neoForgeVersion)
+            proj.extensions.extraProperties.set("neoforge_version_range", "[${neoForgeVersion},)")
+        }
+    }
 }
 
 dependencyResolutionManagement {
