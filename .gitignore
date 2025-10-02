@@ -9,6 +9,7 @@
 !build.gradle
 !settings.gradle
 !gradle.properties
+!stonecutter.json
 !crowdin.yml
 
 # Scripts

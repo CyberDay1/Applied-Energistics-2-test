@@ -1,0 +1,13 @@
+{
+  "vcs": "1.21.4",
+  "versions": [
+    { "project": "1.21.4", "version": "1.21.4", "properties": { "MC": "1.21.4", "NEOFORGE": "21.4.154" } }
+  ],
+  "roadmap": [
+    { "project": "1.21.5", "version": "1.21.5", "properties": { "MC": "1.21.5", "NEOFORGE": "21.5.XXX" } },
+    { "project": "1.21.6", "version": "1.21.6", "properties": { "MC": "1.21.6", "NEOFORGE": "21.6.XXX" } },
+    { "project": "1.21.7", "version": "1.21.7", "properties": { "MC": "1.21.7", "NEOFORGE": "21.7.XXX" } },
+    { "project": "1.21.8", "version": "1.21.8", "properties": { "MC": "1.21.8", "NEOFORGE": "21.8.XXX" } },
+    { "project": "1.21.9", "version": "1.21.9", "properties": { "MC": "1.21.9", "NEOFORGE": "21.9.8-beta" } }
+  ]
+}
