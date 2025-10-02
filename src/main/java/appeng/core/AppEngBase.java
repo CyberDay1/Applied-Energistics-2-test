@@ -111,6 +111,8 @@ public abstract class AppEngBase implements AppEng {
     static AppEngBase INSTANCE;
 
     public AppEngBase(IEventBus modEventBus, ModContainer container) {
+        MixinCompatBootstrap.init();
+
         if (INSTANCE != null) {
             throw new IllegalStateException();
         }
