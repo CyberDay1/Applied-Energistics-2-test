@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capability;
 
 import appeng.api.behaviors.GenericInternalInventory;
 import appeng.api.implementations.blockentities.ICraftingMachine;
@@ -29,6 +30,7 @@ import appeng.api.implementations.blockentities.ICrankable;
 import appeng.api.networking.IInWorldGridNodeHost;
 import appeng.api.storage.MEStorage;
 import appeng.core.AppEng;
+import appeng.capability.AE2Capabilities;
 
 /**
  * Utility class that holds the capabilities provided by AE2.
@@ -51,5 +53,10 @@ public final class AECapabilities {
 
     public static BlockCapability<ICrankable, @Nullable Direction> CRANKABLE = BlockCapability
             .createSided(AppEng.makeId("crankable"), ICrankable.class);
+
+    /**
+     * NeoForge capability tokens exposed for add-ons that directly integrate with the new capability system.
+     */
+    public static final Capability<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST_ENTITY = AE2Capabilities.IN_WORLD_GRID_NODE_HOST;
 
 }

@@ -130,7 +130,12 @@ public final class GridHelper {
      */
     @Nullable
     public static IInWorldGridNodeHost getNodeHost(Level level, BlockPos pos) {
-        return level.getCapability(AECapabilities.IN_WORLD_GRID_NODE_HOST, pos, null);
+        var blockEntity = level.getBlockEntity(pos);
+        if (blockEntity == null) {
+            return null;
+        }
+
+        return blockEntity.getCapability(AECapabilities.IN_WORLD_GRID_NODE_HOST_ENTITY, null);
     }
 
     /**
