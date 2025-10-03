@@ -77,7 +77,7 @@ import appeng.items.parts.FacadeItem;
 import appeng.items.tools.powered.powersink.AEBasePoweredItem;
 import appeng.menu.me.items.CraftingTermMenu;
 import appeng.menu.me.items.PatternEncodingTermMenu;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeTypes;
 import appeng.recipes.entropy.EntropyRecipe;
 import appeng.recipes.game.StorageCellUpgradeRecipe;
 import appeng.recipes.handlers.ChargerRecipe;
@@ -130,10 +130,13 @@ public class ReiPlugin implements REIClientPlugin {
             return;
         }
 
-        registry.registerRecipeFiller(InscriberRecipe.class, AERecipeTypes.INSCRIBER, InscriberRecipeDisplay::new);
-        registry.registerRecipeFiller(ChargerRecipe.class, AERecipeTypes.CHARGER, ChargerDisplay::new);
-        registry.registerRecipeFiller(TransformRecipe.class, AERecipeTypes.TRANSFORM, TransformRecipeWrapper::new);
-        registry.registerRecipeFiller(EntropyRecipe.class, AERecipeTypes.ENTROPY, EntropyRecipeDisplay::new);
+        registry.registerRecipeFiller(InscriberRecipe.class, AE2RecipeTypes.INSCRIBER.get(),
+                InscriberRecipeDisplay::new);
+        registry.registerRecipeFiller(ChargerRecipe.class, AE2RecipeTypes.CHARGER.get(), ChargerDisplay::new);
+        registry.registerRecipeFiller(TransformRecipe.class, AE2RecipeTypes.TRANSFORM.get(),
+                TransformRecipeWrapper::new);
+        registry.registerRecipeFiller(EntropyRecipe.class, AE2RecipeTypes.ENTROPY.get(),
+                EntropyRecipeDisplay::new);
         registry.registerRecipeFiller(StorageCellUpgradeRecipe.class, RecipeType.CRAFTING,
                 this::convertStorageCellUpgradeRecipe);
 

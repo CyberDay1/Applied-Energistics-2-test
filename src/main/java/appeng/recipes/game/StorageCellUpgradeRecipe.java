@@ -21,6 +21,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 import appeng.core.AppEng;
+import appeng.registry.AE2RecipeSerializers;
 
 /**
  * Allows swapping out the storage component of a cell without having to empty it first.
@@ -166,7 +167,7 @@ public class StorageCellUpgradeRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return StorageCellUpgradeRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.STORAGE_CELL_UPGRADE.get();
     }
 
 }

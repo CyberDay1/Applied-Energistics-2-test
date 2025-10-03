@@ -19,16 +19,21 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.RecipeMatcher;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import appeng.datagen.providers.tags.ConventionTags;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 public class QuartzCuttingRecipe implements CraftingRecipe {
     static final int MAX_HEIGHT = 3;
     static final int MAX_WIDTH = 3;
+    public static final RecipeType<QuartzCuttingRecipe> TYPE = new RecipeType<>() {
+    };
     public static final MapCodec<QuartzCuttingRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder.group(
             ItemStack.STRICT_CODEC.fieldOf("result").forGetter(QuartzCuttingRecipe::getResult),
             Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").flatXmap((r) -> {
@@ -73,7 +78,12 @@ public class QuartzCuttingRecipe implements CraftingRecipe {
     }
 
     public RecipeSerializer<?> getSerializer() {
-        return QuartzCuttingRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.QUARTZ_CUTTING.get();
+    }
+
+    @Override
+    public RecipeType<?> getType() {
+        return AE2RecipeTypes.QUARTZ_CUTTING.get();
     }
 
     public CraftingBookCategory category() {

@@ -8,11 +8,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class QuartzCuttingRecipeSerializer implements RecipeSerializer<QuartzCuttingRecipe> {
 
-    public static final QuartzCuttingRecipeSerializer INSTANCE = new QuartzCuttingRecipeSerializer();
-
-    public QuartzCuttingRecipeSerializer() {
-    }
-
     public MapCodec<QuartzCuttingRecipe> codec() {
         return QuartzCuttingRecipe.CODEC;
     }

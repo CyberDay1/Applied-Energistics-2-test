@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 
 import appeng.api.upgrades.IUpgradeableItem;
 import appeng.core.AppEng;
+import appeng.registry.AE2RecipeSerializers;
 
 /**
  * Allows adding upgrades to upgradable items.
@@ -97,7 +98,7 @@ public class AddItemUpgradeRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return AddItemUpgradeRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.ADD_ITEM_UPGRADE.get();
     }
 
 }

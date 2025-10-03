@@ -7,10 +7,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class StorageCellDisassemblyRecipeSerializer implements RecipeSerializer<StorageCellDisassemblyRecipe> {
-    public static final StorageCellDisassemblyRecipeSerializer INSTANCE = new StorageCellDisassemblyRecipeSerializer();
-
-    private StorageCellDisassemblyRecipeSerializer() {
-    }
 
     @Override
     public MapCodec<StorageCellDisassemblyRecipe> codec() {

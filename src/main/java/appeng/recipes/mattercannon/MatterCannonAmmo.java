@@ -46,7 +46,8 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 
 import appeng.core.AppEng;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 /**
  * Defines a type of ammo that can be used for the {@link appeng.items.tools.powered.MatterCannonItem}.
@@ -56,7 +57,8 @@ public class MatterCannonAmmo implements Recipe<RecipeInput> {
     public static final ResourceLocation TYPE_ID = AppEng.makeId("matter_cannon");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
-    public static final RecipeType<MatterCannonAmmo> TYPE = AERecipeTypes.MATTER_CANNON_AMMO;
+    public static final RecipeType<MatterCannonAmmo> TYPE = new RecipeType<>() {
+    };
 
     public static final MapCodec<MatterCannonAmmo> CODEC = RecordCodecBuilder.mapCodec((builder) -> {
         return builder.group(
@@ -117,12 +119,12 @@ public class MatterCannonAmmo implements Recipe<RecipeInput> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return MatterCannonAmmoSerializer.INSTANCE;
+        return AE2RecipeSerializers.MATTER_CANNON.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return TYPE;
+        return AE2RecipeTypes.MATTER_CANNON_AMMO.get();
     }
 
     @Override

@@ -84,7 +84,7 @@ import appeng.items.contents.CellConfig;
 import appeng.items.misc.PaintBallItem;
 import appeng.items.tools.powered.powersink.AEBasePoweredItem;
 import appeng.me.helpers.PlayerSource;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeTypes;
 import appeng.util.ConfigInventory;
 import appeng.util.InteractionUtil;
 import appeng.util.LookDirection;
@@ -459,7 +459,7 @@ public class MatterCannonItem extends AEBasePoweredItem implements IBasicCellIte
             return 0;
         }
 
-        var recipes = server.getRecipeManager().byType(AERecipeTypes.MATTER_CANNON_AMMO);
+        var recipes = server.getRecipeManager().byType(AE2RecipeTypes.MATTER_CANNON_AMMO.get());
         for (var holder : recipes) {
             var ammoRecipe = holder.value();
             if (what.matches(ammoRecipe.getAmmo())) {

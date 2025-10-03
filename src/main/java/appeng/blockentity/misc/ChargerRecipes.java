@@ -6,13 +6,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeTypes;
 import appeng.recipes.handlers.ChargerRecipe;
 
 public class ChargerRecipes {
 
     public static Iterable<RecipeHolder<ChargerRecipe>> getRecipes(Level level) {
-        return level.getRecipeManager().byType(AERecipeTypes.CHARGER);
+        return level.getRecipeManager().byType(AE2RecipeTypes.CHARGER.get());
     }
 
     @Nullable

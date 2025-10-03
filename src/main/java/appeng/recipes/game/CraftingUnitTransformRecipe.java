@@ -18,12 +18,15 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 /**
  * Used to handle upgrading and removal of upgrades for crafting units (in-world).
  */
 public class CraftingUnitTransformRecipe extends CustomRecipe {
+    public static final RecipeType<CraftingUnitTransformRecipe> TYPE = new RecipeType<>() {
+    };
     public static final MapCodec<CraftingUnitTransformRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder
             .group(
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("upgraded_block")
@@ -65,7 +68,7 @@ public class CraftingUnitTransformRecipe extends CustomRecipe {
     public static ItemStack getRemovedUpgrade(Level level, Block upgradedBlock) {
         var recipeManager = level.getRecipeManager();
 
-        for (var holder : recipeManager.byType(AERecipeTypes.CRAFTING_UNIT_TRANSFORM)) {
+        for (var holder : recipeManager.byType(AE2RecipeTypes.CRAFTING_UNIT_TRANSFORM.get())) {
             if (holder.value().upgradedBlock == upgradedBlock) {
                 return holder.value().upgradeItem.getDefaultInstance();
             }
@@ -78,7 +81,7 @@ public class CraftingUnitTransformRecipe extends CustomRecipe {
      * Search for the resulting upgraded block when upgrading a crafting unit with the given upgrade item.
      */
     public static Block getUpgradedBlock(Level level, ItemStack upgradeItem) {
-        for (var holder : level.getRecipeManager().byType(AERecipeTypes.CRAFTING_UNIT_TRANSFORM)) {
+        for (var holder : level.getRecipeManager().byType(AE2RecipeTypes.CRAFTING_UNIT_TRANSFORM.get())) {
             if (upgradeItem.is(holder.value().getUpgradeItem())) {
                 return holder.value().upgradedBlock;
             }
@@ -108,11 +111,11 @@ public class CraftingUnitTransformRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return CraftingUnitTransformRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.CRAFTING_UNIT_TRANSFORM.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return AERecipeTypes.CRAFTING_UNIT_TRANSFORM;
+        return AE2RecipeTypes.CRAFTING_UNIT_TRANSFORM.get();
     }
 }

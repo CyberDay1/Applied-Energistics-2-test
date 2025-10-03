@@ -26,11 +26,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class TransformRecipeSerializer implements RecipeSerializer<TransformRecipe> {
 
-    public static final TransformRecipeSerializer INSTANCE = new TransformRecipeSerializer();
-
-    private TransformRecipeSerializer() {
-    }
-
     @Override
     public MapCodec<TransformRecipe> codec() {
         return TransformRecipe.CODEC;

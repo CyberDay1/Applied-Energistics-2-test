@@ -24,17 +24,14 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.Level;
 
-import appeng.core.definitions.AEItems;
 import appeng.core.definitions.AEParts;
 import appeng.core.definitions.ItemDefinition;
 import appeng.items.parts.FacadeItem;
+import appeng.registry.AE2RecipeSerializers;
 
 public final class FacadeRecipe extends CustomRecipe {
-    public static RecipeSerializer<FacadeRecipe> SERIALIZER = new SimpleCraftingRecipeSerializer<>(
-            (category) -> new FacadeRecipe(category, AEItems.FACADE.get()));
 
     private final ItemDefinition<?> anchor = AEParts.CABLE_ANCHOR;
     private final FacadeItem facade;
@@ -77,7 +74,7 @@ public final class FacadeRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<FacadeRecipe> getSerializer() {
-        return SERIALIZER;
+        return AE2RecipeSerializers.FACADE.get();
     }
 
 }

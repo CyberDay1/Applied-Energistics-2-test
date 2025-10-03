@@ -39,7 +39,8 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import appeng.core.AppEng;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 public class InscriberRecipe implements Recipe<RecipeInput> {
 
@@ -75,7 +76,8 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
     public static final ResourceLocation TYPE_ID = AppEng.makeId("inscriber");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
-    public static final RecipeType<InscriberRecipe> TYPE = AERecipeTypes.INSCRIBER;
+    public static final RecipeType<InscriberRecipe> TYPE = new RecipeType<>() {
+    };
 
     private final Ingredient middleInput;
     private final Ingredient topOptional;
@@ -122,12 +124,12 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return InscriberRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.INSCRIBER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return TYPE;
+        return AE2RecipeTypes.INSCRIBER.get();
     }
 
     @Override

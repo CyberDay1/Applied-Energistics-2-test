@@ -26,11 +26,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class InscriberRecipeSerializer implements RecipeSerializer<InscriberRecipe> {
 
-    public static final InscriberRecipeSerializer INSTANCE = new InscriberRecipeSerializer();
-
-    private InscriberRecipeSerializer() {
-    }
-
     @Override
     public MapCodec<InscriberRecipe> codec() {
         return InscriberRecipe.CODEC;

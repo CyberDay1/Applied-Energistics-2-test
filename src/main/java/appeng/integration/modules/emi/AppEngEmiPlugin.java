@@ -43,7 +43,7 @@ import appeng.integration.modules.itemlists.ItemPredicates;
 import appeng.menu.me.items.CraftingTermMenu;
 import appeng.menu.me.items.PatternEncodingTermMenu;
 import appeng.menu.me.items.WirelessCraftingTermMenu;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeTypes;
 import appeng.recipes.game.StorageCellUpgradeRecipe;
 
 @EmiEntrypoint
@@ -79,13 +79,13 @@ public class AppEngEmiPlugin implements EmiPlugin {
         // Inscriber
         registry.addCategory(EmiInscriberRecipe.CATEGORY);
         registry.addWorkstation(EmiInscriberRecipe.CATEGORY, EmiStack.of(AEBlocks.INSCRIBER));
-        adaptRecipeType(registry, AERecipeTypes.INSCRIBER, EmiInscriberRecipe::new);
+        adaptRecipeType(registry, AE2RecipeTypes.INSCRIBER.get(), EmiInscriberRecipe::new);
 
         // Charger
         registry.addCategory(EmiChargerRecipe.CATEGORY);
         registry.addWorkstation(EmiChargerRecipe.CATEGORY, EmiStack.of(AEBlocks.CHARGER));
         registry.addWorkstation(EmiChargerRecipe.CATEGORY, EmiStack.of(AEBlocks.CRANK));
-        adaptRecipeType(registry, AERecipeTypes.CHARGER, EmiChargerRecipe::new);
+        adaptRecipeType(registry, AE2RecipeTypes.CHARGER.get(), EmiChargerRecipe::new);
 
         // Special upgrade recipes
         adaptSpecialRecipes(registry, StorageCellUpgradeRecipe.class, this::convertStorageCellUpgradeRecipe);
@@ -103,11 +103,11 @@ public class AppEngEmiPlugin implements EmiPlugin {
         // Entropy Manipulator
         registry.addCategory(EmiEntropyRecipe.CATEGORY);
         registry.addWorkstation(EmiEntropyRecipe.CATEGORY, EmiStack.of(AEItems.ENTROPY_MANIPULATOR));
-        adaptRecipeType(registry, AERecipeTypes.ENTROPY, EmiEntropyRecipe::new);
+        adaptRecipeType(registry, AE2RecipeTypes.ENTROPY.get(), EmiEntropyRecipe::new);
 
         // In-World Transformation
         registry.addCategory(EmiTransformRecipe.CATEGORY);
-        adaptRecipeType(registry, AERecipeTypes.TRANSFORM, EmiTransformRecipe::new);
+        adaptRecipeType(registry, AE2RecipeTypes.TRANSFORM.get(), EmiTransformRecipe::new);
 
         // Facades
         if (AEConfig.instance().isEnableFacadeRecipesInRecipeViewer()) {
