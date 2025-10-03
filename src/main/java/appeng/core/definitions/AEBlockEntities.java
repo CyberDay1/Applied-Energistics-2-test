@@ -73,12 +73,12 @@ import appeng.debug.CubeGeneratorBlockEntity;
 import appeng.debug.EnergyGeneratorBlockEntity;
 import appeng.debug.ItemGenBlockEntity;
 import appeng.debug.PhantomNodeBlockEntity;
+import appeng.registry.AE2Registries;
 
 public final class AEBlockEntities {
     private static final List<DeferredBlockEntityType<?>> BLOCK_ENTITY_TYPES = new ArrayList<>();
 
-    public static final DeferredRegister<BlockEntityType<?>> DR = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE,
-            AppEng.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> DR = AE2Registries.BLOCK_ENTITIES;
 
     public static final DeferredBlockEntityType<InscriberBlockEntity> INSCRIBER = create("inscriber",
             InscriberBlockEntity.class,

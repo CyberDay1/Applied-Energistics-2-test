@@ -29,7 +29,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -55,8 +54,6 @@ import appeng.api.parts.CableRenderMode;
 import appeng.api.stacks.AEKeyType;
 import appeng.api.stacks.AEKeyTypesInternal;
 import appeng.core.definitions.AEAttachmentTypes;
-import appeng.core.definitions.AEBlockEntities;
-import appeng.core.definitions.AEBlocks;
 import appeng.core.definitions.AEEntities;
 import appeng.core.definitions.AEItems;
 import appeng.core.definitions.AEParts;
@@ -70,7 +67,6 @@ import appeng.init.InitAdvancementTriggers;
 import appeng.init.InitCapabilityProviders;
 import appeng.init.InitCauldronInteraction;
 import appeng.init.InitDispenserBehavior;
-import appeng.init.InitMenuTypes;
 import appeng.init.InitStats;
 import appeng.init.InitVillager;
 import appeng.init.client.InitParticleTypes;
@@ -82,14 +78,13 @@ import appeng.init.internal.InitStorageCells;
 import appeng.init.internal.InitUpgrades;
 import appeng.init.worldgen.InitStructures;
 import appeng.integration.Integrations;
-import appeng.recipes.AERecipeSerializers;
 import appeng.recipes.AERecipeTypes;
 import appeng.server.AECommand;
 import appeng.server.services.ChunkLoadingService;
 import appeng.server.testworld.GameTestPlotAdapter;
-import appeng.sounds.AppEngSounds;
 import appeng.spatial.SpatialStorageChunkGenerator;
 import appeng.spatial.SpatialStorageDimensionIds;
+import appeng.registry.AE2Registries;
 
 /**
  * Mod functionality that is common to both dedicated server and client.
@@ -124,13 +119,16 @@ public abstract class AppEngBase implements AppEng {
         InitBlockEntityMoveStrategies.init();
 
         AEParts.init();
-        AEBlocks.DR.register(modEventBus);
-        AEItems.DR.register(modEventBus);
-        AEBlockEntities.DR.register(modEventBus);
+        AE2Registries.BLOCKS.register(modEventBus);
+        AE2Registries.ITEMS.register(modEventBus);
+        AE2Registries.BLOCK_ENTITIES.register(modEventBus);
+        AE2Registries.MENUS.register(modEventBus);
+        AE2Registries.RECIPE_SERIALIZERS.register(modEventBus);
+        AE2Registries.SOUNDS.register(modEventBus);
+        AE2Registries.LOOT_MODIFIERS.register(modEventBus);
         AEComponents.DR.register(modEventBus);
         AEEntities.DR.register(modEventBus);
         AERecipeTypes.DR.register(modEventBus);
-        AERecipeSerializers.DR.register(modEventBus);
         InitStructures.register(modEventBus);
         AEAttachmentTypes.register(modEventBus);
 
@@ -142,9 +140,7 @@ public abstract class AppEngBase implements AppEng {
         modEventBus.addListener(InitCapabilityProviders::register);
         modEventBus.addListener(EventPriority.LOWEST, InitCapabilityProviders::registerGenericAdapters);
         modEventBus.addListener((RegisterEvent event) -> {
-            if (event.getRegistryKey() == Registries.SOUND_EVENT) {
-                registerSounds(BuiltInRegistries.SOUND_EVENT);
-            } else if (event.getRegistryKey() == Registries.CREATIVE_MODE_TAB) {
+            if (event.getRegistryKey() == Registries.CREATIVE_MODE_TAB) {
                 registerCreativeTabs(BuiltInRegistries.CREATIVE_MODE_TAB);
             } else if (event.getRegistryKey() == Registries.CUSTOM_STAT) {
                 InitStats.init(event.getRegistry(Registries.CUSTOM_STAT));
@@ -152,8 +148,6 @@ public abstract class AppEngBase implements AppEng {
                 InitAdvancementTriggers.init(event.getRegistry(Registries.TRIGGER_TYPE));
             } else if (event.getRegistryKey() == Registries.PARTICLE_TYPE) {
                 InitParticleTypes.init(event.getRegistry(Registries.PARTICLE_TYPE));
-            } else if (event.getRegistryKey() == Registries.MENU) {
-                InitMenuTypes.init(event.getRegistry(Registries.MENU));
             } else if (event.getRegistryKey() == Registries.CHUNK_GENERATOR) {
                 Registry.register(BuiltInRegistries.CHUNK_GENERATOR, SpatialStorageDimensionIds.CHUNK_GENERATOR_ID,
                         SpatialStorageChunkGenerator.CODEC);
@@ -217,10 +211,6 @@ public abstract class AppEngBase implements AppEng {
 
     public void registerCommands(RegisterCommandsEvent evt) {
         new AECommand().register(evt.getDispatcher());
-    }
-
-    public void registerSounds(Registry<SoundEvent> registry) {
-        AppEngSounds.register(registry);
     }
 
     public void registerRegistries(NewRegistryEvent e) {
