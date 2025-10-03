@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.BiomeModifierProvider;
 
 import appeng.core.AppEng;
+import appeng.worldgen.AE2Features;
 
 public final class AEBiomeModifierProvider extends BiomeModifierProvider {
     public AEBiomeModifierProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
@@ -15,6 +16,7 @@ public final class AEBiomeModifierProvider extends BiomeModifierProvider {
 
     @Override
     protected void registerModifiers(HolderLookup.Provider registries) {
-        // add("add_quartz_ore", yourPlacedFeatureKey, yourBiomeSelector);
+        addFeature("add_certus_ore", overworldBiomes(), AE2Features.CERTUS_ORE_PLACED);
+        addFeature("add_meteorites", overworldBiomes(), AE2Features.METEORITE_PLACED);
     }
 }
