@@ -55,7 +55,6 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -113,10 +112,8 @@ import appeng.helpers.IMouseWheelItem;
 import appeng.hooks.BlockAttackHook;
 import appeng.hooks.RenderBlockOutlineHook;
 import appeng.init.client.InitAdditionalModels;
-import appeng.init.client.InitBlockColors;
 import appeng.init.client.InitBuiltInModels;
 import appeng.init.client.InitEntityLayerDefinitions;
-import appeng.init.client.InitItemColors;
 import appeng.init.client.InitItemModelsProperties;
 import appeng.init.client.InitScreens;
 import appeng.init.client.InitStackRenderHandlers;
@@ -164,13 +161,10 @@ public class AppEngClient extends AppEngBase {
         modEventBus.addListener(this::registerParticleFactories);
         modEventBus.addListener(this::modelRegistryEventAdditionalModels);
         modEventBus.addListener(this::modelRegistryEvent);
-        modEventBus.addListener(this::registerBlockColors);
-        modEventBus.addListener(this::registerItemColors);
         modEventBus.addListener(this::registerEntityRenderers);
         modEventBus.addListener(this::registerEntityLayerDefinitions);
         modEventBus.addListener(this::registerHotkeys);
         modEventBus.addListener(this::registerDimensionSpecialEffects);
-        modEventBus.addListener(InitScreens::init);
         modEventBus.addListener(this::enqueueImcMessages);
 
         BlockAttackHook.install();
@@ -268,14 +262,6 @@ public class AppEngClient extends AppEngBase {
         event.registerSpriteSet(ParticleTypes.LIGHTNING, LightningFX.Factory::new);
         event.registerSpriteSet(ParticleTypes.MATTER_CANNON, MatterCannonFX.Factory::new);
         event.registerSpriteSet(ParticleTypes.VIBRANT, VibrantFX.Factory::new);
-    }
-
-    public void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-        InitBlockColors.init(event.getBlockColors());
-    }
-
-    public void registerItemColors(RegisterColorHandlersEvent.Item event) {
-        InitItemColors.init(event);
     }
 
     private void registerClientTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {

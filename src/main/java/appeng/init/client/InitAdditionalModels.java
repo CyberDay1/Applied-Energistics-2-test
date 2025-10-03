@@ -19,8 +19,6 @@
 package appeng.init.client;
 
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.ModelEvent;
 
 import appeng.api.parts.PartModelsInternal;
@@ -30,7 +28,6 @@ import appeng.client.render.tesr.CrankRenderer;
 /**
  * Registers any JSON model files with Minecraft that are not referenced via blockstates or item IDs
  */
-@OnlyIn(Dist.CLIENT)
 public class InitAdditionalModels {
 
     public static void init(ModelEvent.RegisterAdditional event) {

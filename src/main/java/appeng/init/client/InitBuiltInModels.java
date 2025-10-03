@@ -22,8 +22,6 @@ import java.util.function.Supplier;
 
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import appeng.block.crafting.CraftingUnitType;
 import appeng.block.paint.PaintSplotchesModel;
@@ -43,7 +41,6 @@ import appeng.core.AppEng;
 import appeng.hooks.BuiltInModelHooks;
 import appeng.parts.automation.PlaneModel;
 
-@OnlyIn(Dist.CLIENT)
 public final class InitBuiltInModels {
     private InitBuiltInModels() {
     }
