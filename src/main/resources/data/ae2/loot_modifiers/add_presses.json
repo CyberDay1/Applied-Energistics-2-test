@@ -1,0 +1,9 @@
+{
+  "type": "ae2:add_presses",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "ae2:blocks/mysterious_cube"
+    }
+  ]
+}
