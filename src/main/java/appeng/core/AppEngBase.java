@@ -84,6 +84,7 @@ import appeng.server.services.ChunkLoadingService;
 import appeng.server.testworld.GameTestPlotAdapter;
 import appeng.spatial.SpatialStorageChunkGenerator;
 import appeng.spatial.SpatialStorageDimensionIds;
+import appeng.registry.AE2LootModifiers;
 import appeng.registry.AE2Registries;
 
 /**
@@ -126,6 +127,7 @@ public abstract class AppEngBase implements AppEng {
         AE2Registries.RECIPE_SERIALIZERS.register(modEventBus);
         AE2Registries.SOUNDS.register(modEventBus);
         AE2Registries.LOOT_MODIFIERS.register(modEventBus);
+        AE2LootModifiers.init();
         AEComponents.DR.register(modEventBus);
         AEEntities.DR.register(modEventBus);
         AERecipeTypes.DR.register(modEventBus);

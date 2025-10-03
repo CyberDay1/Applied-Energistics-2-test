@@ -16,6 +16,7 @@ import appeng.data.providers.AEBlockStateProvider;
 import appeng.data.providers.AEFeatureProvider;
 import appeng.data.providers.AEItemModelProvider;
 import appeng.data.providers.AELangProvider;
+import appeng.data.providers.AELootModifierProvider;
 import appeng.data.providers.AELootTableProvider;
 import appeng.data.providers.AERecipeProvider;
 import appeng.data.providers.AETagProviders;
@@ -41,6 +42,7 @@ public final class AE2DataGen {
             generator.addProvider(true, new AETagProviders.ItemTags(packOutput, lookup, blocks));
 
             generator.addProvider(true, new AELootTableProvider(packOutput, lookup));
+            generator.addProvider(true, new AELootModifierProvider(packOutput, lookup));
 
             generator.addProvider(true, new AEFeatureProvider(packOutput, lookup));
 
