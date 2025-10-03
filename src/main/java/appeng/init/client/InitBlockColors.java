@@ -19,8 +19,6 @@
 package appeng.init.client;
 
 import net.minecraft.client.color.block.BlockColors;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import appeng.api.util.AEColor;
 import appeng.block.networking.CableBusColor;
@@ -28,7 +26,6 @@ import appeng.client.render.ColorableBlockEntityBlockColor;
 import appeng.client.render.StaticBlockColor;
 import appeng.core.definitions.AEBlocks;
 
-@OnlyIn(Dist.CLIENT)
 public final class InitBlockColors {
 
     private InitBlockColors() {

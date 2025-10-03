@@ -118,74 +118,73 @@ public final class InitScreens {
     }
 
     public static void init(RegisterMenuScreensEvent event) {
+        registerAll((type, factory, stylePath) -> register(event, type, factory, stylePath));
+    }
+
+    public static void registerDirect() {
+        registerAll(InitScreens::register);
+    }
+
+    private static void registerAll(StyledScreenRegistrar registrar) {
         // spotless:off
-        register(event, QNBMenu.TYPE, QNBScreen::new, "/screens/qnb.json");
-        register(event, SkyChestMenu.TYPE, SkyChestScreen::new, "/screens/sky_chest.json");
-        register(event, MEChestMenu.TYPE, MEChestScreen::new, "/screens/me_chest.json");
-        register(event, WirelessAccessPointMenu.TYPE, WirelessAccessPointScreen::new, "/screens/wireless_access_point.json");
-        register(event, NetworkStatusMenu.NETWORK_TOOL_TYPE, NetworkStatusScreen::new, "/screens/network_status.json");
-        register(event, NetworkStatusMenu.CONTROLLER_TYPE, NetworkStatusScreen::new, "/screens/network_status.json");
-        register(event, CraftingCPUMenu.TYPE, CraftingCPUScreen<CraftingCPUMenu>::new, "/screens/crafting_cpu.json");
-        register(event, NetworkToolMenu.TYPE, NetworkToolScreen::new, "/screens/network_tool.json");
-        register(event, QuartzKnifeMenu.TYPE, QuartzKnifeScreen::new, "/screens/quartz_knife.json");
-        register(event, DriveMenu.TYPE, DriveScreen::new, "/screens/drive.json");
-        register(event, VibrationChamberMenu.TYPE, VibrationChamberScreen::new, "/screens/vibration_chamber.json");
-        register(event, CondenserMenu.TYPE, CondenserScreen::new, "/screens/condenser.json");
-        register(event, InterfaceMenu.TYPE, InterfaceScreen<InterfaceMenu>::new, "/screens/interface.json");
-        register(event, IOBusMenu.EXPORT_TYPE, IOBusScreen::new, "/screens/export_bus.json");
-        register(event, IOBusMenu.IMPORT_TYPE, IOBusScreen::new, "/screens/import_bus.json");
-        register(event, IOPortMenu.TYPE, IOPortScreen::new, "/screens/io_port.json");
-        register(event, StorageBusMenu.TYPE, StorageBusScreen::new, "/screens/storage_bus.json");
-        register(event, SetStockAmountMenu.TYPE, SetStockAmountScreen::new, "/screens/set_stock_amount.json");
-        register(event, FormationPlaneMenu.TYPE, FormationPlaneScreen::new, "/screens/formation_plane.json");
-        register(event, PriorityMenu.TYPE, PriorityScreen::new, "/screens/priority.json");
-        register(event, StorageLevelEmitterMenu.TYPE, StorageLevelEmitterScreen::new, "/screens/level_emitter.json");
-        register(event, EnergyLevelEmitterMenu.TYPE, EnergyLevelEmitterScreen::new, "/screens/energy_level_emitter.json");
-        register(event, SpatialIOPortMenu.TYPE, SpatialIOPortScreen::new, "/screens/spatial_io_port.json");
-        register(event, InscriberMenu.TYPE, InscriberScreen::new, "/screens/inscriber.json");
-        register(event, CellWorkbenchMenu.TYPE, CellWorkbenchScreen::new, "/screens/cell_workbench.json");
-        register(event, PatternProviderMenu.TYPE, PatternProviderScreen<PatternProviderMenu>::new, "/screens/pattern_provider.json");
-        register(event, MolecularAssemblerMenu.TYPE, MolecularAssemblerScreen::new, "/screens/molecular_assembler.json");
-        register(event, CraftAmountMenu.TYPE, CraftAmountScreen::new, "/screens/craft_amount.json");
-        register(event, CraftConfirmMenu.TYPE, CraftConfirmScreen::new, "/screens/craft_confirm.json");
-        register(event, CraftingStatusMenu.TYPE, CraftingStatusScreen::new, "/screens/crafting_status.json");
-        register(event, SpatialAnchorMenu.TYPE, SpatialAnchorScreen::new, "/screens/spatial_anchor.json");
+        registrar.register(QNBMenu.TYPE, QNBScreen::new, "/screens/qnb.json");
+        registrar.register(SkyChestMenu.TYPE, SkyChestScreen::new, "/screens/sky_chest.json");
+        registrar.register(MEChestMenu.TYPE, MEChestScreen::new, "/screens/me_chest.json");
+        registrar.register(WirelessAccessPointMenu.TYPE, WirelessAccessPointScreen::new, "/screens/wireless_access_point.json");
+        registrar.register(NetworkStatusMenu.NETWORK_TOOL_TYPE, NetworkStatusScreen::new, "/screens/network_status.json");
+        registrar.register(NetworkStatusMenu.CONTROLLER_TYPE, NetworkStatusScreen::new, "/screens/network_status.json");
+        registrar.register(CraftingCPUMenu.TYPE, CraftingCPUScreen<CraftingCPUMenu>::new, "/screens/crafting_cpu.json");
+        registrar.register(NetworkToolMenu.TYPE, NetworkToolScreen::new, "/screens/network_tool.json");
+        registrar.register(QuartzKnifeMenu.TYPE, QuartzKnifeScreen::new, "/screens/quartz_knife.json");
+        registrar.register(DriveMenu.TYPE, DriveScreen::new, "/screens/drive.json");
+        registrar.register(VibrationChamberMenu.TYPE, VibrationChamberScreen::new, "/screens/vibration_chamber.json");
+        registrar.register(CondenserMenu.TYPE, CondenserScreen::new, "/screens/condenser.json");
+        registrar.register(InterfaceMenu.TYPE, InterfaceScreen<InterfaceMenu>::new, "/screens/interface.json");
+        registrar.register(IOBusMenu.EXPORT_TYPE, IOBusScreen::new, "/screens/export_bus.json");
+        registrar.register(IOBusMenu.IMPORT_TYPE, IOBusScreen::new, "/screens/import_bus.json");
+        registrar.register(IOPortMenu.TYPE, IOPortScreen::new, "/screens/io_port.json");
+        registrar.register(StorageBusMenu.TYPE, StorageBusScreen::new, "/screens/storage_bus.json");
+        registrar.register(SetStockAmountMenu.TYPE, SetStockAmountScreen::new, "/screens/set_stock_amount.json");
+        registrar.register(FormationPlaneMenu.TYPE, FormationPlaneScreen::new, "/screens/formation_plane.json");
+        registrar.register(PriorityMenu.TYPE, PriorityScreen::new, "/screens/priority.json");
+        registrar.register(StorageLevelEmitterMenu.TYPE, StorageLevelEmitterScreen::new, "/screens/level_emitter.json");
+        registrar.register(EnergyLevelEmitterMenu.TYPE, EnergyLevelEmitterScreen::new, "/screens/energy_level_emitter.json");
+        registrar.register(SpatialIOPortMenu.TYPE, SpatialIOPortScreen::new, "/screens/spatial_io_port.json");
+        registrar.register(InscriberMenu.TYPE, InscriberScreen::new, "/screens/inscriber.json");
+        registrar.register(CellWorkbenchMenu.TYPE, CellWorkbenchScreen::new, "/screens/cell_workbench.json");
+        registrar.register(PatternProviderMenu.TYPE, PatternProviderScreen<PatternProviderMenu>::new, "/screens/pattern_provider.json");
+        registrar.register(MolecularAssemblerMenu.TYPE, MolecularAssemblerScreen::new, "/screens/molecular_assembler.json");
+        registrar.register(CraftAmountMenu.TYPE, CraftAmountScreen::new, "/screens/craft_amount.json");
+        registrar.register(CraftConfirmMenu.TYPE, CraftConfirmScreen::new, "/screens/craft_confirm.json");
+        registrar.register(CraftingStatusMenu.TYPE, CraftingStatusScreen::new, "/screens/crafting_status.json");
+        registrar.register(SpatialAnchorMenu.TYPE, SpatialAnchorScreen::new, "/screens/spatial_anchor.json");
 
         // Terminals
-        InitScreens.<MEStorageMenu, MEStorageScreen<MEStorageMenu>>register(event,
-                MEStorageMenu.TYPE,
+        registrar.register(MEStorageMenu.TYPE,
                 MEStorageScreen::new,
                 "/screens/terminals/terminal.json");
-        InitScreens.<MEStorageMenu, MEStorageScreen<MEStorageMenu>>register(event,
-                BasicCellChestMenu.TYPE,
+        registrar.register(BasicCellChestMenu.TYPE,
                 MEStorageScreen::new,
                 "/screens/terminals/terminal.json");
-        InitScreens.<MEStorageMenu, MEStorageScreen<MEStorageMenu>>register(event,
-                MEStorageMenu.PORTABLE_ITEM_CELL_TYPE,
+        registrar.register(MEStorageMenu.PORTABLE_ITEM_CELL_TYPE,
                 MEStorageScreen::new,
                 "/screens/terminals/portable_item_cell.json");
-        InitScreens.<MEStorageMenu, MEStorageScreen<MEStorageMenu>>register(event,
-                MEStorageMenu.PORTABLE_FLUID_CELL_TYPE,
+        registrar.register(MEStorageMenu.PORTABLE_FLUID_CELL_TYPE,
                 MEStorageScreen::new,
                 "/screens/terminals/portable_fluid_cell.json");
-        InitScreens.<MEStorageMenu, MEStorageScreen<MEStorageMenu>>register(event,
-                MEStorageMenu.WIRELESS_TYPE,
+        registrar.register(MEStorageMenu.WIRELESS_TYPE,
                 MEStorageScreen::new,
                 "/screens/terminals/wireless_terminal.json");
-        InitScreens.<CraftingTermMenu, CraftingTermScreen<CraftingTermMenu>>register(event,
-                CraftingTermMenu.TYPE,
+        registrar.register(CraftingTermMenu.TYPE,
                 CraftingTermScreen::new,
                 "/screens/terminals/crafting_terminal.json");
-        InitScreens.<WirelessCraftingTermMenu, CraftingTermScreen<WirelessCraftingTermMenu>>register(event,
-                WirelessCraftingTermMenu.TYPE,
+        registrar.register(WirelessCraftingTermMenu.TYPE,
                 CraftingTermScreen::new,
                 "/screens/terminals/crafting_terminal.json");
-        InitScreens.<PatternEncodingTermMenu, PatternEncodingTermScreen<PatternEncodingTermMenu>>register(event,
-                PatternEncodingTermMenu.TYPE,
+        registrar.register(PatternEncodingTermMenu.TYPE,
                 PatternEncodingTermScreen::new,
                 "/screens/terminals/pattern_encoding_terminal.json");
-        InitScreens.<PatternAccessTermMenu, PatternAccessTermScreen<PatternAccessTermMenu>>register(event,
-                PatternAccessTermMenu.TYPE, PatternAccessTermScreen::new,
+        registrar.register(PatternAccessTermMenu.TYPE, PatternAccessTermScreen::new,
                 "/screens/terminals/pattern_access_terminal.json");
         // spotless:on
     }
@@ -193,6 +192,17 @@ public final class InitScreens {
     /**
      * Registers a screen for a given menu and ensures the given style is applied after opening the screen.
      */
+    private static <M extends AEBaseMenu, U extends AEBaseScreen<M>> void register(MenuType<M> type,
+            StyledScreenFactory<M, U> factory,
+            String stylePath) {
+        MENU_STYLES.put(type, stylePath);
+        MenuScreens.register(type, (menu, playerInv, title) -> {
+            var style = StyleManager.loadStyleDoc(stylePath);
+
+            return factory.create(menu, playerInv, title, style);
+        });
+    }
+
     public static <M extends AEBaseMenu, U extends AEBaseScreen<M>> void register(RegisterMenuScreensEvent event,
             MenuType<M> type,
             StyledScreenFactory<M, U> factory,
@@ -203,6 +213,13 @@ public final class InitScreens {
 
             return factory.create(menu, playerInv, title, style);
         });
+    }
+
+    @FunctionalInterface
+    private interface StyledScreenRegistrar {
+        <M extends AEBaseMenu, U extends AEBaseScreen<M>> void register(MenuType<M> type,
+                StyledScreenFactory<M, U> factory,
+                String stylePath);
     }
 
     /**

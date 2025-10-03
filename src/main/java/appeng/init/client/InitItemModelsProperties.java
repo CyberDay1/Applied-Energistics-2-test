@@ -21,8 +21,6 @@ package appeng.init.client;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import appeng.api.util.AEColor;
 import appeng.block.networking.EnergyCellBlockItem;
@@ -33,7 +31,6 @@ import appeng.items.tools.powered.ColorApplicatorItem;
 /**
  * Registers custom properties that can be used in item model JSON files.
  */
-@OnlyIn(Dist.CLIENT)
 public final class InitItemModelsProperties {
 
     public static final ResourceLocation COLORED_PREDICATE_ID = AppEng.makeId("colored");
