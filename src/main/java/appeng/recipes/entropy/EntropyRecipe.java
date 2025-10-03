@@ -55,7 +55,8 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import appeng.core.AppEng;
 import appeng.items.tools.powered.EntropyManipulatorItem;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 /**
  * A special recipe used for the {@link EntropyManipulatorItem}.
@@ -80,7 +81,8 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
     public static final ResourceLocation TYPE_ID = AppEng.makeId("entropy");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
-    public static final RecipeType<EntropyRecipe> TYPE = AERecipeTypes.ENTROPY;
+    public static final RecipeType<EntropyRecipe> TYPE = new RecipeType<>() {
+    };
 
     private final EntropyMode mode;
     private final Input input;
@@ -114,12 +116,12 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return EntropyRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.ENTROPY.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return TYPE;
+        return AE2RecipeTypes.ENTROPY.get();
     }
 
     @Override

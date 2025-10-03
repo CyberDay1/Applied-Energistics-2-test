@@ -19,12 +19,15 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 /**
  * Used to handle disassembly of the (Portable) Storage Cells.
  */
 public class StorageCellDisassemblyRecipe extends CustomRecipe {
+    public static final RecipeType<StorageCellDisassemblyRecipe> TYPE = new RecipeType<>() {
+    };
     public static final MapCodec<StorageCellDisassemblyRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder
             .group(
                     BuiltInRegistries.ITEM.byNameCodec().fieldOf("cell")
@@ -75,7 +78,7 @@ public class StorageCellDisassemblyRecipe extends CustomRecipe {
     public static List<ItemStack> getDisassemblyResult(Level level, Item cell) {
         var recipeManager = level.getRecipeManager();
 
-        for (var holder : recipeManager.byType(AERecipeTypes.CELL_DISASSEMBLY)) {
+        for (var holder : recipeManager.byType(AE2RecipeTypes.CELL_DISASSEMBLY.get())) {
             if (holder.value().storageCell == cell) {
                 return holder.value().getCellDisassemblyItems();
             }
@@ -106,11 +109,11 @@ public class StorageCellDisassemblyRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return StorageCellDisassemblyRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.STORAGE_CELL_DISASSEMBLY.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return AERecipeTypes.CELL_DISASSEMBLY;
+        return AE2RecipeTypes.CELL_DISASSEMBLY.get();
     }
 }

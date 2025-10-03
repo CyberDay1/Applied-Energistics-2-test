@@ -25,10 +25,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class MatterCannonAmmoSerializer implements RecipeSerializer<MatterCannonAmmo> {
-    public static final MatterCannonAmmoSerializer INSTANCE = new MatterCannonAmmoSerializer();
-
-    private MatterCannonAmmoSerializer() {
-    }
 
     @Override
     public MapCodec<MatterCannonAmmo> codec() {

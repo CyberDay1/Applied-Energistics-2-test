@@ -17,13 +17,15 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 import appeng.core.AppEng;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 public class ChargerRecipe implements Recipe<RecipeInput> {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("charger");
     @Deprecated(forRemoval = true, since = "1.21.1")
-    public static final RecipeType<ChargerRecipe> TYPE = AERecipeTypes.CHARGER;
+    public static final RecipeType<ChargerRecipe> TYPE = new RecipeType<>() {
+    };
 
     public final Ingredient ingredient;
     public final NonNullList<Ingredient> ingredients;
@@ -75,12 +77,12 @@ public class ChargerRecipe implements Recipe<RecipeInput> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ChargerRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.CHARGER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return TYPE;
+        return AE2RecipeTypes.CHARGER.get();
     }
 
     public Ingredient getIngredient() {

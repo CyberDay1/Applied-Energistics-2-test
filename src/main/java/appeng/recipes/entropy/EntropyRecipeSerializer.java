@@ -26,11 +26,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class EntropyRecipeSerializer implements RecipeSerializer<EntropyRecipe> {
 
-    public static final EntropyRecipeSerializer INSTANCE = new EntropyRecipeSerializer();
-
-    private EntropyRecipeSerializer() {
-    }
-
     @Override
     public MapCodec<EntropyRecipe> codec() {
         return EntropyRecipe.CODEC;

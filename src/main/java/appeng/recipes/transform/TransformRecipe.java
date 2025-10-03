@@ -21,13 +21,15 @@ import net.minecraft.world.level.Level;
 import appeng.blockentity.qnb.QuantumBridgeBlockEntity;
 import appeng.core.AppEng;
 import appeng.core.definitions.AEItems;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeSerializers;
+import appeng.registry.AE2RecipeTypes;
 
 public final class TransformRecipe implements Recipe<TransformRecipeInput> {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("transform");
     @Deprecated(forRemoval = true, since = "1.21.1")
-    public static final RecipeType<TransformRecipe> TYPE = AERecipeTypes.TRANSFORM;
+    public static final RecipeType<TransformRecipe> TYPE = new RecipeType<>() {
+    };
 
     public static final MapCodec<TransformRecipe> CODEC = RecordCodecBuilder.mapCodec(builder -> {
         return builder.group(
@@ -105,12 +107,12 @@ public final class TransformRecipe implements Recipe<TransformRecipeInput> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return TransformRecipeSerializer.INSTANCE;
+        return AE2RecipeSerializers.TRANSFORM.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return TYPE;
+        return AE2RecipeTypes.TRANSFORM.get();
     }
 
     @Override

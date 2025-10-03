@@ -29,7 +29,7 @@ import net.minecraft.world.level.Level;
 
 import appeng.api.ids.AEComponents;
 import appeng.core.definitions.AEItems;
-import appeng.recipes.AERecipeTypes;
+import appeng.registry.AE2RecipeTypes;
 import appeng.recipes.handlers.InscriberProcessType;
 import appeng.recipes.handlers.InscriberRecipe;
 
@@ -46,7 +46,7 @@ public final class InscriberRecipes {
      * Returns an unmodifiable view of all registered inscriber recipes.
      */
     public static Iterable<RecipeHolder<InscriberRecipe>> getRecipes(Level level) {
-        return level.getRecipeManager().byType(AERecipeTypes.INSCRIBER);
+        return level.getRecipeManager().byType(AE2RecipeTypes.INSCRIBER.get());
     }
 
     @Nullable

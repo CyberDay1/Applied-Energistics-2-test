@@ -7,10 +7,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class CraftingUnitTransformRecipeSerializer implements RecipeSerializer<CraftingUnitTransformRecipe> {
-    public static final CraftingUnitTransformRecipeSerializer INSTANCE = new CraftingUnitTransformRecipeSerializer();
-
-    private CraftingUnitTransformRecipeSerializer() {
-    }
 
     @Override
     public MapCodec<CraftingUnitTransformRecipe> codec() {
