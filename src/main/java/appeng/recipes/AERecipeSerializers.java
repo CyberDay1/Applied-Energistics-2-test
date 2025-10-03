@@ -4,7 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import appeng.core.AppEng;
+import appeng.registry.AE2Registries;
 import appeng.recipes.entropy.EntropyRecipeSerializer;
 import appeng.recipes.game.AddItemUpgradeRecipeSerializer;
 import appeng.recipes.game.CraftingUnitTransformRecipeSerializer;
@@ -22,8 +22,7 @@ public final class AERecipeSerializers {
     private AERecipeSerializers() {
     }
 
-    public static final DeferredRegister<RecipeSerializer<?>> DR = DeferredRegister
-            .create(Registries.RECIPE_SERIALIZER, AppEng.MOD_ID);
+    public static final DeferredRegister<RecipeSerializer<?>> DR = AE2Registries.RECIPE_SERIALIZERS;
 
     static {
         register("inscriber", InscriberRecipeSerializer.INSTANCE);

@@ -102,12 +102,13 @@ import appeng.decorative.solid.CertusQuartzClusterBlock;
 import appeng.decorative.solid.NotSoMysteriousCubeBlock;
 import appeng.decorative.solid.QuartzGlassBlock;
 import appeng.decorative.solid.QuartzLampBlock;
+import appeng.registry.AE2Registries;
 
 /**
  * Internal implementation for the API blocks
  */
 public final class AEBlocks {
-    public static final DeferredRegister.Blocks DR = DeferredRegister.createBlocks(AppEng.MOD_ID);
+    public static final DeferredRegister<Block> DR = AE2Registries.BLOCKS;
 
     private static final List<BlockDefinition<?>> BLOCKS = new ArrayList<>();
     private static final Properties QUARTZ_CLUSTER_PROPERTIES = defaultProps(MapColor.COLOR_CYAN,

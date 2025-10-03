@@ -39,11 +39,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
 import appeng.core.AppEng;
-import appeng.init.InitMenuTypes;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.MenuOpener;
 import appeng.menu.locator.MenuHostLocator;
 import appeng.menu.locator.MenuLocators;
+import appeng.registry.AE2Registries;
 
 /**
  * Builder that allows creation of menu types which can be opened from multiple types of hosts.
@@ -204,7 +204,7 @@ public final class MenuTypeBuilder<M extends AEBaseMenu, I> {
      */
     public MenuType<M> build(ResourceLocation id) {
         var menuType = buildUnregistered(id);
-        InitMenuTypes.queueRegistration(this.id, menuType);
+        AE2Registries.MENUS.register(id.getPath(), () -> menuType);
         return menuType;
     }
 

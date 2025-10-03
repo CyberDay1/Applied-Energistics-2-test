@@ -78,6 +78,7 @@ import appeng.items.tools.fluix.FluixPickaxeItem;
 import appeng.items.tools.fluix.FluixSmithingTemplateItem;
 import appeng.items.tools.fluix.FluixSpadeItem;
 import appeng.items.tools.fluix.FluixSwordItem;
+import appeng.registry.AE2Registries;
 import appeng.items.tools.powered.ChargedStaffItem;
 import appeng.items.tools.powered.ColorApplicatorItem;
 import appeng.items.tools.powered.EntropyManipulatorItem;
@@ -99,7 +100,7 @@ import appeng.menu.me.common.MEStorageMenu;
  * Internal implementation for the API items
  */
 public final class AEItems {
-    public static final DeferredRegister.Items DR = DeferredRegister.createItems(AppEng.MOD_ID);
+    public static final DeferredRegister<Item> DR = AE2Registries.ITEMS;
 
     // spotless:off
     private static final List<ItemDefinition<?>> ITEMS = new ArrayList<>();
