@@ -7,12 +7,17 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import net.minecraft.world.item.crafting.RecipeManager;
 
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import appeng.registry.AE2BlockEntities;
+import appeng.recipe.AE2RecipeTypes;
+import appeng.recipe.InscriberRecipe;
 
 public class InscriberBlockEntity extends BlockEntity {
     private final NonNullList<ItemStack> items = NonNullList.withSize(4, ItemStack.EMPTY);
@@ -128,18 +133,46 @@ public class InscriberBlockEntity extends BlockEntity {
     }
 
     public static void tick(BlockPos pos, BlockState state, InscriberBlockEntity be) {
+        Level level = be.getLevel();
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
         ItemStack top = be.items.get(0);
         ItemStack bottom = be.items.get(1);
         ItemStack middle = be.items.get(2);
         ItemStack output = be.items.get(3);
 
-        if (!top.isEmpty() && !middle.isEmpty() && output.isEmpty()) {
-            if (top.getItem().toString().contains("press") && middle.getItem().toString().contains("silicon")) {
-                be.items.set(3, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT));
-                top.shrink(1);
-                middle.shrink(1);
+        if (!output.isEmpty()) {
+            return;
+        }
+
+        RecipeManager recipeManager = level.getRecipeManager();
+        for (var holder : recipeManager.getAllRecipesFor(AE2RecipeTypes.INSCRIBER.get())) {
+            InscriberRecipe recipe = holder.value();
+            if (matchesSlot(top, recipe.top()) && matchesSlot(middle, recipe.middle())
+                    && matchesSlot(bottom, recipe.bottom())) {
+                be.items.set(3, recipe.result().copy());
+                consumeSlot(be.items, 0, recipe.top());
+                consumeSlot(be.items, 2, recipe.middle());
+                consumeSlot(be.items, 1, recipe.bottom());
                 be.setChanged();
+                break;
             }
+        }
+    }
+
+    private static boolean matchesSlot(ItemStack slot, ItemStack requirement) {
+        if (requirement.isEmpty()) {
+            return slot.isEmpty();
+        }
+        return !slot.isEmpty() && slot.getCount() >= requirement.getCount()
+                && ItemStack.isSameItemSameComponents(slot, requirement);
+    }
+
+    private static void consumeSlot(NonNullList<ItemStack> items, int index, ItemStack requirement) {
+        if (!requirement.isEmpty()) {
+            items.get(index).shrink(requirement.getCount());
         }
     }
 }

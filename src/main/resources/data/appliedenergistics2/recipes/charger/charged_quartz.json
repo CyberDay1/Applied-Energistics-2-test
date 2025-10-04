@@ -1,0 +1,6 @@
+{
+  "type": "appliedenergistics2:charger",
+  "input": { "item": "appliedenergistics2:certus_quartz_crystal" },
+  "result": { "item": "appliedenergistics2:charged_certus_quartz_crystal" },
+  "time": 200
+}
