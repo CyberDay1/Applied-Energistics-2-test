@@ -8,6 +8,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
 
+import appeng.api.grid.IGridHost;
+import appeng.capability.provider.GridNodeCapabilityProvider;
 import appeng.capability.provider.InWorldGridNodeHostProvider;
 import appeng.api.networking.IInWorldGridNodeHost;
 import appeng.core.AppEng;
@@ -26,6 +28,9 @@ public final class AE2CapabilityAttach {
         final BlockEntity be = event.getObject();
         if (be instanceof IInWorldGridNodeHost host) {
             event.addCapability(rl("inworld_gridnode_host"), new InWorldGridNodeHostProvider(be, host));
+        }
+        if (be instanceof IGridHost host) {
+            event.addCapability(rl("grid_node"), new GridNodeCapabilityProvider(be, host));
         }
     }
 

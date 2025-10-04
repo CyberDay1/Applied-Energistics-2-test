@@ -43,6 +43,7 @@ import appeng.api.config.PowerMultiplier;
 import appeng.api.config.Setting;
 import appeng.api.config.Settings;
 import appeng.api.config.YesNo;
+import appeng.api.grid.IGridHost;
 import appeng.api.implementations.blockentities.ICrankable;
 import appeng.api.inventories.ISegmentedInventory;
 import appeng.api.inventories.InternalInventory;
@@ -78,7 +79,7 @@ import appeng.util.inv.filter.IAEItemFilter;
  * @since rv0
  */
 public class InscriberBlockEntity extends AENetworkedPoweredBlockEntity
-        implements IGridTickable, IUpgradeableObject, IConfigurableObject {
+        implements IGridTickable, IUpgradeableObject, IConfigurableObject, IGridHost {
     private static final int MAX_PROCESSING_STEPS = 200;
 
     private final IUpgradeInventory upgrades;
@@ -93,6 +94,10 @@ public class InscriberBlockEntity extends AENetworkedPoweredBlockEntity
     private boolean repeatSmash;
     private int finalStep;
     private long clientStart;
+
+    private final appeng.api.grid.IGridNode gridNode = new appeng.api.grid.IGridNode() {
+        // TODO: Hook up real grid node once capability is fully implemented.
+    };
 
     // Internally visible inventories
     private final IAEItemFilter baseFilter = new BaseFilter();
@@ -141,6 +146,11 @@ public class InscriberBlockEntity extends AENetworkedPoweredBlockEntity
                 sideItemHandlerExtern);
 
         this.setPowerSides(getGridConnectableSides(getOrientation()));
+    }
+
+    @Override
+    public appeng.api.grid.IGridNode getGridNode() {
+        return gridNode;
     }
 
     @Override
