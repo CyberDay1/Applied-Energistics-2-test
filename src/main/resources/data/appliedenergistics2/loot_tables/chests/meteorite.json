@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "item", "name": "appliedenergistics2:inscriber_silicon_press" },
+        { "type": "item", "name": "appliedenergistics2:inscriber_logic_press" },
+        { "type": "item", "name": "appliedenergistics2:inscriber_engineering_press" },
+        { "type": "item", "name": "appliedenergistics2:inscriber_calculation_press" }
+      ]
+    }
+  ]
+}

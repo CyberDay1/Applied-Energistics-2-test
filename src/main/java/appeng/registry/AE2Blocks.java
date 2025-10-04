@@ -22,5 +22,11 @@ public final class AE2Blocks {
         "charger",
         () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
 
+    public static final RegistryObject<Block> SKY_STONE = AE2Registries.BLOCKS.register(
+        "sky_stone",
+        () -> new Block(BlockBehaviour.Properties.of()
+            .mapColor(MapColor.COLOR_BLACK)
+            .strength(50.0f, 1200.0f)));
+
     private AE2Blocks() {}
 }

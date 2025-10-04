@@ -21,5 +21,9 @@ public final class AE2Features {
         ResourceKey.create(Registries.CONFIGURED_FEATURE,
             new ResourceLocation(AE2Registries.MODID, "meteorite"));
 
+    public static final ResourceKey<PlacedFeature> METEORITE_PLACED =
+        ResourceKey.create(Registries.PLACED_FEATURE,
+            new ResourceLocation(AE2Registries.MODID, "meteorite"));
+
     private AE2Features() {}
 }
