@@ -24,5 +24,11 @@ public final class AE2DataGenerators {
             generator.addProvider(true, new AE2BlockTagsProvider(output, lookup, helper));
             generator.addProvider(true, new AE2LootTableProvider(output));
         }
+
+        if (event.includeClient()) {
+            generator.addProvider(true, new AE2BlockStateProvider(output, helper));
+            generator.addProvider(true, new AE2ItemModelProvider(output, helper));
+            generator.addProvider(true, new AE2LanguageProvider(output));
+        }
     }
 }
