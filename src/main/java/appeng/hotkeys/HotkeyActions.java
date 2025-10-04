@@ -11,6 +11,7 @@ import java.util.Map;
 
 import net.minecraft.world.level.ItemLike;
 
+import appeng.api.compat.CuriosCompat;
 import appeng.api.features.HotkeyAction;
 import appeng.core.AppEng;
 import appeng.core.definitions.AEItems;
@@ -56,7 +57,10 @@ public class HotkeyActions {
      */
     public static void register(ItemLike item, InventoryHotkeyAction.Opener opener, String id) {
         register(new InventoryHotkeyAction(item, opener), id);
-        register(new CuriosHotkeyAction(item, opener), id);
+        if (CuriosCompat.isLoaded()) {
+            CuriosCompat.reportBridgeInitialized();
+            register(new CuriosHotkeyAction(item, opener), id);
+        }
     }
 
     /**

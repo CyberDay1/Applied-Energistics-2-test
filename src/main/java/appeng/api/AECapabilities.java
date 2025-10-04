@@ -57,6 +57,14 @@ public final class AECapabilities {
     /**
      * NeoForge capability tokens exposed for add-ons that directly integrate with the new capability system.
      */
+    public static final Capability<MEStorage> ME_STORAGE_ENTITY = AE2Capabilities.ME_STORAGE;
+
+    public static final Capability<ICraftingMachine> CRAFTING_MACHINE_ENTITY = AE2Capabilities.CRAFTING_MACHINE;
+
+    public static final Capability<GenericInternalInventory> GENERIC_INTERNAL_INV_ENTITY = AE2Capabilities.GENERIC_INTERNAL_INV;
+
     public static final Capability<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST_ENTITY = AE2Capabilities.IN_WORLD_GRID_NODE_HOST;
+
+    public static final Capability<ICrankable> CRANKABLE_ENTITY = AE2Capabilities.CRANKABLE;
 
 }
