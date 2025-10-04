@@ -18,5 +18,9 @@ public final class AE2Blocks {
         "inscriber",
         () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
 
+    public static final RegistryObject<Block> CHARGER = AE2Registries.BLOCKS.register(
+        "charger",
+        () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
+
     private AE2Blocks() {}
 }
