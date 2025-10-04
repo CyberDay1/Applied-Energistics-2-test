@@ -17,6 +17,7 @@ public class AE2ItemModelProvider extends ItemModelProvider {
         withExistingParent(AE2Items.INSCRIBER.getId().getPath(), modLoc("block/inscriber"));
         withExistingParent(AE2Items.CHARGER.getId().getPath(), modLoc("block/charger"));
         withExistingParent(AE2Items.CERTUS_QUARTZ_ORE.getId().getPath(), modLoc("block/certus_quartz_ore"));
+        withExistingParent(AE2Items.SKY_STONE.getId().getPath(), modLoc("block/sky_stone"));
 
         basicItem(AE2Items.SILICON.get());
         basicItem(AE2Items.CERTUS_QUARTZ_CRYSTAL.get());

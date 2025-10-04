@@ -17,5 +17,6 @@ public class AE2BlockStateProvider extends BlockStateProvider {
         simpleBlock(AE2Blocks.CERTUS_QUARTZ_ORE.get());
         simpleBlock(AE2Blocks.INSCRIBER.get());
         simpleBlock(AE2Blocks.CHARGER.get());
+        simpleBlock(AE2Blocks.SKY_STONE.get());
     }
 }
