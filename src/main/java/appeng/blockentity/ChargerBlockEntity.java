@@ -7,16 +7,18 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import appeng.registry.AE2BlockEntities;
+import appeng.recipe.AE2RecipeTypes;
+import appeng.recipe.ChargerRecipe;
 
 public class ChargerBlockEntity extends BlockEntity {
-    private static final int MAX_CHARGE = 200;
-
     private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
     private final Container container = new Container() {
         @Override
@@ -134,19 +136,52 @@ public class ChargerBlockEntity extends BlockEntity {
     }
 
     public static void tick(BlockPos pos, BlockState state, ChargerBlockEntity be) {
+        Level level = be.getLevel();
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
         ItemStack in = be.items.get(0);
         ItemStack out = be.items.get(1);
 
-        if (!in.isEmpty() && out.isEmpty()) {
-            be.chargeTime++;
-            if (be.chargeTime >= MAX_CHARGE) {
-                be.items.set(1, new ItemStack(net.minecraft.world.item.Items.DIAMOND));
-                in.shrink(1);
-                be.chargeTime = 0;
-                be.setChanged();
-            }
-        } else {
+        if (!out.isEmpty()) {
             be.chargeTime = 0;
+            return;
+        }
+
+        RecipeManager recipeManager = level.getRecipeManager();
+        boolean matched = false;
+        for (var holder : recipeManager.getAllRecipesFor(AE2RecipeTypes.CHARGER.get())) {
+            ChargerRecipe recipe = holder.value();
+            if (matchesInput(in, recipe.input())) {
+                matched = true;
+                be.chargeTime++;
+                if (be.chargeTime >= recipe.time()) {
+                    be.items.set(1, recipe.result().copy());
+                    consumeInput(be.items, 0, recipe.input());
+                    be.chargeTime = 0;
+                    be.setChanged();
+                }
+                break;
+            }
+        }
+
+        if (!matched) {
+            be.chargeTime = 0;
+        }
+    }
+
+    private static boolean matchesInput(ItemStack slot, ItemStack requirement) {
+        if (requirement.isEmpty()) {
+            return slot.isEmpty();
+        }
+        return !slot.isEmpty() && slot.getCount() >= requirement.getCount()
+                && ItemStack.isSameItemSameComponents(slot, requirement);
+    }
+
+    private static void consumeInput(NonNullList<ItemStack> items, int index, ItemStack requirement) {
+        if (!requirement.isEmpty()) {
+            items.get(index).shrink(requirement.getCount());
         }
     }
 }

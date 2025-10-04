@@ -1,0 +1,7 @@
+{
+  "type": "appliedenergistics2:inscriber",
+  "top": { "item": "appliedenergistics2:inscriber_silicon_press" },
+  "middle": { "item": "appliedenergistics2:silicon" },
+  "bottom": { "item": "minecraft:air" },
+  "result": { "item": "appliedenergistics2:printed_silicon" }
+}
