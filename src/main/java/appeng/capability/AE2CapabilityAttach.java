@@ -9,9 +9,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
 
 import appeng.api.grid.IGridHost;
+import appeng.api.networking.IInWorldGridNodeHost;
+import appeng.api.storage.IStorageHost;
 import appeng.capability.provider.GridNodeCapabilityProvider;
 import appeng.capability.provider.InWorldGridNodeHostProvider;
-import appeng.api.networking.IInWorldGridNodeHost;
+import appeng.capability.provider.StorageServiceCapabilityProvider;
 import appeng.core.AppEng;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID)
@@ -31,6 +33,9 @@ public final class AE2CapabilityAttach {
         }
         if (be instanceof IGridHost host) {
             event.addCapability(rl("grid_node"), new GridNodeCapabilityProvider(be, host));
+        }
+        if (be instanceof IStorageHost host) {
+            event.addCapability(rl("storage_service"), new StorageServiceCapabilityProvider(be, host));
         }
     }
 

@@ -1,5 +1,8 @@
 package appeng.blockentity;
 
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -7,19 +10,21 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.minecraft.world.item.crafting.RecipeManager;
-
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
+import appeng.api.storage.IStorageChannel;
+import appeng.api.storage.IStorageHost;
+import appeng.api.storage.IStorageService;
 import appeng.registry.AE2BlockEntities;
 import appeng.recipe.AE2RecipeTypes;
 import appeng.recipe.InscriberRecipe;
 
-public class InscriberBlockEntity extends BlockEntity {
+public class InscriberBlockEntity extends BlockEntity implements IStorageHost {
     private final NonNullList<ItemStack> items = NonNullList.withSize(4, ItemStack.EMPTY);
     private final Container container = new Container() {
         @Override
@@ -107,6 +112,17 @@ public class InscriberBlockEntity extends BlockEntity {
         }
     };
     private final InvWrapper itemHandler = new InvWrapper(this.container);
+    private final IStorageService storageService = new IStorageService() {
+        @Override
+        public <T> IStorageChannel<T> getChannel(Class<T> type) {
+            return null;
+        }
+
+        @Override
+        public List<IStorageChannel<?>> getAllChannels() {
+            return Collections.emptyList();
+        }
+    };
 
     public InscriberBlockEntity(BlockPos pos, BlockState state) {
         super(AE2BlockEntities.INSCRIBER_BE.get(), pos, state);
@@ -118,6 +134,11 @@ public class InscriberBlockEntity extends BlockEntity {
 
     public InvWrapper getItemHandler() {
         return this.itemHandler;
+    }
+
+    @Override
+    public IStorageService getStorageService() {
+        return storageService;
     }
 
     @Override

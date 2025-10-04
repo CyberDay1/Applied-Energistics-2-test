@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import appeng.AE2Capabilities;
 import appeng.api.grid.IGridNode;
+import appeng.api.storage.IStorageService;
 
 /**
  * Simple helpers for third-party integrations to query AE2 grid node capabilities.
@@ -21,5 +22,14 @@ public final class AE2Interop {
     @Nullable
     public static IGridNode getGridNode(BlockEntity be) {
         return be.getCapability(AE2Capabilities.GRID_NODE, null);
+    }
+
+    public static boolean hasStorage(BlockEntity be) {
+        return getStorage(be) != null;
+    }
+
+    @Nullable
+    public static IStorageService getStorage(BlockEntity be) {
+        return be.getCapability(AE2Capabilities.STORAGE_SERVICE, null);
     }
 }
