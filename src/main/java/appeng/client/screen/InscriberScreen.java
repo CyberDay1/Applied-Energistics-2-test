@@ -13,6 +13,6 @@ public class InscriberScreen extends AbstractContainerScreen<InscriberMenu> {
 
     @Override
     protected void renderBg(net.minecraft.client.gui.GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        // TODO: draw background
+        // TODO: draw inscriber background (placeholder, no binary assets)
     }
 }

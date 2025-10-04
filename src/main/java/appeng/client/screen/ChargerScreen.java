@@ -13,6 +13,6 @@ public class ChargerScreen extends AbstractContainerScreen<ChargerMenu> {
 
     @Override
     protected void renderBg(net.minecraft.client.gui.GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        // TODO: draw background
+        // TODO: draw charger background (placeholder, no binary assets)
     }
 }
