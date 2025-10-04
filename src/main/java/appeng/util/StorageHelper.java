@@ -1,7 +1,9 @@
 package appeng.util;
 
+import appeng.api.storage.IItemStorageChannel;
 import appeng.api.storage.IStorageHost;
 import appeng.api.storage.IStorageService;
+import appeng.storage.impl.StorageService;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
@@ -20,6 +22,14 @@ public final class StorageHelper {
     public static IStorageService getStorage(BlockEntity be) {
         if (be instanceof IStorageHost host) {
             return host.getStorageService();
+        }
+        return null;
+    }
+
+    public static IItemStorageChannel getItemChannel(BlockEntity be) {
+        var service = getStorage(be);
+        if (service instanceof StorageService impl) {
+            return impl.getItemChannel();
         }
         return null;
     }

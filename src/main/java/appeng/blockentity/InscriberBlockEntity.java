@@ -1,8 +1,5 @@
 package appeng.blockentity;
 
-import java.util.Collections;
-import java.util.List;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -17,12 +14,12 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
-import appeng.api.storage.IStorageChannel;
 import appeng.api.storage.IStorageHost;
 import appeng.api.storage.IStorageService;
 import appeng.registry.AE2BlockEntities;
 import appeng.recipe.AE2RecipeTypes;
 import appeng.recipe.InscriberRecipe;
+import appeng.storage.impl.StorageService;
 
 public class InscriberBlockEntity extends BlockEntity implements IStorageHost {
     private final NonNullList<ItemStack> items = NonNullList.withSize(4, ItemStack.EMPTY);
@@ -112,17 +109,7 @@ public class InscriberBlockEntity extends BlockEntity implements IStorageHost {
         }
     };
     private final InvWrapper itemHandler = new InvWrapper(this.container);
-    private final IStorageService storageService = new IStorageService() {
-        @Override
-        public <T> IStorageChannel<T> getChannel(Class<T> type) {
-            return null;
-        }
-
-        @Override
-        public List<IStorageChannel<?>> getAllChannels() {
-            return Collections.emptyList();
-        }
-    };
+    private final IStorageService storageService = new StorageService();
 
     public InscriberBlockEntity(BlockPos pos, BlockState state) {
         super(AE2BlockEntities.INSCRIBER_BE.get(), pos, state);
