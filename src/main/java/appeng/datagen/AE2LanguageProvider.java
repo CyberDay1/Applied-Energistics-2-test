@@ -1,0 +1,34 @@
+package appeng.datagen;
+
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.LanguageProvider;
+
+import appeng.AE2Registries;
+
+public class AE2LanguageProvider extends LanguageProvider {
+    public AE2LanguageProvider(PackOutput output) {
+        super(output, AE2Registries.MODID, "en_us");
+    }
+
+    @Override
+    protected void addTranslations() {
+        add("block.appliedenergistics2.certus_quartz_ore", "Certus Quartz Ore");
+        add("block.appliedenergistics2.inscriber", "Inscriber");
+        add("block.appliedenergistics2.charger", "Charger");
+
+        add("item.appliedenergistics2.silicon", "Silicon");
+        add("item.appliedenergistics2.certus_quartz_crystal", "Certus Quartz Crystal");
+        add("item.appliedenergistics2.charged_certus_quartz_crystal", "Charged Certus Quartz Crystal");
+        add("item.appliedenergistics2.printed_silicon", "Printed Silicon");
+        add("item.appliedenergistics2.printed_logic_processor", "Printed Logic Circuit");
+        add("item.appliedenergistics2.printed_engineering_processor", "Printed Engineering Circuit");
+        add("item.appliedenergistics2.printed_calculation_processor", "Printed Calculation Circuit");
+        add("item.appliedenergistics2.logic_processor", "Logic Processor");
+        add("item.appliedenergistics2.engineering_processor", "Engineering Processor");
+        add("item.appliedenergistics2.calculation_processor", "Calculation Processor");
+        add("item.appliedenergistics2.inscriber_silicon_press", "Inscriber Silicon Press");
+        add("item.appliedenergistics2.inscriber_logic_press", "Inscriber Logic Press");
+        add("item.appliedenergistics2.inscriber_engineering_press", "Inscriber Engineering Press");
+        add("item.appliedenergistics2.inscriber_calculation_press", "Inscriber Calculation Press");
+    }
+}

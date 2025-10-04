@@ -63,9 +63,17 @@ public final class AE2Items {
             "calculation_processor",
             () -> new Item(new Properties()));
 
-    public static final RegistryObject<Item> INSCRIBER_BLOCK_ITEM = AE2Registries.ITEMS.register(
+    public static final RegistryObject<Item> CERTUS_QUARTZ_ORE = AE2Registries.ITEMS.register(
+            "certus_quartz_ore",
+            () -> new BlockItem(AE2Blocks.CERTUS_QUARTZ_ORE.get(), new Properties()));
+
+    public static final RegistryObject<Item> INSCRIBER = AE2Registries.ITEMS.register(
             "inscriber",
             () -> new BlockItem(AE2Blocks.INSCRIBER.get(), new Properties()));
+
+    public static final RegistryObject<Item> CHARGER = AE2Registries.ITEMS.register(
+            "charger",
+            () -> new BlockItem(AE2Blocks.CHARGER.get(), new Properties()));
 
     private AE2Items() {}
 }
