@@ -36,6 +36,7 @@ import appeng.parts.networking.EnergyAcceptorPart;
 import appeng.parts.p2p.FEP2PTunnelPart;
 import appeng.parts.p2p.FluidP2PTunnelPart;
 import appeng.parts.p2p.ItemP2PTunnelPart;
+import appeng.registry.AE2BlockEntities;
 
 public final class InitCapabilityProviders {
 
@@ -86,6 +87,10 @@ public final class InitCapabilityProviders {
             event.registerBlockEntity(AECapabilities.IN_WORLD_GRID_NODE_HOST, type,
                     (object, context) -> (IInWorldGridNodeHost) object);
         }
+
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,
+                AE2BlockEntities.ENERGY_ACCEPTOR.get(),
+                (blockEntity, context) -> blockEntity.getEnergyStorage());
     }
 
     /**

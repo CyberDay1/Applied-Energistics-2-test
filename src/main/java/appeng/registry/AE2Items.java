@@ -79,5 +79,13 @@ public final class AE2Items {
             "sky_stone",
             () -> new BlockItem(AE2Blocks.SKY_STONE.get(), new Properties()));
 
+    public static final RegistryObject<Item> CONTROLLER = AE2Registries.ITEMS.register(
+            "controller",
+            () -> new BlockItem(AE2Blocks.CONTROLLER.get(), new Properties()));
+
+    public static final RegistryObject<Item> ENERGY_ACCEPTOR = AE2Registries.ITEMS.register(
+            "energy_acceptor",
+            () -> new BlockItem(AE2Blocks.ENERGY_ACCEPTOR.get(), new Properties()));
+
     private AE2Items() {}
 }
