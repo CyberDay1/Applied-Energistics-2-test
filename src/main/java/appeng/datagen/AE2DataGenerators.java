@@ -11,6 +11,12 @@ public final class AE2DataGenerators {
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
-        // TODO: wire providers
+        var generator = event.getGenerator();
+        var output = generator.getPackOutput();
+
+        if (event.includeServer()) {
+            generator.addProvider(true, new InscriberRecipeProvider(output));
+            generator.addProvider(true, new ChargerRecipeProvider(output));
+        }
     }
 }
