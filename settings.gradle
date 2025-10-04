@@ -134,3 +134,14 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = 'ae2';
+
+plugins {
+    id "dev.kikugie.stonecutter" version "0.7.10"
+}
+
+stonecutter {
+    shared {
+        set("MC", "1.21.4")
+        set("NEOFORGE", "21.4.154")
+    }
+}
