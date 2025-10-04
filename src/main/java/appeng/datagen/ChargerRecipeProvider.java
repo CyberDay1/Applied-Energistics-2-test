@@ -22,9 +22,10 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
 
 import appeng.recipe.ChargerRecipe;
+import appeng.registry.AE2Items;
 
 public class ChargerRecipeProvider extends RecipeProvider {
     public ChargerRecipeProvider(PackOutput output) {
@@ -33,10 +34,10 @@ public class ChargerRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput output) {
-        output.accept(new ResourceLocation("appliedenergistics2", "charger/charged_quartz"),
+        output.accept(new ResourceLocation("appliedenergistics2", "charger/charged_certus_quartz"),
                 new ChargerRecipe(
-                        Items.QUARTZ.getDefaultInstance(),
-                        Items.DIAMOND.getDefaultInstance(),
+                        new ItemStack(AE2Items.CERTUS_QUARTZ_CRYSTAL.get()),
+                        new ItemStack(AE2Items.CHARGED_CERTUS_QUARTZ_CRYSTAL.get()),
                         200),
                 null);
     }
