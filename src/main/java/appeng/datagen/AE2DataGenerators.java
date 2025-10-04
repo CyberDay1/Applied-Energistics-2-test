@@ -23,6 +23,8 @@ public final class AE2DataGenerators {
             generator.addProvider(true, new AE2ItemTagsProvider(output, lookup, helper));
             generator.addProvider(true, new AE2BlockTagsProvider(output, lookup, helper));
             generator.addProvider(true, new AE2LootTableProvider(output));
+            generator.addProvider(true, new AE2WorldgenProvider(output, lookup));
+            generator.addProvider(true, new AE2BiomeModifierProvider(output, lookup));
         }
 
         if (event.includeClient()) {
