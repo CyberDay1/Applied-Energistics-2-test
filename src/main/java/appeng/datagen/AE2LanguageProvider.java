@@ -15,6 +15,7 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("block.appliedenergistics2.certus_quartz_ore", "Certus Quartz Ore");
         add("block.appliedenergistics2.inscriber", "Inscriber");
         add("block.appliedenergistics2.charger", "Charger");
+        add("block.appliedenergistics2.sky_stone", "Sky Stone");
 
         add("item.appliedenergistics2.silicon", "Silicon");
         add("item.appliedenergistics2.certus_quartz_crystal", "Certus Quartz Crystal");
