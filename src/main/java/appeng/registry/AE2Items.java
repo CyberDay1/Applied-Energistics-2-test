@@ -75,5 +75,9 @@ public final class AE2Items {
             "charger",
             () -> new BlockItem(AE2Blocks.CHARGER.get(), new Properties()));
 
+    public static final RegistryObject<Item> SKY_STONE = AE2Registries.ITEMS.register(
+            "sky_stone",
+            () -> new BlockItem(AE2Blocks.SKY_STONE.get(), new Properties()));
+
     private AE2Items() {}
 }
