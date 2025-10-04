@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.config.PowerUnit;
+import appeng.api.grid.IGridHost;
 import appeng.api.implementations.blockentities.ICrankable;
 import appeng.api.implementations.items.IAEItemPowerStorage;
 import appeng.api.inventories.InternalInventory;
@@ -52,12 +53,15 @@ import appeng.util.Platform;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.filter.IAEItemFilter;
 
-public class ChargerBlockEntity extends AENetworkedPoweredBlockEntity implements IGridTickable {
+public class ChargerBlockEntity extends AENetworkedPoweredBlockEntity implements IGridTickable, IGridHost {
     public static final int POWER_MAXIMUM_AMOUNT = 1600;
     private static final int POWER_THRESHOLD = POWER_MAXIMUM_AMOUNT - 1;
     private boolean working;
 
     private final AppEngInternalInventory inv = new AppEngInternalInventory(this, 1, 1, new ChargerInvFilter(this));
+    private final appeng.api.grid.IGridNode gridNode = new appeng.api.grid.IGridNode() {
+        // TODO: Hook up real grid node once capability is fully implemented.
+    };
 
     public ChargerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
@@ -67,6 +71,11 @@ public class ChargerBlockEntity extends AENetworkedPoweredBlockEntity implements
                 .addService(IGridTickable.class, this);
         this.setInternalMaxPower(POWER_MAXIMUM_AMOUNT);
         this.setPowerSides(getGridConnectableSides(getOrientation()));
+    }
+
+    @Override
+    public appeng.api.grid.IGridNode getGridNode() {
+        return gridNode;
     }
 
     @Override
