@@ -14,11 +14,14 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
+import appeng.api.storage.IStorageHost;
+import appeng.api.storage.IStorageService;
 import appeng.registry.AE2BlockEntities;
 import appeng.recipe.AE2RecipeTypes;
 import appeng.recipe.ChargerRecipe;
+import appeng.storage.impl.StorageService;
 
-public class ChargerBlockEntity extends BlockEntity {
+public class ChargerBlockEntity extends BlockEntity implements IStorageHost {
     private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
     private final Container container = new Container() {
         @Override
@@ -106,6 +109,7 @@ public class ChargerBlockEntity extends BlockEntity {
         }
     };
     private final InvWrapper itemHandler = new InvWrapper(this.container);
+    private final IStorageService storageService = new StorageService();
 
     private int chargeTime = 0;
 
@@ -122,10 +126,20 @@ public class ChargerBlockEntity extends BlockEntity {
     }
 
     @Override
+    public IStorageService getStorageService() {
+        return this.storageService;
+    }
+
+    @Override
     public void load(CompoundTag tag) {
         super.load(tag);
         ContainerHelper.loadAllItems(tag, this.items);
         this.chargeTime = tag.getInt("ChargeTime");
+        if (this.storageService instanceof StorageService impl) {
+            if (tag.contains("StorageService")) {
+                impl.loadNBT(tag.getCompound("StorageService"));
+            }
+        }
     }
 
     @Override
@@ -133,6 +147,9 @@ public class ChargerBlockEntity extends BlockEntity {
         super.saveAdditional(tag);
         ContainerHelper.saveAllItems(tag, this.items);
         tag.putInt("ChargeTime", this.chargeTime);
+        if (this.storageService instanceof StorageService impl) {
+            tag.put("StorageService", impl.saveNBT());
+        }
     }
 
     public static void tick(BlockPos pos, BlockState state, ChargerBlockEntity be) {

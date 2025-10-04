@@ -7,6 +7,7 @@ import java.util.Map;
 import appeng.api.storage.IItemStorageChannel;
 import appeng.api.storage.IStorageChannel;
 import appeng.api.storage.IStorageService;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 public class StorageService implements IStorageService {
@@ -29,5 +30,21 @@ public class StorageService implements IStorageService {
 
     public IItemStorageChannel getItemChannel() {
         return (IItemStorageChannel) channels.get(ItemStack.class);
+    }
+
+    public CompoundTag saveNBT() {
+        CompoundTag tag = new CompoundTag();
+        if (getItemChannel() instanceof ItemStorageChannel impl) {
+            tag.put("ItemChannel", impl.saveNBT());
+        }
+        return tag;
+    }
+
+    public void loadNBT(CompoundTag tag) {
+        if (tag.contains("ItemChannel")) {
+            if (getItemChannel() instanceof ItemStorageChannel impl) {
+                impl.loadNBT(tag.getCompound("ItemChannel"));
+            }
+        }
     }
 }

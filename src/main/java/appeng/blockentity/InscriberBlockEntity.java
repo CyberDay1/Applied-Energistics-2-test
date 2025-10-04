@@ -132,12 +132,20 @@ public class InscriberBlockEntity extends BlockEntity implements IStorageHost {
     public void load(CompoundTag tag) {
         super.load(tag);
         ContainerHelper.loadAllItems(tag, this.items);
+        if (this.storageService instanceof StorageService impl) {
+            if (tag.contains("StorageService")) {
+                impl.loadNBT(tag.getCompound("StorageService"));
+            }
+        }
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         ContainerHelper.saveAllItems(tag, this.items);
+        if (this.storageService instanceof StorageService impl) {
+            tag.put("StorageService", impl.saveNBT());
+        }
     }
 
     public static void tick(BlockPos pos, BlockState state, InscriberBlockEntity be) {

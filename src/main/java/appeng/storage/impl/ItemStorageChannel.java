@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import appeng.api.storage.IItemStorageChannel;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemStorageChannel implements IItemStorageChannel {
@@ -171,5 +174,28 @@ public class ItemStorageChannel implements IItemStorageChannel {
             copy.add(stack.copy());
         }
         return Collections.unmodifiableList(copy);
+    }
+
+    public CompoundTag saveNBT() {
+        CompoundTag tag = new CompoundTag();
+        ListTag list = new ListTag();
+        for (ItemStack stack : contents) {
+            CompoundTag stackTag = new CompoundTag();
+            stack.save(stackTag);
+            list.add(stackTag);
+        }
+        tag.put("Items", list);
+        return tag;
+    }
+
+    public void loadNBT(CompoundTag tag) {
+        contents.clear();
+        if (tag.contains("Items", Tag.TAG_LIST)) {
+            ListTag list = tag.getList("Items", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag stackTag = list.getCompound(i);
+                contents.add(ItemStack.of(stackTag));
+            }
+        }
     }
 }
