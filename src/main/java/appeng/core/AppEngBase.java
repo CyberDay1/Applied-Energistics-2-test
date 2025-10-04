@@ -59,6 +59,7 @@ import appeng.core.definitions.AEItems;
 import appeng.core.definitions.AEParts;
 import appeng.core.network.ClientboundPacket;
 import appeng.core.network.InitNetwork;
+import appeng.core.AE2InteropValidator;
 import appeng.hooks.SkyStoneBreakSpeed;
 import appeng.hooks.WrenchHook;
 import appeng.hooks.ticking.TickHandler;
@@ -210,6 +211,8 @@ public abstract class AppEngBase implements AppEng {
         InitDispenserBehavior.init();
 
         InitUpgrades.init();
+
+        AE2InteropValidator.logStatus();
     }
 
     public void registerKeyTypes(Registry<AEKeyType> registry) {
