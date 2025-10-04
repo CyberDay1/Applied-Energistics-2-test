@@ -2,6 +2,8 @@ package appeng.registry;
 
 import appeng.AE2Registries;
 import appeng.blockentity.ChargerBlockEntity;
+import appeng.blockentity.ControllerBlockEntity;
+import appeng.blockentity.EnergyAcceptorBlockEntity;
 import appeng.blockentity.InscriberBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -16,6 +18,16 @@ public final class AE2BlockEntities {
         AE2Registries.BLOCK_ENTITIES.register("charger",
             () -> BlockEntityType.Builder.of(ChargerBlockEntity::new,
                 AE2Blocks.CHARGER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<ControllerBlockEntity>> CONTROLLER =
+        AE2Registries.BLOCK_ENTITIES.register("controller",
+            () -> BlockEntityType.Builder.of(ControllerBlockEntity::new,
+                AE2Blocks.CONTROLLER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<EnergyAcceptorBlockEntity>> ENERGY_ACCEPTOR =
+        AE2Registries.BLOCK_ENTITIES.register("energy_acceptor",
+            () -> BlockEntityType.Builder.of(EnergyAcceptorBlockEntity::new,
+                AE2Blocks.ENERGY_ACCEPTOR.get()).build(null));
 
     private AE2BlockEntities() {}
 }

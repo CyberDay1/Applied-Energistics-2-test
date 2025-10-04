@@ -1,6 +1,8 @@
 package appeng.registry;
 
 import appeng.AE2Registries;
+import appeng.block.ControllerBlock;
+import appeng.block.EnergyAcceptorBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -27,6 +29,12 @@ public final class AE2Blocks {
         () -> new Block(BlockBehaviour.Properties.of()
             .mapColor(MapColor.COLOR_BLACK)
             .strength(50.0f, 1200.0f)));
+
+    public static final RegistryObject<Block> CONTROLLER =
+        AE2Registries.BLOCKS.register("controller", ControllerBlock::new);
+
+    public static final RegistryObject<Block> ENERGY_ACCEPTOR =
+        AE2Registries.BLOCKS.register("energy_acceptor", EnergyAcceptorBlock::new);
 
     private AE2Blocks() {}
 }
