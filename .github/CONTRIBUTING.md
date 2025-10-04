@@ -33,9 +33,16 @@ Please note that we might close any issue not matching these requirements.
   * This `master` branch that is under active development.
   * Only target release branches if you are certain your fix must be on that
     branch.
-  * To quickly create a topic branch based on the development branch; `git 
-    checkout -b my_contribution_branch`. Please avoid working 
+  * To quickly create a topic branch based on the development branch; `git
+    checkout -b my_contribution_branch`. Please avoid working
     directly on the `master` branch.
+* Configure your local workspace with Stonecutter before making changes:
+  * `./gradlew sc:useVersion -Psc.version=1.21.4`
+* Never force Gradle builds inside PRs. If validation is required, request a run
+  of the guarded CI workflow instead of pushing build artifacts.
+* If you are at risk of missing a deadline or experiencing local timeouts,
+  commit your progress and open a pull request with a clear TODO list so the
+  work stays unblocked.
 * Make commits of logical units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
 * Make sure your commit messages are in the proper format.

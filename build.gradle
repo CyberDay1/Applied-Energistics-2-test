@@ -26,6 +26,18 @@ plugins {
 apply plugin: ProjectDefaultsPlugin
 apply plugin: CrowdinPlugin
 
+def describe = { ->
+    try {
+        "git describe --tags".execute().text.trim()
+    } catch (ignored) {
+        "0.1.0-SNAPSHOT"
+    }
+}
+
+if (!project.hasProperty("ae2.version.from.git")) {
+    version = describe()
+}
+
 base {
     archivesName = "appliedenergistics2"
 }
