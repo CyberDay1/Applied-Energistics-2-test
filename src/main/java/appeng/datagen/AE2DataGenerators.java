@@ -3,6 +3,7 @@ package appeng.datagen;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+
 import appeng.AE2Registries;
 
 @EventBusSubscriber(modid = AE2Registries.MODID, bus = EventBusSubscriber.Bus.MOD)
@@ -13,10 +14,15 @@ public final class AE2DataGenerators {
     public static void gatherData(GatherDataEvent event) {
         var generator = event.getGenerator();
         var output = generator.getPackOutput();
+        var helper = event.getExistingFileHelper();
+        var lookup = event.getLookupProvider();
 
         if (event.includeServer()) {
             generator.addProvider(true, new InscriberRecipeProvider(output));
             generator.addProvider(true, new ChargerRecipeProvider(output));
+            generator.addProvider(true, new AE2ItemTagsProvider(output, lookup, helper));
+            generator.addProvider(true, new AE2BlockTagsProvider(output, lookup, helper));
+            generator.addProvider(true, new AE2LootTableProvider(output));
         }
     }
 }
