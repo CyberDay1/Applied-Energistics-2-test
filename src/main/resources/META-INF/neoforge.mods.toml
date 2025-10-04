@@ -1,7 +1,6 @@
 modLoader="javafml"
 loaderVersion="[${NEOFORGE},)"
 license="LGPL-3.0"
-issueTrackerURL="https://github.com/AppliedEnergistics/Applied-Energistics-2/issues"
 
 [[mods]]
 modId="appliedenergistics2"
