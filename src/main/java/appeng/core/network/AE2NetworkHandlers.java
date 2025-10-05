@@ -16,6 +16,7 @@ import appeng.core.network.payload.AE2ActionC2SPayload;
 import appeng.core.network.payload.AE2HelloS2CPayload;
 import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
+import appeng.core.network.payload.EncodePatternC2SPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
@@ -23,6 +24,7 @@ import appeng.crafting.CraftingJob;
 import appeng.crafting.CraftingJobManager;
 import appeng.items.patterns.EncodedPatternItem;
 import appeng.menu.SlotSemantics;
+import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
 
 public final class AE2NetworkHandlers {
@@ -95,6 +97,23 @@ public final class AE2NetworkHandlers {
 
             AELog.info("Planned crafting job {} -> {}", job.getId(), job.describeOutputs());
             AE2Packets.sendPlannedCraftingJob(player, menu.containerId, job);
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleEncodePatternServer(final EncodePatternC2SPayload payload, final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player() instanceof ServerPlayer player)) {
+                return;
+            }
+            if (!(player.containerMenu instanceof PatternEncodingTerminalMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+
+            menu.encodeServer();
         });
         ctx.setPacketHandled(true);
     }

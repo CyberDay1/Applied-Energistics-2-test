@@ -11,6 +11,7 @@ import appeng.core.network.payload.AE2ActionC2SPayload;
 import appeng.core.network.payload.AE2HelloS2CPayload;
 import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
+import appeng.core.network.payload.EncodePatternC2SPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
@@ -39,6 +40,8 @@ public final class AE2Network {
                 AE2NetworkHandlers::handleActionServer);
         play.playToServer(PlanCraftingJobC2SPayload.TYPE, PlanCraftingJobC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handlePlanCraftingJobServer);
+        play.playToServer(EncodePatternC2SPayload.TYPE, EncodePatternC2SPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleEncodePatternServer);
 
         // Login (handshake) payloads
         final LoginPayloadRegistrar login = event.login();

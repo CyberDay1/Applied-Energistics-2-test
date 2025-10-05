@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ggg",
+    "gCg",
+    "glg"
+  ],
+  "key": {
+    "g": {
+      "item": "ae2:quartz_glass"
+    },
+    "C": {
+      "item": "minecraft:crafting_table"
+    },
+    "l": {
+      "item": "ae2:logic_processor"
+    }
+  },
+  "result": {
+    "item": "ae2:pattern_encoding_terminal_block"
+  }
+}

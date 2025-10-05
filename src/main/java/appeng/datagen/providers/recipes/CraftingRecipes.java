@@ -26,6 +26,7 @@ import appeng.core.definitions.AEParts;
 import appeng.core.definitions.ItemDefinition;
 import appeng.datagen.providers.tags.ConventionTags;
 import appeng.items.tools.powered.PortableCellItem;
+import appeng.registry.AE2Items;
 
 public class CraftingRecipes extends AE2RecipeProvider {
     public CraftingRecipes(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
@@ -675,6 +676,16 @@ public class CraftingRecipes extends AE2RecipeProvider {
                 .unlockedBy("has_logic_processor", has(AEItems.LOGIC_PROCESSOR))
                 .unlockedBy("has_quartz_glass", has(AEBlocks.QUARTZ_GLASS))
                 .save(consumer, AppEng.makeId("network/crafting/molecular_assembler"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.PATTERN_ENCODING_TERMINAL_BLOCK.get())
+                .pattern("ggg")
+                .pattern("gCg")
+                .pattern("glg")
+                .define('g', AEBlocks.QUARTZ_GLASS)
+                .define('C', Items.CRAFTING_TABLE)
+                .define('l', AEItems.LOGIC_PROCESSOR)
+                .unlockedBy("has_logic_processor", has(AEItems.LOGIC_PROCESSOR))
+                .unlockedBy("has_quartz_glass", has(AEBlocks.QUARTZ_GLASS))
+                .save(consumer, AppEng.makeId("pattern_encoding_terminal"));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEItems.BLANK_PATTERN, 2)
                 .pattern("aba")
                 .pattern("bcb")

@@ -6,6 +6,7 @@ import appeng.block.ControllerBlock;
 import appeng.block.EnergyAcceptorBlock;
 import appeng.block.crafting.CraftingMonitorBlock;
 import appeng.block.crafting.CraftingUnitType;
+import appeng.block.crafting.PatternEncodingTerminalBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
@@ -73,6 +74,9 @@ public final class AE2Blocks {
 
     public static final RegistryObject<Block> PATTERN_TERMINAL =
         AE2Registries.BLOCKS.register("pattern_terminal", PatternTerminalBlock::new);
+
+    public static final RegistryObject<Block> PATTERN_ENCODING_TERMINAL =
+        AE2Registries.BLOCKS.register("pattern_encoding_terminal", PatternEncodingTerminalBlock::new);
 
     public static final RegistryObject<Block> CRAFTING_MONITOR = AE2Registries.BLOCKS.register("crafting_monitor",
             () -> new CraftingMonitorBlock(CraftingUnitType.MONITOR));

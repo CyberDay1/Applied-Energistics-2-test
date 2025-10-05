@@ -5,6 +5,7 @@ import appeng.menu.ChargerMenu;
 import appeng.menu.InscriberMenu;
 import appeng.menu.me.crafting.CraftingMonitorMenu;
 import appeng.menu.terminal.CraftingTerminalMenu;
+import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -21,6 +22,9 @@ public final class AE2Menus {
 
     public static final RegistryObject<MenuType<PatternTerminalMenu>> PATTERN_TERMINAL_MENU =
         AE2Registries.MENUS.register("pattern_terminal", () -> PatternTerminalMenu.TYPE);
+
+    public static final RegistryObject<MenuType<PatternEncodingTerminalMenu>> PATTERN_ENCODING_TERMINAL_MENU =
+        AE2Registries.MENUS.register("pattern_encoding_terminal", () -> PatternEncodingTerminalMenu.TYPE);
 
     public static final RegistryObject<MenuType<CraftingMonitorMenu>> CRAFTING_MONITOR_MENU =
         AE2Registries.MENUS.register("crafting_monitor", () -> CraftingMonitorMenu.TYPE);

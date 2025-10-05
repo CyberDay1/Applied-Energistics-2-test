@@ -56,7 +56,8 @@ public class AE2ItemTagsProvider extends ItemTagsProvider {
         tag(TERMINALS)
                 .addOptional(new ResourceLocation(AE2Registries.MODID, "terminal"))
                 .addOptional(new ResourceLocation(AE2Registries.MODID, "crafting_terminal"))
-                .addOptional(new ResourceLocation(AE2Registries.MODID, "pattern_terminal"));
+                .addOptional(new ResourceLocation(AE2Registries.MODID, "pattern_terminal"))
+                .addOptional(new ResourceLocation(AE2Registries.MODID, "pattern_encoding_terminal_block"));
 
         tag(CABLES)
                 .add(AE2Items.CABLE.get())
