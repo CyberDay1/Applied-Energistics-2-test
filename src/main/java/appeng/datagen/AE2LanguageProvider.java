@@ -35,6 +35,10 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("item.appliedenergistics2.logic_processor", "Logic Processor");
         add("item.appliedenergistics2.engineering_processor", "Engineering Processor");
         add("item.appliedenergistics2.calculation_processor", "Calculation Processor");
+        add("item.appliedenergistics2.capacity_card", "Capacity Card");
+        add("item.appliedenergistics2.speed_card", "Speed Card");
+        add("item.appliedenergistics2.redstone_card", "Redstone Card");
+        add("item.appliedenergistics2.fuzzy_card", "Fuzzy Card");
         add("item.appliedenergistics2.inscriber_silicon_press", "Inscriber Silicon Press");
         add("item.appliedenergistics2.inscriber_logic_press", "Inscriber Logic Press");
         add("item.appliedenergistics2.inscriber_engineering_press", "Inscriber Engineering Press");

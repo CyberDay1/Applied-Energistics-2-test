@@ -32,6 +32,9 @@ import appeng.api.storage.IStorageProvider;
 import appeng.api.storage.StorageApi;
 import appeng.api.storage.MEStorage;
 import appeng.api.behaviors.ExternalStorageStrategy;
+import appeng.api.upgrades.IUpgradeInventory;
+import appeng.api.upgrades.IUpgradeableObject;
+import appeng.api.upgrades.UpgradeInventories;
 import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
 import appeng.blockentity.grid.AENetworkedBlockEntity;
@@ -52,7 +55,7 @@ import appeng.core.definitions.AEItems;
 import appeng.parts.automation.StackWorldBehaviors;
 
 public class StorageBusBlockEntity extends AENetworkedBlockEntity
-        implements IStorageProvider, IConfigInvHost, IPriorityHost, IConfigurableObject {
+        implements IStorageProvider, IConfigInvHost, IPriorityHost, IConfigurableObject, IUpgradeableObject {
 
     private final ConfigInventory config = ConfigInventory.configTypes(63).changeListener(this::onConfigChanged).build();
     private final IConfigManager configManager = IConfigManager.builder(this::onSettingsChanged)
@@ -63,12 +66,14 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
             .build();
 
     private int priority = 0;
+    private final IUpgradeInventory upgrades;
 
     public StorageBusBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
 
         getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL);
         getMainNode().addService(IStorageProvider.class, this);
+        this.upgrades = UpgradeInventories.forMachine(AEBlocks.STORAGE_BUS, 4, this::onUpgradesChanged);
     }
 
     @Override
@@ -190,6 +195,12 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
         IStorageProvider.requestUpdate(getMainNode());
     }
 
+    private void onUpgradesChanged() {
+        setChanged();
+        updateMountedStorage();
+        IStorageProvider.requestUpdate(getMainNode());
+    }
+
     private IPartitionList createFilter() {
         var builder = IPartitionList.builder();
 
@@ -211,6 +222,7 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
         config.writeToChildTag(data, "config", registries);
         data.putInt("priority", priority);
         configManager.writeToNBT(data, registries);
+        upgrades.writeToNBT(data, "upgrades", registries);
     }
 
     @Override
@@ -219,6 +231,7 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
         config.readFromChildTag(data, "config", registries);
         priority = data.getInt("priority");
         configManager.readFromNBT(data, registries);
+        upgrades.readFromNBT(data, "upgrades", registries);
     }
 
     @Override
@@ -280,5 +293,10 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
         if (level != null && !level.isClientSide()) {
             IStorageProvider.requestUpdate(getMainNode());
         }
+    }
+
+    @Override
+    public IUpgradeInventory getUpgrades() {
+        return upgrades;
     }
 }

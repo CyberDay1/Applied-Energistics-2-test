@@ -2,6 +2,7 @@ package appeng.blockentity.io;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -10,6 +11,7 @@ import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.networking.IGrid;
+import appeng.core.definitions.AEBlocks;
 import appeng.core.settings.TickRates;
 import appeng.api.behaviors.StackImportStrategy;
 import appeng.parts.automation.StackTransferContextImpl;
@@ -24,6 +26,11 @@ public class ImportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
         super(type, pos, state);
 
         getMainNode().addService(IGridTickable.class, this);
+    }
+
+    @Override
+    protected ItemLike getUpgradeableItem() {
+        return AEBlocks.IMPORT_BUS;
     }
 
     @Override

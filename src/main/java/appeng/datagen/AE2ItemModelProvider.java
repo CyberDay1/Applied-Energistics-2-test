@@ -36,6 +36,10 @@ public class AE2ItemModelProvider extends ItemModelProvider {
         basicItem(AE2Items.INSCRIBER_LOGIC_PRESS.get());
         basicItem(AE2Items.INSCRIBER_ENGINEERING_PRESS.get());
         basicItem(AE2Items.INSCRIBER_CALCULATION_PRESS.get());
+        basicItem(AE2Items.CAPACITY_CARD.get());
+        basicItem(AE2Items.SPEED_CARD.get());
+        basicItem(AE2Items.REDSTONE_CARD.get());
+        basicItem(AE2Items.FUZZY_CARD.get());
         basicItem(AE2Items.BASIC_CELL_1K.get());
         basicItem(AE2Items.BASIC_CELL_4K.get());
         basicItem(AE2Items.BASIC_CELL_16K.get());

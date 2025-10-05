@@ -12,6 +12,7 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.Items;
 
 import appeng.AE2Registries;
 import appeng.registry.AE2Items;
@@ -52,6 +53,43 @@ public class AE2RecipeProvider extends RecipeProvider {
                 .define('C', AE2Items.BASIC_CELL_16K.get())
                 .unlockedBy("has_basic_cell_16k", has(AE2Items.BASIC_CELL_16K.get()))
                 .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/basic_cell_64k"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.REDSTONE_CARD.get())
+                .pattern("RRR")
+                .pattern("RPR")
+                .pattern("RRR")
+                .define('R', Items.REDSTONE)
+                .define('P', AE2Items.LOGIC_PROCESSOR.get())
+                .unlockedBy("has_logic_processor", has(AE2Items.LOGIC_PROCESSOR.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/redstone_card"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.CAPACITY_CARD.get())
+                .pattern("QQQ")
+                .pattern("QPQ")
+                .pattern("QQQ")
+                .define('Q', Items.QUARTZ)
+                .define('P', AE2Items.CALCULATION_PROCESSOR.get())
+                .unlockedBy("has_calculation_processor", has(AE2Items.CALCULATION_PROCESSOR.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/capacity_card"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.SPEED_CARD.get())
+                .pattern("GGG")
+                .pattern("GPG")
+                .pattern("GGG")
+                .define('G', Items.GLOWSTONE_DUST)
+                .define('P', AE2Items.ENGINEERING_PROCESSOR.get())
+                .unlockedBy("has_engineering_processor", has(AE2Items.ENGINEERING_PROCESSOR.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/speed_card"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.FUZZY_CARD.get())
+                .pattern("SWS")
+                .pattern("WPW")
+                .pattern("SWS")
+                .define('S', Items.STRING)
+                .define('W', Items.WHITE_WOOL)
+                .define('P', AE2Items.CALCULATION_PROCESSOR.get())
+                .unlockedBy("has_calculation_processor", has(AE2Items.CALCULATION_PROCESSOR.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/fuzzy_card"));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, AE2Items.PARTITIONED_CELL.get())
                 .requires(AE2Items.ENGINEERING_PROCESSOR.get())

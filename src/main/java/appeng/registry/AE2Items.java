@@ -13,6 +13,10 @@ import appeng.items.storage.BasicCell1kItem;
 import appeng.items.storage.BasicCell4kItem;
 import appeng.items.storage.BasicCell64kItem;
 import appeng.items.storage.PartitionedCellItem;
+import appeng.items.upgrades.CapacityCardItem;
+import appeng.items.upgrades.FuzzyCardItem;
+import appeng.items.upgrades.RedstoneCardItem;
+import appeng.items.upgrades.SpeedCardItem;
 
 public final class AE2Items {
     public static final RegistryObject<Item> CERTUS_QUARTZ_CRYSTAL = AE2Registries.ITEMS.register(
@@ -70,6 +74,22 @@ public final class AE2Items {
     public static final RegistryObject<Item> CALCULATION_PROCESSOR = AE2Registries.ITEMS.register(
             "calculation_processor",
             () -> new Item(new Properties()));
+
+    public static final RegistryObject<Item> REDSTONE_CARD = AE2Registries.ITEMS.register(
+            "redstone_card",
+            () -> new RedstoneCardItem(new Properties()));
+
+    public static final RegistryObject<Item> CAPACITY_CARD = AE2Registries.ITEMS.register(
+            "capacity_card",
+            () -> new CapacityCardItem(new Properties()));
+
+    public static final RegistryObject<Item> SPEED_CARD = AE2Registries.ITEMS.register(
+            "speed_card",
+            () -> new SpeedCardItem(new Properties()));
+
+    public static final RegistryObject<Item> FUZZY_CARD = AE2Registries.ITEMS.register(
+            "fuzzy_card",
+            () -> new FuzzyCardItem(new Properties()));
 
     public static final RegistryObject<Item> CERTUS_QUARTZ_ORE = AE2Registries.ITEMS.register(
             "certus_quartz_ore",
