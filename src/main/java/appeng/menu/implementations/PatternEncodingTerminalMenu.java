@@ -66,6 +66,10 @@ public class PatternEncodingTerminalMenu extends AEBaseMenu {
     }
 
     public void encodeServer() {
-        terminal.encodePattern();
+        var result = terminal.encode();
+        var player = getPlayer();
+        if (player != null) {
+            player.displayClientMessage(result.message(), result.success());
+        }
     }
 }

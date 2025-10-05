@@ -1,5 +1,6 @@
 package appeng.blockentity.crafting;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
@@ -20,11 +22,10 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-import appeng.api.crafting.PatternDetailsHelper;
-import appeng.core.definitions.AEItems;
-
 import appeng.blockentity.AEBaseBlockEntity;
 import appeng.registry.AE2BlockEntities;
+import appeng.registry.AE2Items;
+import appeng.items.patterns.EncodedPatternItem;
 
 public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
     private static final int CRAFTING_GRID_SIZE = 9;
@@ -201,9 +202,9 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
         @Override
         public boolean canPlaceItem(int index, ItemStack stack) {
             if (index == BLANK_PATTERN_SLOT) {
-                return AEItems.BLANK_PATTERN.is(stack);
+                return stack.is(AE2Items.BLANK_PATTERN.get());
             }
-            return PatternDetailsHelper.isEncodedPattern(stack);
+            return stack.is(AE2Items.ENCODED_PATTERN.get());
         }
     };
 
@@ -259,57 +260,93 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
                 .orElse(ItemStack.EMPTY);
     }
 
-    public boolean encodePattern() {
+    public EncodeResult encode() {
         var level = getLevel();
         if (level == null || level.isClientSide()) {
-            return false;
+            return EncodeResult.error(Component.translatable("message.appliedenergistics2.pattern_encoding.internal"));
         }
 
         if (!patternItems.get(ENCODED_PATTERN_SLOT).isEmpty()) {
-            return false;
+            return EncodeResult.error(
+                    Component.translatable("message.appliedenergistics2.pattern_encoding.output_occupied"));
         }
 
         var blank = patternItems.get(BLANK_PATTERN_SLOT);
-        if (blank.isEmpty() || !AEItems.BLANK_PATTERN.is(blank)) {
-            return false;
+        if (blank.isEmpty() || !blank.is(AE2Items.BLANK_PATTERN.get())) {
+            return EncodeResult.error(
+                    Component.translatable("message.appliedenergistics2.pattern_encoding.need_blank_pattern"));
         }
 
         var input = createCraftingInput();
         if (input.isEmpty()) {
-            return false;
+            return EncodeResult
+                    .error(Component.translatable("message.appliedenergistics2.pattern_encoding.no_ingredients"));
         }
 
         var recipe = findRecipe(level, input.get()).orElse(null);
         if (recipe == null) {
-            return false;
+            return EncodeResult
+                    .error(Component.translatable("message.appliedenergistics2.pattern_encoding.invalid_recipe"));
         }
 
-        var result = recipe.value().assemble(input.get(), level.registryAccess());
+        var result = recipe.value().assemble(input.get(), level.registryAccess()).copy();
         if (result.isEmpty()) {
-            return false;
+            return EncodeResult
+                    .error(Component.translatable("message.appliedenergistics2.pattern_encoding.invalid_recipe"));
         }
 
-        var ingredients = new ItemStack[CRAFTING_GRID_SIZE];
-        for (int i = 0; i < CRAFTING_GRID_SIZE; i++) {
-            ingredients[i] = craftingItems.get(i).copy();
+        var encodedStack = new ItemStack(AE2Items.ENCODED_PATTERN.get());
+        if (!(encodedStack.getItem() instanceof EncodedPatternItem encodedPatternItem)) {
+            return EncodeResult.error(
+                    Component.translatable("message.appliedenergistics2.pattern_encoding.internal"));
         }
 
-        ItemStack encoded;
-        try {
-            encoded = PatternDetailsHelper.encodeCraftingPattern(recipe, ingredients, result.copy(), false, false);
-        } catch (IllegalArgumentException ex) {
-            return false;
-        }
-
-        if (encoded.isEmpty()) {
-            return false;
-        }
+        var inputs = summarizeInputs();
+        encodedPatternItem.setRecipe(encodedStack, recipe.id(), inputs, List.of(result));
 
         var remaining = blank.copy();
         remaining.shrink(1);
         setBlankPatternStack(remaining.isEmpty() ? ItemStack.EMPTY : remaining);
-        setEncodedPatternStack(encoded);
-        return true;
+        setEncodedPatternStack(encodedStack);
+
+        return EncodeResult.success(
+                Component.translatable("message.appliedenergistics2.pattern_encoding.success", result.getHoverName()));
+    }
+
+    private List<ItemStack> summarizeInputs() {
+        var summarized = new ArrayList<ItemStack>();
+        for (var stack : craftingItems) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            var unit = stack.copy();
+            unit.setCount(1);
+
+            boolean merged = false;
+            for (var existing : summarized) {
+                if (ItemStack.isSameItemSameComponents(existing, unit)) {
+                    existing.grow(1);
+                    merged = true;
+                    break;
+                }
+            }
+
+            if (!merged) {
+                summarized.add(unit);
+            }
+        }
+        return summarized;
+    }
+
+    public record EncodeResult(boolean success, Component message) {
+        public static EncodeResult success(Component message) {
+            return new EncodeResult(true, message);
+        }
+
+        public static EncodeResult error(Component message) {
+            return new EncodeResult(false, message);
+        }
     }
 
     private Optional<CraftingInput> createCraftingInput() {
