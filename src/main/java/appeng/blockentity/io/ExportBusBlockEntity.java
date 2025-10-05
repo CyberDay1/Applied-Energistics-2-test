@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -20,6 +21,7 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.util.IConfigManager;
 import appeng.api.stacks.AEKey;
+import appeng.core.definitions.AEBlocks;
 import appeng.core.settings.TickRates;
 import appeng.core.definitions.AEItems;
 import appeng.parts.automation.StackTransferContextImpl;
@@ -34,6 +36,11 @@ public class ExportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
         super(type, pos, state);
 
         getMainNode().addService(IGridTickable.class, this);
+    }
+
+    @Override
+    protected ItemLike getUpgradeableItem() {
+        return AEBlocks.EXPORT_BUS;
     }
 
     @Override

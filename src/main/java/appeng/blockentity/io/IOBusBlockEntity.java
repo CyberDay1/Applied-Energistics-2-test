@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -14,7 +15,9 @@ import appeng.api.config.Settings;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridNodeListener;
 import appeng.api.orientation.BlockOrientation;
+import appeng.api.upgrades.IUpgradeInventory;
 import appeng.api.upgrades.IUpgradeableObject;
+import appeng.api.upgrades.UpgradeInventories;
 import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
 import appeng.api.networking.security.IActionSource;
@@ -35,11 +38,19 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     protected final IActionSource source = new MachineSource(this);
     private IPartitionList cachedFilter = DefaultPriorityList.INSTANCE;
     private boolean filterDirty = true;
+    private final IUpgradeInventory upgrades;
 
     protected IOBusBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         this.configManager = createConfigManager();
+        this.upgrades = UpgradeInventories.forMachine(getUpgradeableItem(), getUpgradeSlotCount(), this::onUpgradesChanged);
         getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL);
+    }
+
+    protected abstract ItemLike getUpgradeableItem();
+
+    protected int getUpgradeSlotCount() {
+        return 4;
     }
 
     protected IConfigManager createConfigManager() {
@@ -92,6 +103,7 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
         super.saveAdditional(data, registries);
         config.writeToChildTag(data, "config", registries);
         configManager.writeToNBT(data, registries);
+        upgrades.writeToNBT(data, "upgrades", registries);
     }
 
     @Override
@@ -99,6 +111,7 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
         super.loadTag(data, registries);
         config.readFromChildTag(data, "config", registries);
         configManager.readFromNBT(data, registries);
+        upgrades.readFromNBT(data, "upgrades", registries);
     }
 
     @Override
@@ -134,7 +147,7 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     }
 
     protected int getAvailableConfigSlots() {
-        return Math.min(config.size(), 18 + getUpgrades().getInstalledUpgrades(AEItems.CAPACITY_CARD) * 9);
+        return Math.min(config.size(), 18 + getCapacityUpgradeCount() * 9);
     }
 
     @Override
@@ -187,5 +200,31 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     protected int getOperationsPerTick() {
         // TODO: Integrate upgrade cards and config-based rates.
         return 4;
+    }
+
+    @Override
+    public IUpgradeInventory getUpgrades() {
+        return upgrades;
+    }
+
+    protected int getCapacityUpgradeCount() {
+        return upgrades.getInstalledUpgrades(AEItems.CAPACITY_CARD);
+    }
+
+    protected int getSpeedUpgradeCount() {
+        return upgrades.getInstalledUpgrades(AEItems.SPEED_CARD);
+    }
+
+    protected boolean hasRedstoneUpgrade() {
+        return upgrades.isInstalled(AEItems.REDSTONE_CARD);
+    }
+
+    protected boolean hasFuzzyUpgrade() {
+        return upgrades.isInstalled(AEItems.FUZZY_CARD);
+    }
+
+    private void onUpgradesChanged() {
+        setChanged();
+        onFiltersChanged();
     }
 }

@@ -19,6 +19,11 @@ public class StorageBusBlockMenu extends UpgradeableMenu<StorageBusBlockEntity> 
     }
 
     @Override
+    protected void setupUpgrades() {
+        super.setupUpgrades();
+    }
+
+    @Override
     protected void setupConfig() {
         var wrapper = getHost().getConfig().createMenuWrapper();
         for (int i = 0; i < wrapper.size(); i++) {

@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.Block;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.Tooltips;
 import appeng.items.materials.EnergyCardItem;
-import appeng.items.materials.UpgradeCardItem;
+import appeng.items.upgrades.UpgradeCardItem;
 
 /**
  * Manages available upgrades for AE machines, parts and items.

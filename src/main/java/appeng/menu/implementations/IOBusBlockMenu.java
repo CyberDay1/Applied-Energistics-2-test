@@ -15,4 +15,9 @@ public abstract class IOBusBlockMenu<T extends IOBusBlockEntity> extends Upgrade
     protected void setupConfig() {
         addExpandableConfigSlots(getHost().getConfig(), 2, 9, 5);
     }
+
+    @Override
+    protected void setupUpgrades() {
+        super.setupUpgrades();
+    }
 }

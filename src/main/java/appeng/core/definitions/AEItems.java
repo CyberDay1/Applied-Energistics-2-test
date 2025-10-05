@@ -98,6 +98,10 @@ import appeng.items.tools.quartz.QuartzSpadeItem;
 import appeng.items.tools.quartz.QuartzSwordItem;
 import appeng.items.tools.quartz.QuartzToolType;
 import appeng.items.tools.quartz.QuartzWrenchItem;
+import appeng.items.upgrades.CapacityCardItem;
+import appeng.items.upgrades.FuzzyCardItem;
+import appeng.items.upgrades.RedstoneCardItem;
+import appeng.items.upgrades.SpeedCardItem;
 import appeng.menu.me.common.MEStorageMenu;
 
 /**
@@ -226,12 +230,12 @@ public final class AEItems {
     public static final ItemDefinition<MaterialItem> CALCULATION_PROCESSOR = item("Calculation Processor", AEItemIds.CALCULATION_PROCESSOR, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> ENGINEERING_PROCESSOR = item("Engineering Processor", AEItemIds.ENGINEERING_PROCESSOR, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> BASIC_CARD = item("Basic Card", AEItemIds.BASIC_CARD, MaterialItem::new);
-    public static final ItemDefinition<Item> REDSTONE_CARD = item("Redstone Card", AEItemIds.REDSTONE_CARD, Upgrades::createUpgradeCardItem);
-    public static final ItemDefinition<Item> CAPACITY_CARD = item("Capacity Card", AEItemIds.CAPACITY_CARD, Upgrades::createUpgradeCardItem);
+    public static final ItemDefinition<RedstoneCardItem> REDSTONE_CARD = item("Redstone Card", AEItemIds.REDSTONE_CARD, RedstoneCardItem::new);
+    public static final ItemDefinition<CapacityCardItem> CAPACITY_CARD = item("Capacity Card", AEItemIds.CAPACITY_CARD, CapacityCardItem::new);
     public static final ItemDefinition<Item> VOID_CARD = item("Overflow Destruction Card", AEItemIds.VOID_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<MaterialItem> ADVANCED_CARD = item("Advanced Card", AEItemIds.ADVANCED_CARD, MaterialItem::new);
-    public static final ItemDefinition<Item> FUZZY_CARD = item("Fuzzy Card", AEItemIds.FUZZY_CARD, Upgrades::createUpgradeCardItem);
-    public static final ItemDefinition<Item> SPEED_CARD = item("Acceleration Card", AEItemIds.SPEED_CARD, Upgrades::createUpgradeCardItem);
+    public static final ItemDefinition<FuzzyCardItem> FUZZY_CARD = item("Fuzzy Card", AEItemIds.FUZZY_CARD, FuzzyCardItem::new);
+    public static final ItemDefinition<SpeedCardItem> SPEED_CARD = item("Acceleration Card", AEItemIds.SPEED_CARD, SpeedCardItem::new);
     public static final ItemDefinition<Item> INVERTER_CARD = item("Inverter Card", AEItemIds.INVERTER_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<Item> CRAFTING_CARD = item("Crafting Card", AEItemIds.CRAFTING_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<Item> EQUAL_DISTRIBUTION_CARD = item("Equal Distribution Card", AEItemIds.EQUAL_DISTRIBUTION_CARD, Upgrades::createUpgradeCardItem);
