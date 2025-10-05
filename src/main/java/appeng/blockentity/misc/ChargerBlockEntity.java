@@ -52,6 +52,7 @@ import appeng.core.settings.TickRates;
 import appeng.util.Platform;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.filter.IAEItemFilter;
+import appeng.grid.SimpleGridNode;
 
 public class ChargerBlockEntity extends AENetworkedPoweredBlockEntity implements IGridTickable, IGridHost {
     public static final int POWER_MAXIMUM_AMOUNT = 1600;
@@ -59,9 +60,7 @@ public class ChargerBlockEntity extends AENetworkedPoweredBlockEntity implements
     private boolean working;
 
     private final AppEngInternalInventory inv = new AppEngInternalInventory(this, 1, 1, new ChargerInvFilter(this));
-    private final appeng.api.grid.IGridNode gridNode = new appeng.api.grid.IGridNode() {
-        // TODO: Hook up real grid node once capability is fully implemented.
-    };
+    private final appeng.api.grid.IGridNode gridNode = new SimpleGridNode();
 
     public ChargerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);

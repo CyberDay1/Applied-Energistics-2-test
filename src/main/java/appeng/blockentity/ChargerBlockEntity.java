@@ -14,14 +14,18 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
+import appeng.api.grid.IGridHost;
+import appeng.api.grid.IGridNode;
 import appeng.api.storage.IStorageHost;
 import appeng.api.storage.IStorageService;
+import appeng.grid.SimpleGridNode;
 import appeng.registry.AE2BlockEntities;
 import appeng.recipe.AE2RecipeTypes;
 import appeng.recipe.ChargerRecipe;
 import appeng.storage.impl.StorageService;
+import appeng.util.GridHelper;
 
-public class ChargerBlockEntity extends BlockEntity implements IStorageHost {
+public class ChargerBlockEntity extends BlockEntity implements IStorageHost, IGridHost {
     private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
     private final Container container = new Container() {
         @Override
@@ -109,6 +113,7 @@ public class ChargerBlockEntity extends BlockEntity implements IStorageHost {
         }
     };
     private final InvWrapper itemHandler = new InvWrapper(this.container);
+    private final IGridNode gridNode = new SimpleGridNode();
     private final IStorageService storageService = new StorageService();
 
     private int chargeTime = 0;
@@ -117,12 +122,29 @@ public class ChargerBlockEntity extends BlockEntity implements IStorageHost {
         super(AE2BlockEntities.CHARGER_BE.get(), pos, state);
     }
 
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        GridHelper.discover(this);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        // TODO: Prune connections when nodes are removed
+    }
+
     public NonNullList<ItemStack> getItems() {
         return items;
     }
 
     public InvWrapper getItemHandler() {
         return this.itemHandler;
+    }
+
+    @Override
+    public IGridNode getGridNode() {
+        return gridNode;
     }
 
     @Override

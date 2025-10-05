@@ -71,6 +71,7 @@ import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.CombinedInternalInventory;
 import appeng.util.inv.FilteredInternalInventory;
 import appeng.util.inv.filter.IAEItemFilter;
+import appeng.grid.SimpleGridNode;
 
 /**
  * @author AlgorithmX2
@@ -95,9 +96,7 @@ public class InscriberBlockEntity extends AENetworkedPoweredBlockEntity
     private int finalStep;
     private long clientStart;
 
-    private final appeng.api.grid.IGridNode gridNode = new appeng.api.grid.IGridNode() {
-        // TODO: Hook up real grid node once capability is fully implemented.
-    };
+    private final appeng.api.grid.IGridNode gridNode = new SimpleGridNode();
 
     // Internally visible inventories
     private final IAEItemFilter baseFilter = new BaseFilter();
