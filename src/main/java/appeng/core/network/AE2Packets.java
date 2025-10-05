@@ -1,5 +1,7 @@
 package appeng.core.network;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -7,6 +9,7 @@ import appeng.core.network.payload.AE2ActionC2SPayload;
 import appeng.core.network.payload.AE2HelloS2CPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
+import appeng.core.network.payload.S2CJobUpdatePayload;
 
 import appeng.crafting.CraftingJob;
 
@@ -29,5 +32,11 @@ public final class AE2Packets {
     public static void sendPlannedCraftingJob(ServerPlayer player, int containerId, CraftingJob job) {
         PacketDistributor.sendToPlayer(player,
                 new PlannedCraftingJobS2CPayload(containerId, job.getId(), job.getOutputs()));
+    }
+
+    public static void sendCraftingJobUpdate(ServerLevel level, BlockPos pos, CraftingJob job) {
+        PacketDistributor.sendToPlayersNear(level, null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 32,
+                new S2CJobUpdatePayload(job.getId(), job.getState(), job.getTicksCompleted(),
+                        job.getTicksRequired()));
     }
 }

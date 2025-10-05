@@ -117,6 +117,9 @@ public class LocalizationProvider implements IAE2DataProvider {
         add("death.attack.matter_cannon.item", "%1$s was shot by %2$s using %3$s");
         add("entity.minecraft.villager.ae2.fluix_researcher", "Fluix Researcher");
         add("message.ae2.crafting_job_planned", "Planned crafting job created.");
+        add("message.ae2.crafting_job_started", "Crafting job %s started.");
+        add("message.ae2.crafting_job_progress", "Crafting job %1$s progress: %2$d / %3$d ticks.");
+        add("message.ae2.crafting_job_complete", "Crafting job %s complete.");
         add("gui.ae2.PatternEncoding.primary_processing_result_hint",
                 "Can be requested through the automated crafting system.");
         add("gui.ae2.PatternEncoding.primary_processing_result_tooltip", "Primary Processing Result");
