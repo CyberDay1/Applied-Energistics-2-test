@@ -20,6 +20,7 @@ public final class AE2DataGenerators {
         if (event.includeServer()) {
             generator.addProvider(true, new InscriberRecipeProvider(output));
             generator.addProvider(true, new ChargerRecipeProvider(output));
+            generator.addProvider(true, new AE2RecipeProvider(output));
             generator.addProvider(true, new AE2ItemTagsProvider(output, lookup, helper));
             generator.addProvider(true, new AE2BlockTagsProvider(output, lookup, helper));
             generator.addProvider(true, new AE2LootTableProvider(output));
