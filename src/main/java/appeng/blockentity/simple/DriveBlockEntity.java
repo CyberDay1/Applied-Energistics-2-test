@@ -18,6 +18,7 @@ import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
 import appeng.items.storage.BasicCellItem;
+import appeng.items.storage.fluid.BasicFluidCellItem;
 import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
 import appeng.registry.AE2BlockEntities;
@@ -111,7 +112,8 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
 
         @Override
         public boolean canPlaceItem(int index, ItemStack stack) {
-            return stack.isEmpty() || stack.getItem() instanceof BasicCellItem;
+            return stack.isEmpty() || stack.getItem() instanceof BasicCellItem
+                    || stack.getItem() instanceof BasicFluidCellItem;
         }
     };
     private final InvWrapper itemHandler = new InvWrapper(container);
