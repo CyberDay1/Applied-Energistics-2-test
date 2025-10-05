@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "b": {
+      "item": "minecraft:chest"
+    },
+    "c": {
+      "item": "ae2:fluix_glass_cable"
+    },
+    "p": {
+      "item": "ae2:logic_processor"
+    }
+  },
+  "pattern": [
+    "cpc",
+    "bcb",
+    "cpc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "ae2:storage_bus"
+  }
+}
