@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -21,6 +24,7 @@ import appeng.api.storage.IStorageChannel;
 import appeng.api.storage.IStorageService;
 import appeng.api.storage.ItemStackView;
 import appeng.blockentity.simple.DriveBlockEntity;
+import appeng.core.AELog;
 
 public class StorageService implements IStorageService {
     private static final Map<UUID, NetworkStorageData> NETWORKS = new ConcurrentHashMap<>();
@@ -141,6 +145,10 @@ public class StorageService implements IStorageService {
         if (gridId == null || amount <= 0) {
             return 0;
         }
+        if (!isItemAllowedByWhitelist(gridId, item)) {
+            logPartitionedInsert(gridId, item, simulate);
+            return 0;
+        }
         return getOrCreateNetwork(gridId).insert(item, amount, simulate);
     }
 
@@ -183,6 +191,57 @@ public class StorageService implements IStorageService {
             return List.of();
         }
         return network.getAll();
+    }
+
+    static boolean hasItemWhitelist(UUID gridId) {
+        if (gridId == null) {
+            return false;
+        }
+        var network = NETWORKS.get(gridId);
+        if (network == null) {
+            return false;
+        }
+        return network.getItemWhitelistSummary().restricted();
+    }
+
+    static Set<ResourceLocation> getItemWhitelist(UUID gridId) {
+        if (gridId == null) {
+            return Set.of();
+        }
+        var network = NETWORKS.get(gridId);
+        if (network == null) {
+            return Set.of();
+        }
+        return network.getItemWhitelistSummary().allowedItems();
+    }
+
+    static boolean isItemAllowedByWhitelist(UUID gridId, Item item) {
+        if (gridId == null) {
+            return true;
+        }
+        var network = NETWORKS.get(gridId);
+        if (network == null) {
+            return true;
+        }
+        var summary = network.getItemWhitelistSummary();
+        if (!summary.restricted()) {
+            return true;
+        }
+        var itemId = BuiltInRegistries.ITEM.getKey(item);
+        return summary.allowedItems().contains(itemId);
+    }
+
+    static void logPartitionedInsert(UUID gridId, Item item, boolean simulate) {
+        if (gridId == null) {
+            return;
+        }
+        var itemId = BuiltInRegistries.ITEM.getKey(item);
+        var whitelist = getItemWhitelist(gridId);
+        AELog.debug("Rejected %s insert of %s on grid %s due to whitelist %s",
+                simulate ? "simulated" : "real",
+                itemId,
+                gridId,
+                whitelist);
     }
 
     static int insertFluidIntoNetwork(UUID gridId, Fluid fluid, int amount, boolean simulate) {
@@ -293,6 +352,10 @@ public class StorageService implements IStorageService {
 
         List<ItemStackView> getAll() {
             return itemStorage.getAll();
+        }
+
+        NetworkItemStorage.ItemWhitelistSummary getItemWhitelistSummary() {
+            return itemStorage.getWhitelistSummary();
         }
 
         int insertFluid(Fluid fluid, int amount, boolean simulate) {

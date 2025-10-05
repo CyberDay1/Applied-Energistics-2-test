@@ -29,6 +29,10 @@ public class ItemStorageChannel implements IItemStorageChannel {
 
         var gridId = service.getGridId();
         if (gridId != null) {
+            if (!StorageService.isItemAllowedByWhitelist(gridId, stack.getItem())) {
+                StorageService.logPartitionedInsert(gridId, stack.getItem(), simulate);
+                return stack;
+            }
             int accepted = StorageService.insertIntoNetwork(gridId, stack.getItem(), stack.getCount(), simulate);
             stack.shrink(accepted);
             return stack.isEmpty() ? ItemStack.EMPTY : stack;
@@ -84,6 +88,10 @@ public class ItemStorageChannel implements IItemStorageChannel {
 
         var gridId = service.getGridId();
         if (gridId != null) {
+            if (!StorageService.isItemAllowedByWhitelist(gridId, resource.getItem())) {
+                StorageService.logPartitionedInsert(gridId, resource.getItem(), simulate);
+                return 0;
+            }
             long inserted = 0;
             long remaining = amount;
             while (remaining > 0) {
