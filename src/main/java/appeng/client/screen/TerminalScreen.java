@@ -23,7 +23,6 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     private static final int SLOT_SIZE = 18;
     private static final int ITEMS_PER_ROW = 4;
     private static final int VISIBLE_ROWS = 3;
-    private static final int ITEMS_PER_PAGE = ITEMS_PER_ROW * VISIBLE_ROWS;
     private static final int LIST_LEFT_OFFSET = 7;
     private static final int LIST_TOP_OFFSET = 24;
 
@@ -31,6 +30,38 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     private int scrollIndex;
     private boolean scrolling;
     private List<ItemStackView> currentItems = List.of();
+
+    protected int getSlotSize() {
+        return SLOT_SIZE;
+    }
+
+    protected int getItemsPerRow() {
+        return ITEMS_PER_ROW;
+    }
+
+    protected int getVisibleRows() {
+        return VISIBLE_ROWS;
+    }
+
+    protected int getListLeftOffset() {
+        return LIST_LEFT_OFFSET;
+    }
+
+    protected int getListTopOffset() {
+        return LIST_TOP_OFFSET;
+    }
+
+    protected int getItemsPerPage() {
+        return getItemsPerRow() * getVisibleRows();
+    }
+
+    protected int getListLeft() {
+        return this.leftPos + getListLeftOffset();
+    }
+
+    protected int getListTop() {
+        return this.topPos + getListTopOffset();
+    }
 
     public TerminalScreen(TerminalMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -84,10 +115,10 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
-        int scrollbarX = this.leftPos + LIST_LEFT_OFFSET + ITEMS_PER_ROW * SLOT_SIZE + 4;
-        int scrollbarY = this.topPos + LIST_TOP_OFFSET;
+        int scrollbarX = getListLeft() + getItemsPerRow() * getSlotSize() + 4;
+        int scrollbarY = getListTop();
         int scrollbarWidth = 6;
-        int scrollbarHeight = VISIBLE_ROWS * SLOT_SIZE;
+        int scrollbarHeight = getVisibleRows() * getSlotSize();
         if (mouseX >= scrollbarX && mouseX <= scrollbarX + scrollbarWidth && mouseY >= scrollbarY
                 && mouseY <= scrollbarY + scrollbarHeight) {
             this.scrolling = true;
@@ -118,10 +149,10 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        int listX = this.leftPos + LIST_LEFT_OFFSET;
-        int listY = this.topPos + LIST_TOP_OFFSET;
-        int listWidth = ITEMS_PER_ROW * SLOT_SIZE;
-        int listHeight = VISIBLE_ROWS * SLOT_SIZE;
+        int listX = getListLeft();
+        int listY = getListTop();
+        int listWidth = getItemsPerRow() * getSlotSize();
+        int listHeight = getVisibleRows() * getSlotSize();
         if (mouseX >= listX && mouseX <= listX + listWidth && mouseY >= listY && mouseY <= listY + listHeight) {
             int maxScroll = getMaxScroll();
             if (maxScroll > 0) {
@@ -155,15 +186,15 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
         int y = this.topPos;
         graphics.fill(x, y, x + this.imageWidth, y + this.imageHeight, 0xFF2F2F2F);
 
-        int listX = x + LIST_LEFT_OFFSET;
-        int listY = y + LIST_TOP_OFFSET;
+        int listX = getListLeft();
+        int listY = getListTop();
         int startIndex = this.scrollIndex;
 
-        for (int row = 0; row < VISIBLE_ROWS; row++) {
-            for (int col = 0; col < ITEMS_PER_ROW; col++) {
-                int index = startIndex + row * ITEMS_PER_ROW + col;
-                int slotX = listX + col * SLOT_SIZE;
-                int slotY = listY + row * SLOT_SIZE;
+        for (int row = 0; row < getVisibleRows(); row++) {
+            for (int col = 0; col < getItemsPerRow(); col++) {
+                int index = startIndex + row * getItemsPerRow() + col;
+                int slotX = listX + col * getSlotSize();
+                int slotY = listY + row * getSlotSize();
                 graphics.fill(slotX, slotY, slotX + 16, slotY + 16, 0xFF3F3F3F);
                 if (index < this.currentItems.size()) {
                     ItemStackView view = this.currentItems.get(index);
@@ -205,10 +236,10 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     }
 
     private void drawScrollbar(GuiGraphics graphics, int listX, int listY) {
-        int barX = listX + ITEMS_PER_ROW * SLOT_SIZE + 4;
+        int barX = listX + getItemsPerRow() * getSlotSize() + 4;
         int barY = listY;
         int barWidth = 6;
-        int barHeight = VISIBLE_ROWS * SLOT_SIZE;
+        int barHeight = getVisibleRows() * getSlotSize();
         graphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0xFF1B1B1B);
 
         int handleHeight = getScrollHandleHeight(barHeight);
@@ -220,22 +251,22 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     }
 
     private int getScrollHandleHeight(int barHeight) {
-        if (this.currentItems.size() <= ITEMS_PER_PAGE) {
+        if (this.currentItems.size() <= getItemsPerPage()) {
             return barHeight;
         }
         int handle = (int) Math.max(8,
-                Math.floor((double) barHeight * ITEMS_PER_PAGE / (double) this.currentItems.size()));
+                Math.floor((double) barHeight * getItemsPerPage() / (double) this.currentItems.size()));
         return Math.min(barHeight, handle);
     }
 
     private int getMaxScroll() {
-        int max = this.currentItems.size() - ITEMS_PER_PAGE;
+        int max = this.currentItems.size() - getItemsPerPage();
         return Math.max(0, max);
     }
 
     private void updateScrollFromY(double mouseY) {
-        int barTop = this.topPos + LIST_TOP_OFFSET;
-        int barHeight = VISIBLE_ROWS * SLOT_SIZE;
+        int barTop = getListTop();
+        int barHeight = getVisibleRows() * getSlotSize();
         int handleHeight = getScrollHandleHeight(barHeight);
         double relative = (mouseY - barTop - handleHeight / 2.0) / (barHeight - handleHeight);
         relative = Mth.clamp(relative, 0.0, 1.0);
@@ -244,10 +275,10 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     }
 
     private void renderOfflineOverlay(GuiGraphics graphics) {
-        int x = this.leftPos + LIST_LEFT_OFFSET;
-        int y = this.topPos + LIST_TOP_OFFSET;
-        int width = ITEMS_PER_ROW * SLOT_SIZE;
-        int height = VISIBLE_ROWS * SLOT_SIZE;
+        int x = getListLeft();
+        int y = getListTop();
+        int width = getItemsPerRow() * getSlotSize();
+        int height = getVisibleRows() * getSlotSize();
         graphics.fill(x, y, x + width, y + height, 0xAA000000);
         Component offline = Component.literal("OFFLINE");
         int textWidth = this.font.width(offline);
@@ -265,10 +296,10 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     }
 
     private boolean isWithinItemArea(double mouseX, double mouseY) {
-        int listX = this.leftPos + LIST_LEFT_OFFSET;
-        int listY = this.topPos + LIST_TOP_OFFSET;
-        int listWidth = ITEMS_PER_ROW * SLOT_SIZE;
-        int listHeight = VISIBLE_ROWS * SLOT_SIZE;
+        int listX = getListLeft();
+        int listY = getListTop();
+        int listWidth = getItemsPerRow() * getSlotSize();
+        int listHeight = getVisibleRows() * getSlotSize();
         return mouseX >= listX && mouseX < listX + listWidth && mouseY >= listY && mouseY < listY + listHeight;
     }
 
@@ -277,15 +308,15 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
             return;
         }
 
-        int listX = this.leftPos + LIST_LEFT_OFFSET;
-        int listY = this.topPos + LIST_TOP_OFFSET;
-        int col = (int) ((mouseX - listX) / SLOT_SIZE);
-        int row = (int) ((mouseY - listY) / SLOT_SIZE);
-        if (col < 0 || col >= ITEMS_PER_ROW || row < 0 || row >= VISIBLE_ROWS) {
+        int listX = getListLeft();
+        int listY = getListTop();
+        int col = (int) ((mouseX - listX) / getSlotSize());
+        int row = (int) ((mouseY - listY) / getSlotSize());
+        if (col < 0 || col >= getItemsPerRow() || row < 0 || row >= getVisibleRows()) {
             return;
         }
 
-        int index = this.scrollIndex + row * ITEMS_PER_ROW + col;
+        int index = this.scrollIndex + row * getItemsPerRow() + col;
         if (index < 0 || index >= this.currentItems.size()) {
             return;
         }

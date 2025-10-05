@@ -107,6 +107,10 @@ public final class AE2Items {
             "terminal",
             () -> new BlockItem(AE2Blocks.TERMINAL.get(), new Properties()));
 
+    public static final RegistryObject<Item> CRAFTING_TERMINAL = AE2Registries.ITEMS.register(
+            "crafting_terminal",
+            () -> new BlockItem(AE2Blocks.CRAFTING_TERMINAL.get(), new Properties()));
+
     public static final RegistryObject<Item> BASIC_CELL_1K = AE2Registries.ITEMS.register(
             "basic_cell_1k",
             () -> new BasicCell1kItem(new Properties().stacksTo(1)));

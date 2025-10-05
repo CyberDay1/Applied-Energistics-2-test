@@ -32,11 +32,16 @@ public class TerminalMenu extends AEBaseMenu {
     private List<ItemStackView> clientItems = new ArrayList<>();
     private boolean clientOnline;
 
-    public TerminalMenu(int id, Inventory inv, TerminalBlockEntity terminal) {
-        super(TYPE, id, inv, terminal);
+    protected TerminalMenu(MenuType<? extends TerminalMenu> type, int id, Inventory inv,
+            TerminalBlockEntity terminal) {
+        super(type, id, inv, terminal);
         this.terminal = terminal;
         this.player = inv.player;
         this.createPlayerInventorySlots(inv);
+    }
+
+    public TerminalMenu(int id, Inventory inv, TerminalBlockEntity terminal) {
+        this(TYPE, id, inv, terminal);
     }
 
     @Override
