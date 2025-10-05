@@ -11,6 +11,8 @@ import appeng.core.network.payload.AE2ActionC2SPayload;
 import appeng.core.network.payload.AE2HelloS2CPayload;
 import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
+import appeng.core.network.payload.PlanCraftingJobC2SPayload;
+import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class AE2Network {
@@ -25,13 +27,15 @@ public final class AE2Network {
         // Play (in-game) payloads
         final PlayPayloadRegistrar play = event.registrar(PLAY_PROTOCOL);
 
-        // S2C example
         play.playToClient(AE2HelloS2CPayload.TYPE, AE2HelloS2CPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleHelloClient);
+        play.playToClient(PlannedCraftingJobS2CPayload.TYPE, PlannedCraftingJobS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handlePlannedCraftingJobClient);
 
-        // C2S example
         play.playToServer(AE2ActionC2SPayload.TYPE, AE2ActionC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleActionServer);
+        play.playToServer(PlanCraftingJobC2SPayload.TYPE, PlanCraftingJobC2SPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handlePlanCraftingJobServer);
 
         // Login (handshake) payloads
         final LoginPayloadRegistrar login = event.login();

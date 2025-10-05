@@ -1,0 +1,135 @@
+package appeng.crafting;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
+import appeng.api.storage.ItemStackView;
+import appeng.items.patterns.EncodedPatternItem;
+
+/**
+ * Represents a planned crafting job. This is a lightweight description that only tracks the inputs and outputs of the
+ * job for now. Actual execution is handled in later phases.
+ */
+public final class CraftingJob {
+    private static final String INPUTS_TAG = "Inputs";
+    private static final String OUTPUTS_TAG = "Outputs";
+    private static final String ITEM_TAG = "item";
+    private static final String LEGACY_ITEM_TAG = "id";
+    private static final String COUNT_TAG = "count";
+    private static final String LEGACY_COUNT_TAG = "Count";
+
+    private final UUID id;
+    private final List<ItemStackView> inputs;
+    private final List<ItemStackView> outputs;
+    private final boolean simulated;
+
+    private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated) {
+        this.id = id;
+        this.inputs = List.copyOf(inputs);
+        this.outputs = List.copyOf(outputs);
+        this.simulated = simulated;
+    }
+
+    public static CraftingJob fromPattern(ItemStack patternStack) {
+        if (!(patternStack.getItem() instanceof EncodedPatternItem)) {
+            throw new IllegalArgumentException("Stack is not an encoded pattern");
+        }
+
+        CompoundTag tag = patternStack.getTag();
+        List<ItemStackView> inputs = readItemViews(tag, INPUTS_TAG);
+        List<ItemStackView> outputs = readItemViews(tag, OUTPUTS_TAG);
+
+        if (outputs.isEmpty()) {
+            outputs = List.of(new ItemStackView(patternStack.getItem(), 1));
+        }
+
+        return new CraftingJob(UUID.randomUUID(), inputs, outputs, true);
+    }
+
+    public static CraftingJob fromPattern(EncodedPatternItem pattern) {
+        return fromPattern(pattern.getDefaultInstance());
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public List<ItemStackView> getInputs() {
+        return inputs;
+    }
+
+    public List<ItemStackView> getOutputs() {
+        return outputs;
+    }
+
+    public boolean isSimulated() {
+        return simulated;
+    }
+
+    /**
+     * Returns a string summary of the planned outputs suitable for logging.
+     */
+    public String describeOutputs() {
+        if (outputs.isEmpty()) {
+            return "<no outputs>";
+        }
+
+        return outputs.stream()
+                .map(view -> view.count() + "x " + BuiltInRegistries.ITEM.getKey(view.item()))
+                .collect(Collectors.joining(", "));
+    }
+
+    private static List<ItemStackView> readItemViews(@Nullable CompoundTag tag, String key) {
+        if (tag == null || !tag.contains(key, Tag.TAG_LIST)) {
+            return List.of();
+        }
+
+        ListTag list = tag.getList(key, Tag.TAG_COMPOUND);
+        List<ItemStackView> result = new ArrayList<>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag entry = list.getCompound(i);
+            Item item = resolveItem(entry);
+            int count = resolveCount(entry);
+            if (item != null && count > 0) {
+                result.add(new ItemStackView(item, count));
+            }
+        }
+        return result;
+    }
+
+    @Nullable
+    private static Item resolveItem(CompoundTag entry) {
+        String name = entry.contains(ITEM_TAG, Tag.TAG_STRING) ? entry.getString(ITEM_TAG)
+                : entry.contains(LEGACY_ITEM_TAG, Tag.TAG_STRING) ? entry.getString(LEGACY_ITEM_TAG) : null;
+        if (name == null) {
+            return null;
+        }
+        ResourceLocation id = ResourceLocation.tryParse(name);
+        if (id == null) {
+            return null;
+        }
+        return BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+    }
+
+    private static int resolveCount(CompoundTag entry) {
+        if (entry.contains(COUNT_TAG)) {
+            return entry.getInt(COUNT_TAG);
+        }
+        if (entry.contains(LEGACY_COUNT_TAG)) {
+            return entry.getInt(LEGACY_COUNT_TAG);
+        }
+        return 0;
+    }
+}
