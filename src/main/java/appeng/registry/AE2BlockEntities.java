@@ -6,6 +6,7 @@ import appeng.blockentity.ChargerBlockEntity;
 import appeng.blockentity.ControllerBlockEntity;
 import appeng.blockentity.EnergyAcceptorBlockEntity;
 import appeng.blockentity.InscriberBlockEntity;
+import appeng.blockentity.simple.DriveBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.RegistryObject;
 
@@ -19,6 +20,11 @@ public final class AE2BlockEntities {
         AE2Registries.BLOCK_ENTITIES.register("charger",
             () -> BlockEntityType.Builder.of(ChargerBlockEntity::new,
                 AE2Blocks.CHARGER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<DriveBlockEntity>> DRIVE_SIMPLE =
+        AE2Registries.BLOCK_ENTITIES.register("drive",
+            () -> BlockEntityType.Builder.of(DriveBlockEntity::new,
+                AE2Blocks.DRIVE.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<ControllerBlockEntity>> CONTROLLER =
         AE2Registries.BLOCK_ENTITIES.register("controller",
