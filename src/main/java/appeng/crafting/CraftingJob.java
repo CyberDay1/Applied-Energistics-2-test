@@ -46,6 +46,8 @@ public final class CraftingJob {
     private State state;
     private int ticksCompleted;
     private int ticksRequired;
+    private int insertedOutputs;
+    private int droppedOutputs;
 
     private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated) {
         this.id = id;
@@ -55,6 +57,8 @@ public final class CraftingJob {
         this.state = State.PLANNED;
         this.ticksCompleted = 0;
         this.ticksRequired = DEFAULT_TICKS_REQUIRED;
+        this.insertedOutputs = 0;
+        this.droppedOutputs = 0;
     }
 
     public static CraftingJob fromPattern(ItemStack patternStack) {
@@ -122,6 +126,23 @@ public final class CraftingJob {
 
     public void setTicksRequired(int ticksRequired) {
         this.ticksRequired = Math.max(1, ticksRequired);
+    }
+
+    /**
+     * Records how many output items were successfully inserted into the ME network and how many had to be dropped in
+     * the world once the job completed.
+     */
+    public void recordOutputDelivery(int inserted, int dropped) {
+        this.insertedOutputs = Math.max(0, inserted);
+        this.droppedOutputs = Math.max(0, dropped);
+    }
+
+    public int getInsertedOutputs() {
+        return insertedOutputs;
+    }
+
+    public int getDroppedOutputs() {
+        return droppedOutputs;
     }
 
     /**

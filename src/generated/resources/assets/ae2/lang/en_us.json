@@ -280,7 +280,7 @@
   "dimension.ae2.spatial_storage": "Spatial Storage",
   "entity.ae2.tiny_tnt_primed": "Tiny TNT Primed",
   "entity.minecraft.villager.ae2.fluix_researcher": "Fluix Researcher",
-  "message.ae2.crafting_job_complete": "Crafting job %s complete.",
+  "message.ae2.crafting_job_complete": "Crafting job %s completed: %d inserted, %d dropped.",
   "message.ae2.crafting_job_planned": "Planned crafting job created.",
   "message.ae2.crafting_job_progress": "Crafting job %1$s progress: %2$d / %3$d ticks.",
   "message.ae2.crafting_job_started": "Crafting job %s started.",

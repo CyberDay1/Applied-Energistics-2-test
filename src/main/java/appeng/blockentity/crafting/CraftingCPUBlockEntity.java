@@ -31,6 +31,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
 
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
@@ -41,6 +43,8 @@ import appeng.core.network.AE2Packets;
 import appeng.crafting.CraftingJob;
 import appeng.crafting.CraftingJobManager;
 import appeng.crafting.cpu.CraftingCPUMultiblock;
+import appeng.api.storage.ItemStackView;
+import appeng.storage.impl.StorageService;
 
 /**
  * Block entity backing the crafting CPU controller block.
@@ -257,6 +261,8 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
 
         if (runningJobProgress >= job.getTicksRequired()) {
             job.setTicksCompleted(job.getTicksRequired());
+            var delivery = deliverJobOutputs(job);
+            job.recordOutputDelivery(delivery.inserted(), delivery.dropped());
             manager.jobExecutionCompleted(job, this);
             AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
             releaseReservation(job.getId());
@@ -279,5 +285,55 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
     @Override
     public IGridNode getGridNode() {
         return getMainNode().getNode();
+    }
+
+    private OutputDeliveryResult deliverJobOutputs(CraftingJob job) {
+        if (!(this.level instanceof ServerLevel serverLevel)) {
+            return new OutputDeliveryResult(0, 0);
+        }
+
+        var node = getMainNode().getNode();
+        var gridId = node != null ? node.getGridId() : null;
+
+        int inserted = 0;
+        int dropped = 0;
+
+        for (ItemStackView view : job.getOutputs()) {
+            int remaining = view.count();
+
+            if (gridId != null) {
+                int accepted = StorageService.insertIntoNetwork(gridId, view.item(), remaining, false);
+                if (accepted > 0) {
+                    inserted += accepted;
+                    remaining -= accepted;
+                }
+            }
+
+            if (remaining > 0) {
+                dropped += dropRemainder(serverLevel, view, remaining);
+            }
+        }
+
+        return new OutputDeliveryResult(inserted, dropped);
+    }
+
+    private int dropRemainder(ServerLevel level, ItemStackView view, int amount) {
+        int dropped = 0;
+        int maxStackSize = Math.max(1, new ItemStack(view.item()).getMaxStackSize());
+        int remaining = amount;
+
+        while (remaining > 0) {
+            int toDrop = Math.min(remaining, maxStackSize);
+            ItemStack stack = new ItemStack(view.item(), toDrop);
+            Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
+                    worldPosition.getZ() + 0.5, stack);
+            dropped += toDrop;
+            remaining -= toDrop;
+        }
+
+        return dropped;
+    }
+
+    private record OutputDeliveryResult(int inserted, int dropped) {
     }
 }

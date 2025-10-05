@@ -137,7 +137,7 @@ public final class AE2NetworkHandlers {
                 }
             } else if (payload.state() == CraftingJob.State.COMPLETE) {
                 translationKey = "message.ae2.crafting_job_complete";
-                args = new Object[] { payload.jobId() };
+                args = new Object[] { payload.jobId(), payload.insertedOutputs(), payload.droppedOutputs() };
             }
 
             if (translationKey != null) {

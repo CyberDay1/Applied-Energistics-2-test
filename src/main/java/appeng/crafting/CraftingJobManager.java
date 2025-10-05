@@ -83,7 +83,15 @@ public final class CraftingJobManager {
         jobs.remove(job.getId());
         completedJobs.put(job.getId(), job);
         reservations.remove(job.getId());
-        LOG.debug("Job {} completed on CPU at {}", job.getId(), cpu.getBlockPos());
+        int inserted = job.getInsertedOutputs();
+        int dropped = job.getDroppedOutputs();
+        if (dropped > 0) {
+            LOG.warn("Job {} completed on CPU at {} with {} items dropped ({} inserted).", job.getId(),
+                    cpu.getBlockPos(), dropped, inserted);
+        } else {
+            LOG.info("Job {} completed on CPU at {} ({} items inserted).", job.getId(), cpu.getBlockPos(), inserted);
+        }
+        LOG.debug("Job {} transitioned to {}", job.getId(), job.getState());
     }
 
     public CraftingJob getJob(UUID jobId) {

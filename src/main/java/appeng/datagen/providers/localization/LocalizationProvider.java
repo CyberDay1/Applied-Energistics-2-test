@@ -119,7 +119,7 @@ public class LocalizationProvider implements IAE2DataProvider {
         add("message.ae2.crafting_job_planned", "Planned crafting job created.");
         add("message.ae2.crafting_job_started", "Crafting job %s started.");
         add("message.ae2.crafting_job_progress", "Crafting job %1$s progress: %2$d / %3$d ticks.");
-        add("message.ae2.crafting_job_complete", "Crafting job %s complete.");
+        add("message.ae2.crafting_job_complete", "Crafting job %s completed: %d inserted, %d dropped.");
         add("gui.ae2.PatternEncoding.primary_processing_result_hint",
                 "Can be requested through the automated crafting system.");
         add("gui.ae2.PatternEncoding.primary_processing_result_tooltip", "Primary Processing Result");
