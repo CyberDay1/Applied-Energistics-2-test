@@ -54,6 +54,7 @@ import appeng.block.AEBaseBlock;
 import appeng.block.AEBaseBlockItem;
 import appeng.block.crafting.CraftingBlockItem;
 import appeng.block.crafting.CraftingCPUBlock;
+import appeng.block.crafting.CraftingCoProcessorBlock;
 import appeng.block.crafting.CraftingMonitorBlock;
 import appeng.block.crafting.CraftingUnitBlock;
 import appeng.block.crafting.CraftingUnitType;
@@ -200,6 +201,10 @@ public final class AEBlocks {
 
     public static final BlockDefinition<CraftingCPUBlock> CRAFTING_CPU = block("Crafting CPU", AEBlockIds.CRAFTING_CPU,
             CraftingCPUBlock::new);
+    public static final BlockDefinition<CraftingCoProcessorBlock> CRAFTING_CO_PROCESSOR = block(
+            "Crafting Co-Processing Unit",
+            AEBlockIds.CRAFTING_CO_PROCESSOR,
+            CraftingCoProcessorBlock::new);
     public static final BlockDefinition<CraftingUnitBlock> CRAFTING_UNIT = block("Crafting Unit", AEBlockIds.CRAFTING_UNIT, () -> new CraftingUnitBlock(CraftingUnitType.UNIT));
     public static final BlockDefinition<CraftingUnitBlock> CRAFTING_ACCELERATOR = craftingBlock("Crafting Co-Processing Unit", AEBlockIds.CRAFTING_ACCELERATOR, () -> new CraftingUnitBlock(CraftingUnitType.ACCELERATOR));
     public static final BlockDefinition<CraftingUnitBlock> CRAFTING_STORAGE_1K = craftingBlock("1k Crafting Storage", AEBlockIds.CRAFTING_STORAGE_1K, () -> new CraftingUnitBlock(CraftingUnitType.STORAGE_1K));

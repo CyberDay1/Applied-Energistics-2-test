@@ -39,6 +39,7 @@ import appeng.blockentity.ClientTickingBlockEntity;
 import appeng.blockentity.ServerTickingBlockEntity;
 import appeng.blockentity.crafting.CraftingBlockEntity;
 import appeng.blockentity.crafting.CraftingCPUBlockEntity;
+import appeng.blockentity.crafting.CraftingCoProcessorBlockEntity;
 import appeng.blockentity.crafting.CraftingMonitorBlockEntity;
 import appeng.blockentity.crafting.MolecularAssemblerBlockEntity;
 import appeng.blockentity.crafting.PatternProviderBlockEntity;
@@ -147,6 +148,11 @@ public final class AEBlockEntities {
             CreativeEnergyCellBlockEntity.class, CreativeEnergyCellBlockEntity::new, AEBlocks.CREATIVE_ENERGY_CELL);
     public static final DeferredBlockEntityType<CraftingCPUBlockEntity> CRAFTING_CPU = create("crafting_cpu",
             CraftingCPUBlockEntity.class, CraftingCPUBlockEntity::new, AEBlocks.CRAFTING_CPU);
+    public static final DeferredBlockEntityType<CraftingCoProcessorBlockEntity> CRAFTING_CO_PROCESSOR = create(
+            "crafting_co_processor",
+            CraftingCoProcessorBlockEntity.class,
+            CraftingCoProcessorBlockEntity::new,
+            AEBlocks.CRAFTING_CO_PROCESSOR);
     public static final DeferredBlockEntityType<CraftingBlockEntity> CRAFTING_UNIT = create("crafting_unit",
             CraftingBlockEntity.class, CraftingBlockEntity::new, AEBlocks.CRAFTING_UNIT,
             AEBlocks.CRAFTING_ACCELERATOR);

@@ -66,6 +66,7 @@ public class BlockModelProvider extends AE2BlockStateProvider {
         crystalResonanceGenerator();
         wirelessAccessPoint();
         craftingMonitor();
+        craftingCoProcessor();
         quartzGrowthAccelerator();
         meChest();
         patternProvider();
@@ -182,6 +183,14 @@ public class BlockModelProvider extends AE2BlockStateProvider {
                                         BlockOrientation.get(facing));
                             }
                         }));
+    }
+
+    private void craftingCoProcessor() {
+        var model = models().cubeAll("block/crafting/co_processor", AppEng.makeId("block/crafting/co_processor"));
+        multiVariantGenerator(AEBlocks.CRAFTING_CO_PROCESSOR,
+                Variant.variant().with(VariantProperties.MODEL, model.getLocation()))
+                .with(createFacingDispatch(0, 0));
+        simpleBlockItem(AEBlocks.CRAFTING_CO_PROCESSOR.block(), model);
     }
 
     private void crystalResonanceGenerator() {

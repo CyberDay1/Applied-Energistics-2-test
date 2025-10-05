@@ -54,6 +54,14 @@ public final class CraftingJobManager {
 
         CraftingCPUBlockEntity controller = cpu.getController();
         int requiredCapacity = estimateRequiredCapacity(job);
+        int availableSlots = controller.getAvailableJobSlots();
+
+        if (availableSlots <= 0) {
+            LOG.info("Failed to reserve crafting job {} on CPU at {} (parallel jobs in use: {}/{})", job.describeOutputs(),
+                    controller.getBlockPos(), controller.getActiveReservations().size(),
+                    controller.getMaxParallelJobCount());
+            return false;
+        }
 
         boolean reserved = controller.reserveJob(job, requiredCapacity);
         if (reserved) {
