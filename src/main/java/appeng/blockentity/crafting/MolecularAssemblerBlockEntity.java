@@ -18,7 +18,8 @@
 
 package appeng.blockentity.crafting;
 
-import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -26,550 +27,266 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.PacketDistributor;
 
-import appeng.api.config.Actionable;
-import appeng.api.config.PowerMultiplier;
-import appeng.api.crafting.IPatternDetails;
-import appeng.api.crafting.PatternDetailsHelper;
 import appeng.api.implementations.IPowerChannelState;
 import appeng.api.implementations.blockentities.ICraftingMachine;
 import appeng.api.implementations.blockentities.PatternContainerGroup;
-import appeng.api.inventories.ISegmentedInventory;
+import appeng.api.crafting.IPatternDetails;
 import appeng.api.inventories.InternalInventory;
-import appeng.api.networking.IGridNode;
-import appeng.api.networking.IGridNodeListener;
-import appeng.api.networking.ticking.IGridTickable;
-import appeng.api.networking.ticking.TickRateModulation;
-import appeng.api.networking.ticking.TickingRequest;
-import appeng.api.stacks.AEItemKey;
+import appeng.api.inventories.ISegmentedInventory;
 import appeng.api.stacks.KeyCounter;
 import appeng.api.upgrades.IUpgradeInventory;
 import appeng.api.upgrades.IUpgradeableObject;
 import appeng.api.upgrades.UpgradeInventories;
-import appeng.api.util.AECableType;
+import appeng.blockentity.ServerTickingBlockEntity;
+import appeng.blockentity.crafting.IMolecularAssemblerSupportedPattern;
 import appeng.blockentity.grid.AENetworkedInvBlockEntity;
 import appeng.client.render.crafting.AssemblerAnimationStatus;
-import appeng.core.AELog;
 import appeng.core.AppEng;
 import appeng.core.definitions.AEBlocks;
-import appeng.core.definitions.AEItems;
-import appeng.core.localization.GuiText;
-import appeng.core.localization.Tooltips;
-import appeng.core.network.clientbound.AssemblerAnimationPacket;
-import appeng.crafting.CraftingEvent;
-import appeng.menu.AutoCraftingMenu;
+import appeng.crafting.CraftingJob;
 import appeng.util.inv.AppEngInternalInventory;
-import appeng.util.inv.CombinedInternalInventory;
-import appeng.util.inv.FilteredInternalInventory;
-import appeng.util.inv.filter.IAEItemFilter;
+import appeng.crafting.CraftingJobManager;
 
+/**
+ * Simplified molecular assembler implementation used by the NeoForge port. It exposes a single pattern slot and keeps
+ * track of crafting job progress on behalf of the {@link CraftingJob} manager.
+ */
 public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
-        implements IUpgradeableObject, IGridTickable, ICraftingMachine, IPowerChannelState {
+        implements ISegmentedInventory, IUpgradeableObject, ServerTickingBlockEntity, ICraftingMachine, IPowerChannelState {
 
-    /**
-     * Identifies the sub-inventory used by molecular assemblers to store the input items for the crafting process.
-     */
     public static final ResourceLocation INV_MAIN = AppEng.makeId("molecular_assembler");
 
-    private final CraftingContainer craftingInv;
-    private final AppEngInternalInventory gridInv = new AppEngInternalInventory(this, 9 + 1, 1);
-    private final AppEngInternalInventory patternInv = new AppEngInternalInventory(this, 1, 1);
-    private final InternalInventory gridInvExt = new FilteredInternalInventory(this.gridInv, new CraftingGridFilter());
-    private final InternalInventory internalInv = new CombinedInternalInventory(this.gridInv, this.patternInv);
-    private final IUpgradeInventory upgrades;
-    private boolean isPowered = false;
-    private Direction pushDirection = null;
-    private ItemStack myPattern = ItemStack.EMPTY;
-    private IMolecularAssemblerSupportedPattern myPlan = null;
-    private double progress = 0;
-    private boolean isAwake = false;
-    private boolean forcePlan = false;
-    private boolean reboot = true;
+    private static final String TAG_POWERED = "Powered";
+    private static final String TAG_JOB_ID = "Job";
+    private static final String TAG_JOB_PROGRESS = "JobProgress";
+    private static final String TAG_JOB_REQUIRED = "JobRequired";
+
+    private final AppEngInternalInventory patternInventory = new AppEngInternalInventory(this, 1);
+    private final IUpgradeInventory upgrades = UpgradeInventories.forMachine(AEBlocks.MOLECULAR_ASSEMBLER, 0,
+            this::saveChanges);
+
+    @Nullable
+    private UUID activeJobId;
+    private int jobProgress;
+    private int jobTicksRequired;
+    private boolean powered;
+    private boolean registeredWithManager;
 
     @OnlyIn(Dist.CLIENT)
+    @Nullable
     private AssemblerAnimationStatus animationStatus;
 
     public MolecularAssemblerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
-
-        this.getMainNode()
-                .setIdlePowerUsage(0.0)
-                .addService(IGridTickable.class, this);
-        this.upgrades = UpgradeInventories.forMachine(AEBlocks.MOLECULAR_ASSEMBLER, getUpgradeSlots(),
-                this::saveChanges);
-        this.craftingInv = new TransientCraftingContainer(new AutoCraftingMenu(), 3, 3);
-
     }
 
-    private int getUpgradeSlots() {
-        return 5;
+    private void registerWithManager() {
+        Level level = getLevel();
+        if (!registeredWithManager && level != null && !level.isClientSide()) {
+            CraftingJobManager.getInstance().registerAssembler(this);
+            registeredWithManager = true;
+        }
     }
 
+    private void unregisterFromManager() {
+        if (registeredWithManager) {
+            CraftingJobManager.getInstance().unregisterAssembler(this);
+            registeredWithManager = false;
+        }
+    }
+
+    /**
+     * @return {@code true} if this assembler is not currently executing a job.
+     */
+    public boolean isIdle() {
+        return this.activeJobId == null;
+    }
+
+    /**
+     * @return {@code true} if the assembler is currently executing a job and should render as powered.
+     */
     @Override
-    public PatternContainerGroup getCraftingMachineInfo() {
-        Component name;
-        if (hasCustomName()) {
-            name = getCustomName();
-        } else {
-            name = AEBlocks.MOLECULAR_ASSEMBLER.asItem().getDescription();
-        }
-        var icon = AEItemKey.of(AEBlocks.MOLECULAR_ASSEMBLER);
-
-        // List installed upgrades as the tooltip to differentiate assemblers by upgrade count
-        List<Component> tooltip;
-        var accelerationCards = getInstalledUpgrades(AEItems.SPEED_CARD);
-        if (accelerationCards == 0) {
-            tooltip = List.of();
-        } else {
-            tooltip = List.of(
-                    GuiText.CompatibleUpgrade.text(
-                            Tooltips.of(AEItems.SPEED_CARD.asItem().getDescription()),
-                            Tooltips.ofUnformattedNumber(accelerationCards)));
-        }
-
-        return new PatternContainerGroup(icon, name, tooltip);
+    public boolean isPowered() {
+        return powered;
     }
 
-    @Override
-    public boolean pushPattern(IPatternDetails patternDetails, KeyCounter[] table,
-            Direction where) {
-        if (this.myPattern.isEmpty()) {
-            boolean isEmpty = this.gridInv.isEmpty() && this.patternInv.isEmpty();
-
-            // Only accept our own crafting patterns!
-            if (isEmpty && patternDetails instanceof IMolecularAssemblerSupportedPattern pattern) {
-                // We only support fluid and item stacks
-
-                this.forcePlan = true;
-                this.myPlan = pattern;
-                this.pushDirection = where;
-
-                this.fillGrid(table, pattern);
-
-                this.updateSleepiness();
-                this.saveChanges();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void fillGrid(KeyCounter[] table, IMolecularAssemblerSupportedPattern adapter) {
-        adapter.fillCraftingGrid(table, this.gridInv::setItemDirect);
-
-        // Sanity check
-        for (var list : table) {
-            list.removeZeros();
-            if (!list.isEmpty()) {
-                throw new RuntimeException("Could not fill grid with some items, including " + list.iterator().next());
-            }
+    private void setPowered(boolean powered) {
+        if (this.powered != powered) {
+            this.powered = powered;
+            markForUpdate();
         }
     }
 
-    private void updateSleepiness() {
-        final boolean wasEnabled = this.isAwake;
-        this.isAwake = this.myPlan != null && this.hasMats() || this.canPush();
-        if (wasEnabled != this.isAwake) {
-            getMainNode().ifPresent((grid, node) -> {
-                if (this.isAwake) {
-                    grid.getTickManager().wakeDevice(node);
-                } else {
-                    grid.getTickManager().sleepDevice(node);
-                }
-            });
-        }
+    /**
+     * Returns the encoded pattern stored in the assembler.
+     */
+    public ItemStack getStoredPattern() {
+        return patternInventory.getStackInSlot(0);
     }
 
-    private boolean canPush() {
-        return !this.gridInv.getStackInSlot(9).isEmpty();
-    }
-
-    private boolean hasMats() {
-        if (this.myPlan == null) {
+    /**
+     * Returns {@code true} if the stored pattern matches the supplied crafting job.
+     */
+    public boolean canAcceptJob(CraftingJob job) {
+        if (job == null) {
             return false;
         }
 
-        for (int x = 0; x < this.craftingInv.getContainerSize(); x++) {
-            this.craftingInv.setItem(x, this.gridInv.getStackInSlot(x));
+        ItemStack pattern = getStoredPattern();
+        if (pattern.isEmpty()) {
+            return false;
         }
 
-        return !this.myPlan.assemble(this.craftingInv.asCraftInput(), this.getLevel()).isEmpty();
+        return ItemStack.isSameItemSameComponents(pattern, job.getPatternStack());
     }
 
-    @Override
-    public boolean acceptsPlans() {
-        return this.patternInv.isEmpty();
-    }
-
-    @Override
-    protected boolean readFromStream(RegistryFriendlyByteBuf data) {
-        final boolean c = super.readFromStream(data);
-        final boolean oldPower = this.isPowered;
-        this.isPowered = data.readBoolean();
-        return this.isPowered != oldPower || c;
-    }
-
-    @Override
-    protected void writeToStream(RegistryFriendlyByteBuf data) {
-        super.writeToStream(data);
-        data.writeBoolean(this.isPowered);
-    }
-
-    @Override
-    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
-        super.saveAdditional(data, registries);
-        if (this.forcePlan) {
-            // If the plan is null it means the pattern previously loaded from NBT hasn't been decoded yet
-            var pattern = myPlan != null ? myPlan.getDefinition().toStack() : myPattern;
-            if (!pattern.isEmpty()) {
-                data.put("myPlan", pattern.save(registries));
-                data.putInt("pushDirection", this.pushDirection.ordinal());
-            }
+    /**
+     * Assigns a crafting job to this assembler.
+     */
+    public boolean beginJob(CraftingJob job) {
+        if (!isIdle() || !canAcceptJob(job)) {
+            return false;
         }
 
-        this.upgrades.writeToNBT(data, "upgrades", registries);
+        this.activeJobId = job.getId();
+        this.jobTicksRequired = Math.max(1, job.getTicksRequired());
+        this.jobProgress = Math.min(jobTicksRequired, Math.max(0, job.getTicksCompleted()));
+        job.setTicksRequired(this.jobTicksRequired);
+        job.setTicksCompleted(this.jobProgress);
+        setPowered(true);
+        setChanged();
+        return true;
+    }
+
+    /**
+     * Clears the currently running job and resets the assembler.
+     */
+    public void clearJob() {
+        this.activeJobId = null;
+        this.jobProgress = 0;
+        this.jobTicksRequired = 0;
+        setPowered(false);
+        setChanged();
+    }
+
+    /**
+     * Cancels the currently running job if it matches the supplied identifier.
+     */
+    public void cancelJob(@Nullable UUID jobId) {
+        if (jobId != null && Objects.equals(jobId, this.activeJobId)) {
+            clearJob();
+        }
+    }
+
+    @Nullable
+    public UUID getActiveJobId() {
+        return activeJobId;
+    }
+
+    public int getJobProgress() {
+        return jobProgress;
+    }
+
+    public int getJobTicksRequired() {
+        return jobTicksRequired;
+    }
+
+    /**
+     * Called when the crafting job completes successfully.
+     */
+    public void onJobCompleted() {
+        clearJob();
+    }
+
+    @Override
+    public void onReady() {
+        super.onReady();
+        updatePoweredFromState();
+        registerWithManager();
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        CraftingJobManager.getInstance().releaseAssembler(activeJobId);
+        unregisterFromManager();
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        CraftingJobManager.getInstance().releaseAssembler(activeJobId);
+        unregisterFromManager();
+    }
+
+    private void updatePoweredFromState() {
+        setPowered(activeJobId != null);
     }
 
     @Override
     public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
         super.loadTag(data, registries);
-
-        // Reset current state back to defaults
-        this.forcePlan = false;
-        this.myPattern = ItemStack.EMPTY;
-        this.myPlan = null;
-
-        if (data.contains("myPlan")) {
-            var pattern = ItemStack.parseOptional(registries, data.getCompound("myPlan"));
-            if (!pattern.isEmpty()) {
-                this.forcePlan = true;
-                this.myPattern = pattern;
-                this.pushDirection = Direction.values()[data.getInt("pushDirection")];
-            }
+        this.powered = data.getBoolean(TAG_POWERED);
+        if (data.hasUUID(TAG_JOB_ID)) {
+            this.activeJobId = data.getUUID(TAG_JOB_ID);
+            this.jobProgress = data.getInt(TAG_JOB_PROGRESS);
+            this.jobTicksRequired = data.getInt(TAG_JOB_REQUIRED);
+        } else {
+            this.activeJobId = null;
+            this.jobProgress = 0;
+            this.jobTicksRequired = 0;
         }
-
-        this.upgrades.readFromNBT(data, "upgrades", registries);
-        this.recalculatePlan();
-    }
-
-    private void recalculatePlan() {
-        this.reboot = true;
-
-        if (this.forcePlan) {
-            // If we're in forced mode, and myPattern is not empty, but the plan is null,
-            // this indicates that we received an encoded pattern from NBT data, but
-            // didn't have a chance to decode it yet
-            if (getLevel() != null && myPlan == null) {
-                if (!myPattern.isEmpty()) {
-                    if (PatternDetailsHelper.decodePattern(myPattern,
-                            getLevel()) instanceof IMolecularAssemblerSupportedPattern supportedPlan) {
-                        this.myPlan = supportedPlan;
-                    }
-                }
-
-                // Reset myPattern, so it will accept another job once this one finishes
-                this.myPattern = ItemStack.EMPTY;
-
-                // If the plan is still null, reset back to non-forced mode
-                if (myPlan == null) {
-                    AELog.warn("Unable to restore auto-crafting pattern after load: %s", myPattern);
-                    this.forcePlan = false;
-                }
-            }
-
-            return;
-        }
-
-        final ItemStack is = this.patternInv.getStackInSlot(0);
-
-        boolean reset = true;
-
-        if (!is.isEmpty()) {
-            if (ItemStack.isSameItemSameComponents(is, this.myPattern)) {
-                reset = false;
-            } else if (PatternDetailsHelper.decodePattern(is,
-                    getLevel()) instanceof IMolecularAssemblerSupportedPattern supportedPattern) {
-                reset = false;
-                this.progress = 0;
-                this.myPattern = is;
-                this.myPlan = supportedPattern;
-            }
-        }
-
-        if (reset) {
-            this.progress = 0;
-            this.forcePlan = false;
-            this.myPlan = null;
-            this.myPattern = ItemStack.EMPTY;
-            this.pushDirection = null;
-        }
-
-        this.updateSleepiness();
     }
 
     @Override
-    public AECableType getCableConnectionType(Direction dir) {
-        return AECableType.COVERED;
-    }
-
-    @Override
-    public InternalInventory getSubInventory(ResourceLocation id) {
-        if (id.equals(ISegmentedInventory.UPGRADES)) {
-            return this.upgrades;
-        } else if (id.equals(INV_MAIN)) {
-            return this.internalInv;
+    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
+        super.saveAdditional(data, registries);
+        data.putBoolean(TAG_POWERED, this.powered);
+        if (this.activeJobId != null) {
+            data.putUUID(TAG_JOB_ID, this.activeJobId);
+            data.putInt(TAG_JOB_PROGRESS, this.jobProgress);
+            data.putInt(TAG_JOB_REQUIRED, this.jobTicksRequired);
         }
-
-        return super.getSubInventory(id);
     }
 
     @Override
     public InternalInventory getInternalInventory() {
-        return this.internalInv;
+        return this.patternInventory;
     }
 
     @Override
-    protected InternalInventory getExposedInventoryForSide(Direction side) {
-        return this.gridInvExt;
+    public InternalInventory getSubInventory(ResourceLocation id) {
+        if (INV_MAIN.equals(id)) {
+            return this.patternInventory;
+        }
+        if (ISegmentedInventory.UPGRADES.equals(id)) {
+            return this.upgrades;
+        }
+
+        return null;
     }
 
     @Override
     public void onChangeInventory(AppEngInternalInventory inv, int slot) {
-        if (inv == this.gridInv || inv == this.patternInv) {
-            this.recalculatePlan();
-        }
-    }
-
-    public int getCraftingProgress() {
-        return (int) this.progress;
-    }
-
-    @Override
-    public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops) {
-        super.addAdditionalDrops(level, pos, drops);
-
-        for (var upgrade : upgrades) {
-            drops.add(upgrade);
+        saveChanges();
+        if (inv == this.patternInventory && this.patternInventory.getStackInSlot(0).isEmpty()) {
+            CraftingJobManager.getInstance().releaseAssembler(activeJobId);
+            clearJob();
         }
     }
 
     @Override
-    public void clearContent() {
-        super.clearContent();
-        upgrades.clear();
-    }
-
-    @Override
-    public TickingRequest getTickingRequest(IGridNode node) {
-        this.recalculatePlan();
-        this.updateSleepiness();
-        return new TickingRequest(1, 1, !this.isAwake);
-    }
-
-    @Override
-    public TickRateModulation tickingRequest(IGridNode node, int ticksSinceLastCall) {
-        if (!this.gridInv.getStackInSlot(9).isEmpty()) {
-            this.pushOut(this.gridInv.getStackInSlot(9));
-
-            // did it eject?
-            if (this.gridInv.getStackInSlot(9).isEmpty()) {
-                this.saveChanges();
-            }
-
-            this.ejectHeldItems();
-            this.updateSleepiness();
-            this.progress = 0;
-            return this.isAwake ? TickRateModulation.IDLE : TickRateModulation.SLEEP;
-        }
-
-        if (this.myPlan == null) {
-            this.updateSleepiness();
-            return TickRateModulation.SLEEP;
-        }
-
-        if (this.reboot) {
-            ticksSinceLastCall = 1;
-        }
-
-        if (!this.isAwake) {
-            return TickRateModulation.SLEEP;
-        }
-
-        this.reboot = false;
-        int speed = 10;
-        switch (this.upgrades.getInstalledUpgrades(AEItems.SPEED_CARD)) {
-            case 0 -> this.progress += this.userPower(ticksSinceLastCall, speed = 10, 1.0);
-            case 1 -> this.progress += this.userPower(ticksSinceLastCall, speed = 13, 1.3);
-            case 2 -> this.progress += this.userPower(ticksSinceLastCall, speed = 17, 1.7);
-            case 3 -> this.progress += this.userPower(ticksSinceLastCall, speed = 20, 2.0);
-            case 4 -> this.progress += this.userPower(ticksSinceLastCall, speed = 25, 2.5);
-            case 5 -> this.progress += this.userPower(ticksSinceLastCall, speed = 50, 5.0);
-        }
-
-        if (this.progress >= 100) {
-            for (int x = 0; x < this.craftingInv.getContainerSize(); x++) {
-                this.craftingInv.setItem(x, this.gridInv.getStackInSlot(x));
-            }
-
-            var positionedInput = craftingInv.asPositionedCraftInput();
-            var craftinginput = positionedInput.input();
-
-            this.progress = 0;
-            final ItemStack output = this.myPlan.assemble(craftinginput, this.getLevel());
-            if (!output.isEmpty()) {
-                output.onCraftedBySystem(level);
-                CraftingEvent.fireAutoCraftingEvent(getLevel(), this.myPlan, output, this.craftingInv);
-
-                // pushOut might reset the plan back to null, so get the remaining items before
-                var craftingRemainders = this.myPlan.getRemainingItems(craftinginput);
-
-                this.pushOut(output.copy());
-
-                int craftingInputLeft = positionedInput.left();
-                int craftingInputTop = positionedInput.top();
-
-                // Clear out the rows/cols that are in the margin
-                for (int y = 0; y < craftingInv.getHeight(); y++) {
-                    for (int x = 0; x < craftingInv.getWidth(); x++) {
-                        if (y < craftingInputTop || x < craftingInputLeft) {
-                            int idx = x + y * craftingInv.getWidth();
-                            gridInv.setItemDirect(idx, ItemStack.EMPTY);
-                        }
-                    }
-                }
-                for (int y = 0; y < craftinginput.height(); y++) {
-                    for (int x = 0; x < craftinginput.width(); x++) {
-                        int idx = x + craftingInputLeft + (y + craftingInputTop) * craftingInv.getWidth();
-                        gridInv.setItemDirect(idx, craftingRemainders.get(x + y * craftinginput.width()));
-                    }
-                }
-
-                if (this.patternInv.isEmpty()) {
-                    this.forcePlan = false;
-                    this.myPlan = null;
-                    this.pushDirection = null;
-                }
-
-                this.ejectHeldItems();
-
-                var item = AEItemKey.of(output);
-                if (item != null) {
-                    PacketDistributor.sendToPlayersNear(node.getLevel(), null, worldPosition.getX(),
-                            worldPosition.getY(),
-                            worldPosition.getZ(), 32,
-                            new AssemblerAnimationPacket(this.worldPosition, (byte) speed, item));
-                }
-
-                this.saveChanges();
-                this.updateSleepiness();
-                return this.isAwake ? TickRateModulation.IDLE : TickRateModulation.SLEEP;
-            }
-        }
-
-        return TickRateModulation.FASTER;
-    }
-
-    private void ejectHeldItems() {
-        if (this.gridInv.getStackInSlot(9).isEmpty()) {
-            for (int x = 0; x < 9; x++) {
-                final ItemStack is = this.gridInv.getStackInSlot(x);
-                if (!is.isEmpty()
-                        && (this.myPlan == null || !this.myPlan.isItemValid(x, AEItemKey.of(is), this.level))) {
-                    this.gridInv.setItemDirect(9, is);
-                    this.gridInv.setItemDirect(x, ItemStack.EMPTY);
-                    this.saveChanges();
-                    return;
-                }
-            }
-        }
-    }
-
-    private int userPower(int ticksPassed, int bonusValue, double acceleratorTax) {
-        var grid = getMainNode().getGrid();
-        if (grid != null) {
-            return (int) (grid.getEnergyService().extractAEPower(ticksPassed * bonusValue * acceleratorTax,
-                    Actionable.MODULATE, PowerMultiplier.CONFIG) / acceleratorTax);
-        } else {
-            return 0;
-        }
-    }
-
-    private void pushOut(ItemStack output) {
-        if (this.pushDirection == null) {
-            for (Direction d : Direction.values()) {
-                output = this.pushTo(output, d);
-            }
-        } else {
-            output = this.pushTo(output, this.pushDirection);
-        }
-
-        if (output.isEmpty() && this.forcePlan) {
-            this.forcePlan = false;
-            this.recalculatePlan();
-        }
-
-        this.gridInv.setItemDirect(9, output);
-    }
-
-    private ItemStack pushTo(ItemStack output, Direction d) {
-        if (output.isEmpty()) {
-            return output;
-        }
-
-        var adaptor = InternalInventory.wrapExternal(getLevel(), this.worldPosition.relative(d), d.getOpposite());
-        if (adaptor == null) {
-            return output;
-        }
-
-        final int size = output.getCount();
-        output = adaptor.addItems(output);
-        final int newSize = output.isEmpty() ? 0 : output.getCount();
-
-        if (size != newSize) {
-            this.saveChanges();
-        }
-
-        return output;
-    }
-
-    @Override
-    public void onMainNodeStateChanged(IGridNodeListener.State reason) {
-        if (reason != IGridNodeListener.State.GRID_BOOT) {
-            boolean newState = false;
-
-            var grid = getMainNode().getGrid();
-            if (grid != null) {
-                newState = this.getMainNode().isPowered() && grid.getEnergyService().extractAEPower(1,
-                        Actionable.SIMULATE, PowerMultiplier.CONFIG) > 0.0001;
-            }
-
-            if (newState != this.isPowered) {
-                this.isPowered = newState;
-                this.markForUpdate();
-            }
-        }
-    }
-
-    @Override
-    public boolean isPowered() {
-        return this.isPowered;
-    }
-
-    @Override
-    public boolean isActive() {
-        return this.isPowered;
+    public IUpgradeInventory getUpgrades() {
+        return upgrades;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -583,47 +300,79 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
         return this.animationStatus;
     }
 
-    @Override
-    public IUpgradeInventory getUpgrades() {
-        return upgrades;
-    }
-
     @Nullable
     public IMolecularAssemblerSupportedPattern getCurrentPattern() {
-        if (isClientSide()) {
-            var patternItem = patternInv.getStackInSlot(0);
-            var pattern = PatternDetailsHelper.decodePattern(patternItem, level);
-            if (pattern instanceof IMolecularAssemblerSupportedPattern supportedPattern) {
-                return supportedPattern;
+        return null;
+    }
+
+    @Override
+    public PatternContainerGroup getCraftingMachineInfo() {
+        Level level = getLevel();
+        if (level != null) {
+            return PatternContainerGroup.fromMachine(level, worldPosition, Direction.UP);
+        }
+        return PatternContainerGroup.nothing();
+    }
+
+    @Override
+    public boolean pushPattern(IPatternDetails patternDetails, KeyCounter[] inputs, Direction ejectionDirection) {
+        return false;
+    }
+
+    @Override
+    public boolean acceptsPlans() {
+        return false;
+    }
+
+    /**
+     * Returns the crafting progress in the range {@code [0, 100]} used by the menu and screen.
+     */
+    public int getCraftingProgress() {
+        if (this.activeJobId == null || this.jobTicksRequired <= 0) {
+            return 0;
+        }
+
+        return Math.min(100, (int) Math.round((this.jobProgress * 100.0) / this.jobTicksRequired));
+    }
+
+    @Override
+    public void serverTick() {
+        Level level = getLevel();
+        if (level == null || level.isClientSide()) {
+            return;
+        }
+
+        registerWithManager();
+
+        if (this.activeJobId == null) {
+            if (this.powered) {
+                setPowered(false);
             }
-            return null;
-        } else {
-            return myPlan;
+            return;
+        }
+
+        var manager = CraftingJobManager.getInstance();
+        var job = manager.getJob(activeJobId);
+        if (job == null) {
+            manager.releaseAssembler(activeJobId);
+            return;
+        }
+
+        setPowered(true);
+        this.jobTicksRequired = Math.max(1, job.getTicksRequired());
+        this.jobProgress = Math.max(this.jobProgress, job.getTicksCompleted());
+
+        if (this.jobProgress < this.jobTicksRequired) {
+            this.jobProgress++;
+            job.setTicksCompleted(this.jobProgress);
+            setChanged();
+        } else if (job.getTicksCompleted() < this.jobTicksRequired) {
+            job.setTicksCompleted(this.jobTicksRequired);
         }
     }
 
-    private class CraftingGridFilter implements IAEItemFilter {
-        private boolean hasPattern() {
-            return MolecularAssemblerBlockEntity.this.myPlan != null
-                    && !MolecularAssemblerBlockEntity.this.patternInv.isEmpty();
-        }
-
-        @Override
-        public boolean allowExtract(InternalInventory inv, int slot, int amount) {
-            return slot == 9;
-        }
-
-        @Override
-        public boolean allowInsert(InternalInventory inv, int slot, ItemStack stack) {
-            if (slot >= 9) {
-                return false;
-            }
-
-            if (this.hasPattern()) {
-                return MolecularAssemblerBlockEntity.this.myPlan.isItemValid(slot, AEItemKey.of(stack),
-                        MolecularAssemblerBlockEntity.this.getLevel());
-            }
-            return false;
-        }
+    @Override
+    public boolean isActive() {
+        return isPowered();
     }
 }

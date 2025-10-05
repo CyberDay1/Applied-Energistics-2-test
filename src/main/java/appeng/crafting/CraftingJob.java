@@ -42,6 +42,7 @@ public final class CraftingJob {
     private final List<ItemStackView> inputs;
     private final List<ItemStackView> outputs;
     private final boolean simulated;
+    private final ItemStack patternStack;
 
     private State state;
     private int ticksCompleted;
@@ -49,11 +50,13 @@ public final class CraftingJob {
     private int insertedOutputs;
     private int droppedOutputs;
 
-    private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated) {
+    private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated,
+            ItemStack patternStack) {
         this.id = id;
         this.inputs = List.copyOf(inputs);
         this.outputs = List.copyOf(outputs);
         this.simulated = simulated;
+        this.patternStack = patternStack;
         this.state = State.PLANNED;
         this.ticksCompleted = 0;
         this.ticksRequired = DEFAULT_TICKS_REQUIRED;
@@ -74,7 +77,9 @@ public final class CraftingJob {
             outputs = List.of(new ItemStackView(patternStack.getItem(), 1));
         }
 
-        return new CraftingJob(UUID.randomUUID(), inputs, outputs, true);
+        ItemStack storedPattern = patternStack.copy();
+        storedPattern.setCount(1);
+        return new CraftingJob(UUID.randomUUID(), inputs, outputs, true, storedPattern);
     }
 
     public static CraftingJob fromPattern(EncodedPatternItem pattern) {
@@ -95,6 +100,10 @@ public final class CraftingJob {
 
     public boolean isSimulated() {
         return simulated;
+    }
+
+    public ItemStack getPatternStack() {
+        return patternStack;
     }
 
     public State getState() {
