@@ -42,5 +42,9 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("item.appliedenergistics2.basic_cell_4k", "4k Storage Cell");
         add("item.appliedenergistics2.basic_cell_16k", "16k Storage Cell");
         add("item.appliedenergistics2.basic_cell_64k", "64k Storage Cell");
+        add("item.appliedenergistics2.fluid_storage_cell_1k", "1k Fluid Storage Cell");
+        add("item.appliedenergistics2.fluid_storage_cell_4k", "4k Fluid Storage Cell");
+        add("item.appliedenergistics2.fluid_storage_cell_16k", "16k Fluid Storage Cell");
+        add("item.appliedenergistics2.fluid_storage_cell_64k", "64k Fluid Storage Cell");
     }
 }
