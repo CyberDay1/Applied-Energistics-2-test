@@ -47,5 +47,9 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("item.appliedenergistics2.fluid_storage_cell_4k", "4k Fluid Storage Cell");
         add("item.appliedenergistics2.fluid_storage_cell_16k", "16k Fluid Storage Cell");
         add("item.appliedenergistics2.fluid_storage_cell_64k", "64k Fluid Storage Cell");
+
+        add("tooltip.ae2.cell.used", "Used: %s / %s");
+        add("tooltip.ae2.cell.types", "Types: %s / %s");
+        add("tooltip.ae2.cell.priority", "Priority: %s");
     }
 }

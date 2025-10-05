@@ -30,11 +30,11 @@ import net.minecraft.world.item.ItemStack;
 
 import appeng.api.config.IncludeExclude;
 import appeng.api.stacks.GenericStack;
+import appeng.api.storage.cells.IBasicCellItem;
 import appeng.api.storage.cells.ICellHandler;
 import appeng.api.storage.cells.ISaveProvider;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
-import appeng.core.localization.Tooltips;
 import appeng.items.storage.StorageCellTooltipComponent;
 
 /**
@@ -59,8 +59,14 @@ public class BasicCellHandler implements ICellHandler {
             return;
         }
 
-        lines.add(Tooltips.bytesUsed(handler.getUsedBytes(), handler.getTotalBytes()));
-        lines.add(Tooltips.typesUsed(handler.getStoredItemTypes(), handler.getTotalItemTypes()));
+        var tooltipData = new IBasicCellItem.TooltipData(
+                handler.getUsedBytes(),
+                handler.getTotalBytes(),
+                handler.getStoredItemTypes(),
+                handler.getTotalItemTypes(),
+                handler.getPriority());
+
+        ((IBasicCellItem) is.getItem()).appendCellTooltip(is, lines, tooltipData);
 
         if (handler.isPreformatted()) {
             var list = (handler.getPartitionListMode() == IncludeExclude.WHITELIST ? GuiText.Included

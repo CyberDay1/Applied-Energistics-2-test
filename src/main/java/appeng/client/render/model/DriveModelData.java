@@ -22,19 +22,23 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 
+import appeng.blockentity.storage.DriveLedState;
+
 public final class DriveModelData {
     public final static ModelProperty<Item[]> STATE = new ModelProperty<>();
+    public final static ModelProperty<DriveLedState[]> LEDS = new ModelProperty<>();
 
     private DriveModelData() {
     }
 
-    public static ModelData.Builder builder(Item[] cells) {
+    public static ModelData.Builder builder(Item[] cells, DriveLedState[] leds) {
         return AEModelData.builder()
                 .with(STATE, cells)
+                .with(LEDS, leds)
                 .with(AEModelData.SKIP_CACHE, true);
     }
 
-    public static ModelData create(Item[] cells) {
-        return builder(cells).build();
+    public static ModelData create(Item[] cells, DriveLedState[] leds) {
+        return builder(cells, leds).build();
     }
 }
