@@ -12,21 +12,22 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.tags.BiomeTags;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 
-import appeng.AE2Registries;
+import appeng.core.AppEng;
 import appeng.worldgen.AE2Features;
 
 public class AE2BiomeModifierProvider extends DatapackBuiltinEntriesProvider {
     private static final ResourceKey<BiomeModifier> ADD_CERTUS_QUARTZ = ResourceKey.create(
-        Registries.BIOME_MODIFIER, new ResourceLocation(AE2Registries.MODID, "add_certus_quartz_ore"));
+        Registries.BIOME_MODIFIER, new ResourceLocation(AppEng.MOD_ID, "add_certus_quartz_ore"));
     private static final ResourceKey<BiomeModifier> ADD_METEORITES = ResourceKey.create(
-        Registries.BIOME_MODIFIER, new ResourceLocation(AE2Registries.MODID, "add_meteorites"));
+        Registries.BIOME_MODIFIER, new ResourceLocation(AppEng.MOD_ID, "add_meteorites_overworld"));
 
     public AE2BiomeModifierProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries, createBuilder(), Set.of(AE2Registries.MODID));
+        super(output, registries, createBuilder(), Set.of(AppEng.MOD_ID));
     }
 
     private static RegistrySetBuilder createBuilder() {
@@ -37,18 +38,17 @@ public class AE2BiomeModifierProvider extends DatapackBuiltinEntriesProvider {
         var biomes = context.lookup(Registries.BIOME);
         var placedFeatures = context.lookup(Registries.PLACED_FEATURE);
 
-        var overworld = biomes.getOrThrow(ResourceKey.create(Registries.BIOME,
-            new ResourceLocation("minecraft", "overworld")));
+        var overworld = biomes.getOrThrow(BiomeTags.IS_OVERWORLD);
         var certusOre = placedFeatures.getOrThrow(AE2Features.CERTUS_QUARTZ_ORE_PLACED);
 
         context.register(ADD_CERTUS_QUARTZ, new BiomeModifiers.AddFeaturesBiomeModifier(
-            HolderSet.direct(overworld),
+            overworld,
             HolderSet.direct(certusOre),
             GenerationStep.Decoration.UNDERGROUND_ORES));
 
         var meteoriteFeature = placedFeatures.getOrThrow(AE2Features.METEORITE_PLACED);
         context.register(ADD_METEORITES, new BiomeModifiers.AddFeaturesBiomeModifier(
-            HolderSet.direct(overworld),
+            overworld,
             HolderSet.direct(meteoriteFeature),
             GenerationStep.Decoration.SURFACE_STRUCTURES));
     }

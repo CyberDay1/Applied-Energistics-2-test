@@ -80,6 +80,9 @@ public final class AE2Items {
     public static final RegistryObject<Item> SKY_STONE = AE2Registries.ITEMS.register(
             "sky_stone",
             () -> new BlockItem(AE2Blocks.SKY_STONE.get(), new Properties()));
+    public static final RegistryObject<Item> SKY_STONE_CHEST = AE2Registries.ITEMS.register(
+            "sky_stone_chest",
+            () -> new BlockItem(AE2Blocks.SKY_STONE_CHEST.get(), new Properties()));
 
     public static final RegistryObject<Item> CONTROLLER = AE2Registries.ITEMS.register(
             "controller",

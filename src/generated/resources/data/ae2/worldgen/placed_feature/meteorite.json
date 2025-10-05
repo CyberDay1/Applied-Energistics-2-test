@@ -1,0 +1,19 @@
+{
+  "feature": "ae2:meteorite",
+  "placement": [
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 1200
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "motion_blocking_no_leaves"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -131,6 +131,7 @@ public abstract class AppEngBase implements AppEng {
         AE2Registries.RECIPE_TYPES.register(modEventBus);
         AE2Registries.SOUNDS.register(modEventBus);
         AE2Registries.LOOT_MODIFIERS.register(modEventBus);
+        AE2Registries.FEATURES.register(modEventBus);
         AE2Registries.CONDITIONS.register(modEventBus);
         AE2LootModifiers.init();
         AE2RecipeSerializers.init();
