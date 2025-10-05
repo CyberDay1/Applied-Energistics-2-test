@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.core.network.AE2Packets;
 import appeng.menu.terminal.PatternTerminalMenu;
 
 public class PatternTerminalScreen extends CraftingTerminalScreen {
@@ -19,6 +20,7 @@ public class PatternTerminalScreen extends CraftingTerminalScreen {
             Component.translatable("gui.ae2.pattern_terminal.mode.processing");
 
     private Button modeButton;
+    private Button planButton;
 
     public PatternTerminalScreen(PatternTerminalMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -33,13 +35,21 @@ public class PatternTerminalScreen extends CraftingTerminalScreen {
                 .bounds(buttonX - 2, buttonY, 40, 20)
                 .build();
         addRenderableWidget(this.modeButton);
+
+        int planButtonX = this.leftPos + ENCODED_PATTERN_X - 2;
+        this.planButton = Button.builder(Component.literal("Plan"), btn -> sendPlanRequest())
+                .bounds(planButtonX, buttonY, 40, 20)
+                .build();
+        addRenderableWidget(this.planButton);
         updateModeButton();
+        updatePlanButton();
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
         updateModeButton();
+        updatePlanButton();
     }
 
     @Override
@@ -61,9 +71,21 @@ public class PatternTerminalScreen extends CraftingTerminalScreen {
         }
     }
 
+    private void sendPlanRequest() {
+        if (this.menu.hasEncodedPattern()) {
+            AE2Packets.planCraftingJob(this.menu.containerId, this.menu.getEncodedPatternSlotIndex());
+        }
+    }
+
     private void updateModeButton() {
         if (this.modeButton != null) {
             this.modeButton.setMessage(this.menu.isProcessingMode() ? PROCESSING_MODE : CRAFTING_MODE);
+        }
+    }
+
+    private void updatePlanButton() {
+        if (this.planButton != null) {
+            this.planButton.active = this.menu.hasEncodedPattern();
         }
     }
 }
