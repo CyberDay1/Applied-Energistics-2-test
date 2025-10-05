@@ -12,6 +12,6 @@ public final class AELangProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        // add("item." + AppEng.MOD_ID + ".certus_quartz", "Certus Quartz");
+        add("block." + AppEng.MOD_ID + ".cable", "ME Cable");
     }
 }

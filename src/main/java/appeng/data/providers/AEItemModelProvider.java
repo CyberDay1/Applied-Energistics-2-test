@@ -5,6 +5,7 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import appeng.core.AppEng;
+import appeng.registry.AE2Blocks;
 
 public final class AEItemModelProvider extends ItemModelProvider {
     public AEItemModelProvider(PackOutput output, ExistingFileHelper existing) {
@@ -13,7 +14,6 @@ public final class AEItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        // withExistingParent(AEItems.SOMETHING.getId().getPath(), modLoc("item/generated"))
-        //     .texture("layer0", modLoc("item/something"));
+        withExistingParent(AE2Blocks.CABLE.getId().getPath(), modLoc("block/cable"));
     }
 }

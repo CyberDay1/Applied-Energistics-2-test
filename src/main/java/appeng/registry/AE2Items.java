@@ -87,5 +87,9 @@ public final class AE2Items {
             "energy_acceptor",
             () -> new BlockItem(AE2Blocks.ENERGY_ACCEPTOR.get(), new Properties()));
 
+    public static final RegistryObject<Item> CABLE = AE2Registries.ITEMS.register(
+            "cable",
+            () -> new BlockItem(AE2Blocks.CABLE.get(), new Properties()));
+
     private AE2Items() {}
 }

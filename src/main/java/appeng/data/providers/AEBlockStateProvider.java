@@ -5,6 +5,7 @@ import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import appeng.core.AppEng;
+import appeng.registry.AE2Blocks;
 
 public final class AEBlockStateProvider extends BlockStateProvider {
     public AEBlockStateProvider(PackOutput output, ExistingFileHelper existing) {
@@ -13,6 +14,6 @@ public final class AEBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        // simpleBlock(AEBlocks.QUARTZ_ORE.get());
+        simpleBlock(AE2Blocks.CABLE.get());
     }
 }

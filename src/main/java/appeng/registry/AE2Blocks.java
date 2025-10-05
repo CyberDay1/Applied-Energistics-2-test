@@ -1,6 +1,7 @@
 package appeng.registry;
 
 import appeng.AE2Registries;
+import appeng.block.CableBlock;
 import appeng.block.ControllerBlock;
 import appeng.block.EnergyAcceptorBlock;
 import net.minecraft.world.level.block.Block;
@@ -35,6 +36,9 @@ public final class AE2Blocks {
 
     public static final RegistryObject<Block> ENERGY_ACCEPTOR =
         AE2Registries.BLOCKS.register("energy_acceptor", EnergyAcceptorBlock::new);
+
+    public static final RegistryObject<Block> CABLE =
+        AE2Registries.BLOCKS.register("cable", CableBlock::new);
 
     private AE2Blocks() {}
 }
