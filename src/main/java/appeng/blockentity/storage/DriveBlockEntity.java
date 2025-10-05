@@ -60,6 +60,7 @@ import appeng.client.render.model.DriveModelData;
 import appeng.core.AELog;
 import appeng.core.definitions.AEBlocks;
 import appeng.helpers.IPriorityHost;
+import appeng.me.cells.BasicCellInventory;
 import appeng.me.storage.DriveWatcher;
 import appeng.menu.ISubMenu;
 import appeng.menu.MenuOpener;
@@ -79,6 +80,7 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
     // This is only used on the client
     private final Item[] clientSideCellItems = new Item[getCellCount()];
     private final CellState[] clientSideCellState = new CellState[getCellCount()];
+    private final DriveLedState[] clientSideLedState = new DriveLedState[getCellCount()];
     private boolean clientSideOnline;
 
     public DriveBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
@@ -89,6 +91,7 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
         inv.setFilter(new CellValidInventoryFilter());
 
         Arrays.fill(clientSideCellState, CellState.ABSENT);
+        Arrays.fill(clientSideLedState, DriveLedState.OFF);
     }
 
     @Override
@@ -112,6 +115,12 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
         }
         data.writeInt(packedState);
 
+        int packedLeds = 0;
+        for (int i = 0; i < getCellCount(); i++) {
+            packedLeds |= clientSideLedState[i].ordinal() << (i * 3);
+        }
+        data.writeInt(packedLeds);
+
         for (int i = 0; i < getCellCount(); i++) {
             data.writeVarInt(BuiltInRegistries.ITEM.getId(getCellItem(i)));
         }
@@ -131,6 +140,7 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
 
                 var cellState = getCellStatus(i);
                 cellData.putString("state", cellState.name().toLowerCase(Locale.ROOT));
+                cellData.putString("led", getLedState(i).name().toLowerCase(Locale.ROOT));
                 data.put("cell" + i, cellData);
             }
         }
@@ -154,6 +164,16 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
         if (clientSideOnline != online) {
             clientSideOnline = online;
             changed = true;
+        }
+
+        var packedLeds = data.readInt();
+        for (int i = 0; i < getCellCount(); i++) {
+            var ledOrdinal = (packedLeds >> (i * 3)) & 0b111;
+            var ledState = DriveLedState.fromOrdinal(ledOrdinal);
+            if (clientSideLedState[i] != ledState) {
+                clientSideLedState[i] = ledState;
+                changed = true;
+            }
         }
 
         for (int i = 0; i < getCellCount(); i++) {
@@ -180,18 +200,27 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
         for (int i = 0; i < getCellCount(); i++) {
             this.clientSideCellItems[i] = null;
             this.clientSideCellState[i] = CellState.ABSENT;
+            this.clientSideLedState[i] = DriveLedState.OFF;
 
             var tagName = "cell" + i;
             if (data.contains(tagName, Tag.TAG_COMPOUND)) {
                 var cellData = data.getCompound(tagName);
                 var id = ResourceLocation.parse(cellData.getString("id"));
                 var cellStateName = cellData.getString("state");
+                var ledStateName = cellData.getString("led");
 
                 clientSideCellItems[i] = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
                 try {
                     clientSideCellState[i] = CellState.valueOf(cellStateName.toUpperCase(Locale.ROOT));
                 } catch (IllegalArgumentException e) {
                     AELog.warn("Cannot parse cell state for cell %d: %s", i, cellStateName);
+                }
+                if (!ledStateName.isEmpty()) {
+                    try {
+                        clientSideLedState[i] = DriveLedState.valueOf(ledStateName.toUpperCase(Locale.ROOT));
+                    } catch (IllegalArgumentException e) {
+                        AELog.warn("Cannot parse drive LED state for cell %d: %s", i, ledStateName);
+                    }
                 }
             }
         }
@@ -229,6 +258,59 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
         }
 
         return handler.getStatus();
+    }
+
+    public DriveLedState getLedState(int slot) {
+        if (isClientSide()) {
+            return this.clientSideLedState[slot];
+        }
+
+        return computeLedState(slot);
+    }
+
+    private DriveLedState computeLedState(int slot) {
+        var handler = this.invBySlot[slot];
+        if (handler == null) {
+            return DriveLedState.OFF;
+        }
+
+        if (!isPowered()) {
+            return DriveLedState.OFF;
+        }
+
+        var cell = handler.getCell();
+        if (cell instanceof BasicCellInventory basicCell) {
+            if (basicCell.isPreformatted() || basicCell.getPriority() != 0) {
+                return DriveLedState.BLUE;
+            }
+
+            long totalBytes = basicCell.getTotalBytes();
+            long usedBytes = basicCell.getUsedBytes();
+            double ratio = totalBytes <= 0 ? 0 : (double) usedBytes / totalBytes;
+            long totalTypes = basicCell.getTotalItemTypes();
+            long storedTypes = basicCell.getStoredItemTypes();
+            double typeRatio = totalTypes <= 0 ? 0 : (double) storedTypes / totalTypes;
+
+            boolean hasRemainingItems = basicCell.getRemainingItemCount() > 0;
+            boolean hasRemainingTypes = basicCell.getRemainingItemTypes() > 0;
+
+            if (!hasRemainingItems) {
+                return DriveLedState.RED;
+            }
+
+            if (!hasRemainingTypes || ratio >= 0.8 || typeRatio >= 0.8) {
+                return DriveLedState.YELLOW;
+            }
+
+            return DriveLedState.GREEN;
+        }
+
+        return switch (handler.getStatus()) {
+            case FULL -> DriveLedState.RED;
+            case TYPES_FULL -> DriveLedState.YELLOW;
+            case NOT_EMPTY, EMPTY -> DriveLedState.GREEN;
+            case ABSENT -> DriveLedState.OFF;
+        };
     }
 
     @Override
@@ -303,6 +385,12 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
             var cellState = this.getCellStatus(x);
             if (cellState != this.clientSideCellState[x]) {
                 this.clientSideCellState[x] = cellState;
+                changed = true;
+            }
+
+            var ledState = computeLedState(x);
+            if (ledState != this.clientSideLedState[x]) {
+                this.clientSideLedState[x] = ledState;
                 changed = true;
             }
         }
@@ -439,10 +527,12 @@ public class DriveBlockEntity extends AENetworkedInvBlockEntity
     @Override
     public ModelData getModelData() {
         var cells = new Item[getCellCount()];
+        var leds = new DriveLedState[getCellCount()];
         for (int i = 0; i < getCellCount(); i++) {
             cells[i] = getCellItem(i);
+            leds[i] = getLedState(i);
         }
-        return DriveModelData.create(cells);
+        return DriveModelData.create(cells, leds);
     }
 
     public void openMenu(Player player) {

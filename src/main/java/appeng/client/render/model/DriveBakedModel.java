@@ -39,6 +39,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
+import appeng.blockentity.storage.DriveLedState;
 import appeng.client.render.DelegateBakedModel;
 import appeng.thirdparty.fabric.MutableQuadView;
 import appeng.thirdparty.fabric.RenderContext;
@@ -46,16 +47,18 @@ import appeng.thirdparty.fabric.RenderContext;
 public class DriveBakedModel extends DelegateBakedModel {
     private static final ChunkRenderTypeSet RENDER_TYPES = ChunkRenderTypeSet.of(RenderType.CUTOUT);
     private final Map<Item, BakedModel> cellModels;
+    private final Map<DriveLedState, BakedModel> ledOverlays;
     private final BakedModel defaultCellModel;
 
     private final RenderContext.QuadTransform[] slotTransforms;
 
     public DriveBakedModel(Transformation rotation, BakedModel bakedBase, Map<Item, BakedModel> cellModels,
-            BakedModel defaultCell) {
+            Map<DriveLedState, BakedModel> ledOverlays, BakedModel defaultCell) {
         super(bakedBase);
         this.defaultCellModel = defaultCell;
         this.slotTransforms = buildSlotTransforms(rotation);
         this.cellModels = cellModels;
+        this.ledOverlays = ledOverlays;
     }
 
     /**
@@ -77,6 +80,7 @@ public class DriveBakedModel extends DelegateBakedModel {
         List<BakedQuad> result = new ArrayList<>(super.getQuads(state, side, rand, extraData, renderType));
 
         var cells = extraData.get(DriveModelData.STATE);
+        var leds = extraData.get(DriveModelData.LEDS);
 
         // Add cell models on top of the base model, if possible
         if (cells != null) {
@@ -93,6 +97,19 @@ public class DriveBakedModel extends DelegateBakedModel {
                         quadView.fromVanilla(quad, side);
                         slotTransforms[slot].transform(quadView);
                         result.add(quadView.toBlockBakedQuad());
+                    }
+
+                    if (leds != null) {
+                        var ledState = slot < leds.length ? leds[slot] : DriveLedState.OFF;
+                        var overlay = ledOverlays.get(ledState);
+                        if (overlay != null) {
+                            var overlayQuad = MutableQuadView.getInstance();
+                            for (BakedQuad quad : overlay.getQuads(state, side, rand, ModelData.EMPTY, renderType)) {
+                                overlayQuad.fromVanilla(quad, side);
+                                slotTransforms[slot].transform(overlayQuad);
+                                result.add(overlayQuad.toBlockBakedQuad());
+                            }
+                        }
                     }
                 }
             }

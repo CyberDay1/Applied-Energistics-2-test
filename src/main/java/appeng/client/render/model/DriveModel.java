@@ -19,6 +19,7 @@
 package appeng.client.render.model;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,6 +40,7 @@ import net.minecraft.world.item.Items;
 import appeng.api.client.StorageCellModels;
 import appeng.client.render.BasicUnbakedModel;
 import appeng.init.internal.InitStorageCells;
+import appeng.blockentity.storage.DriveLedState;
 
 public class DriveModel implements BasicUnbakedModel {
 
@@ -46,6 +48,11 @@ public class DriveModel implements BasicUnbakedModel {
             "ae2:block/drive/drive_base");
     private static final ResourceLocation MODEL_CELL_EMPTY = ResourceLocation.parse(
             "ae2:block/drive/drive_cell_empty");
+    private static final Map<DriveLedState, ResourceLocation> LED_MODELS = Map.of(
+            DriveLedState.GREEN, ResourceLocation.parse("ae2:block/drive/led/green"),
+            DriveLedState.YELLOW, ResourceLocation.parse("ae2:block/drive/led/yellow"),
+            DriveLedState.RED, ResourceLocation.parse("ae2:block/drive/led/red"),
+            DriveLedState.BLUE, ResourceLocation.parse("ae2:block/drive/led/blue"));
 
     @Nullable
     @Override
@@ -63,14 +70,21 @@ public class DriveModel implements BasicUnbakedModel {
         final BakedModel defaultCell = baker.bake(StorageCellModels.getDefaultModel(), modelTransform);
         cellModels.put(Items.AIR, baker.bake(MODEL_CELL_EMPTY, modelTransform));
 
-        return new DriveBakedModel(modelTransform.getRotation(), baseModel, cellModels, defaultCell);
+        final Map<DriveLedState, BakedModel> ledModels = new EnumMap<>(DriveLedState.class);
+        ledModels.put(DriveLedState.OFF, null);
+        for (var entry : LED_MODELS.entrySet()) {
+            ledModels.put(entry.getKey(), baker.bake(entry.getValue(), modelTransform));
+        }
+
+        return new DriveBakedModel(modelTransform.getRotation(), baseModel, cellModels, ledModels, defaultCell);
     }
 
     @Override
     public Collection<ResourceLocation> getDependencies() {
         return ImmutableSet.<ResourceLocation>builder().add(StorageCellModels.getDefaultModel())
                 .addAll(InitStorageCells.getModels())
-                .addAll(StorageCellModels.models().values()).build();
+                .addAll(StorageCellModels.models().values())
+                .addAll(LED_MODELS.values()).build();
     }
 
 }

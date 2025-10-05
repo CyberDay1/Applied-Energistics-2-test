@@ -29,13 +29,14 @@ import java.util.Optional;
 import com.google.common.base.Preconditions;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 
-import appeng.api.storage.ItemStackView;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AEKeyType;
+import appeng.api.storage.ItemStackView;
+import appeng.core.localization.Tooltips;
 import appeng.me.cells.BasicCellHandler;
 
 /**
@@ -129,6 +130,36 @@ public interface IBasicCellItem extends ICellWorkbenchItem {
     default void addCellInformationToTooltip(ItemStack is, List<Component> lines) {
         Preconditions.checkArgument(is.getItem() == this);
         BasicCellHandler.INSTANCE.addCellInformationToTooltip(is, lines);
+    }
+
+    /**
+     * Allows storage cell items to customize the textual information shown in their tooltip.
+     *
+     * @param stack  The storage cell stack the tooltip is being rendered for.
+     * @param lines  The tooltip lines to append to.
+     * @param data   Pre-computed information about the storage cell contents.
+     */
+    default void appendCellTooltip(ItemStack stack, List<Component> lines, TooltipData data) {
+        lines.add(data.usedBytesComponent());
+        lines.add(data.storedTypesComponent());
+        lines.add(data.priorityComponent());
+    }
+
+    /**
+     * Information that can be shown in a storage cell tooltip.
+     */
+    record TooltipData(long usedBytes, long totalBytes, long storedTypes, long totalTypes, int priority) {
+        public Component usedBytesComponent() {
+            return Tooltips.storageCellUsed(usedBytes, totalBytes);
+        }
+
+        public Component storedTypesComponent() {
+            return Tooltips.storageCellTypes(storedTypes, totalTypes);
+        }
+
+        public Component priorityComponent() {
+            return Tooltips.storageCellPriority(priority);
+        }
     }
 
     /**

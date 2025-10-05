@@ -444,4 +444,23 @@ public final class Tooltips {
                 of(GuiText.Types));
     }
 
+    public static Component storageCellUsed(long bytes, long max) {
+        double ratio = max <= 0 ? 0 : (double) bytes / max;
+        return Component.translatable("tooltip.ae2.cell.used",
+                ofUnformattedNumberWithRatioColor(bytes, ratio, false),
+                ofUnformattedNumber(max)).withStyle(NORMAL_TOOLTIP_TEXT);
+    }
+
+    public static Component storageCellTypes(long storedTypes, long maxTypes) {
+        double ratio = maxTypes <= 0 ? 0 : (double) storedTypes / maxTypes;
+        return Component.translatable("tooltip.ae2.cell.types",
+                ofUnformattedNumberWithRatioColor(storedTypes, ratio, false),
+                ofUnformattedNumber(maxTypes)).withStyle(NORMAL_TOOLTIP_TEXT);
+    }
+
+    public static Component storageCellPriority(int priority) {
+        return Component.translatable("tooltip.ae2.cell.priority",
+                ofUnformattedNumber((long) priority)).withStyle(NORMAL_TOOLTIP_TEXT);
+    }
+
 }
