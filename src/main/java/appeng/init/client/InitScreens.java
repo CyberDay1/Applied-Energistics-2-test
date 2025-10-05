@@ -46,6 +46,7 @@ import appeng.client.gui.implementations.InscriberScreen;
 import appeng.client.gui.implementations.InterfaceScreen;
 import appeng.client.gui.implementations.MEChestScreen;
 import appeng.client.gui.implementations.MolecularAssemblerScreen;
+import appeng.client.gui.implementations.PatternEncodingTerminalScreen;
 import appeng.client.gui.implementations.PatternProviderScreen;
 import appeng.client.gui.implementations.PriorityScreen;
 import appeng.client.gui.implementations.QNBScreen;
@@ -85,6 +86,7 @@ import appeng.menu.implementations.InscriberMenu;
 import appeng.menu.implementations.InterfaceMenu;
 import appeng.menu.implementations.MEChestMenu;
 import appeng.menu.implementations.MolecularAssemblerMenu;
+import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.implementations.PatternAccessTermMenu;
 import appeng.menu.implementations.PatternProviderMenu;
 import appeng.menu.implementations.PriorityMenu;
@@ -195,6 +197,9 @@ public final class InitScreens {
                 "/screens/terminals/crafting_terminal.json");
         registrar.register(PatternEncodingTermMenu.TYPE,
                 PatternEncodingTermScreen::new,
+                "/screens/terminals/pattern_encoding_terminal.json");
+        registrar.register(PatternEncodingTerminalMenu.TYPE,
+                PatternEncodingTerminalScreen::new,
                 "/screens/terminals/pattern_encoding_terminal.json");
         registrar.register(PatternAccessTermMenu.TYPE, PatternAccessTermScreen::new,
                 "/screens/terminals/pattern_access_terminal.json");

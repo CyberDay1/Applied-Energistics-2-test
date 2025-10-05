@@ -8,6 +8,7 @@ import appeng.blockentity.EnergyAcceptorBlockEntity;
 import appeng.blockentity.InscriberBlockEntity;
 import appeng.blockentity.simple.DriveBlockEntity;
 import appeng.blockentity.terminal.CraftingTerminalBlockEntity;
+import appeng.blockentity.crafting.PatternEncodingTerminalBlockEntity;
 import appeng.blockentity.terminal.PatternTerminalBlockEntity;
 import appeng.blockentity.terminal.TerminalBlockEntity;
 import appeng.blockentity.crafting.CraftingMonitorBlockEntity;
@@ -57,6 +58,11 @@ public final class AE2BlockEntities {
         AE2Registries.BLOCK_ENTITIES.register("pattern_terminal",
             () -> BlockEntityType.Builder.of(PatternTerminalBlockEntity::new,
                 AE2Blocks.PATTERN_TERMINAL.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<PatternEncodingTerminalBlockEntity>> PATTERN_ENCODING_TERMINAL =
+        AE2Registries.BLOCK_ENTITIES.register("pattern_encoding_terminal",
+            () -> BlockEntityType.Builder.of(PatternEncodingTerminalBlockEntity::new,
+                AE2Blocks.PATTERN_ENCODING_TERMINAL.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<CraftingMonitorBlockEntity>> CRAFTING_MONITOR =
         AE2Registries.BLOCK_ENTITIES.register("crafting_monitor",
