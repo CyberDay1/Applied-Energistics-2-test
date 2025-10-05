@@ -199,6 +199,26 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
         setChanged();
         updateMountedStorage();
         IStorageProvider.requestUpdate(getMainNode());
+        logUpgradeEffects();
+    }
+
+    private void logUpgradeEffects() {
+        var capacity = upgrades.getInstalledUpgrades(AEItems.CAPACITY_CARD);
+        var fuzzy = upgrades.isInstalled(AEItems.FUZZY_CARD);
+        var redstone = upgrades.isInstalled(AEItems.REDSTONE_CARD);
+        var inverter = upgrades.isInstalled(AEItems.INVERTER_CARD);
+        var voiding = upgrades.isInstalled(AEItems.VOID_CARD);
+        var slots = Math.min(config.size(), 18 + capacity * 9);
+
+        AELog.debug(
+                "Storage bus at {} upgrades: capacity={}, fuzzy={}, redstone={}, inverted={}, void={}, configSlots={}",
+                getBlockPos(),
+                capacity,
+                fuzzy,
+                redstone,
+                inverter,
+                voiding,
+                slots);
     }
 
     private IPartitionList createFilter() {

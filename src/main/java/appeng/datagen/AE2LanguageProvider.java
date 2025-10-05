@@ -39,6 +39,10 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("item.appliedenergistics2.speed_card", "Speed Card");
         add("item.appliedenergistics2.redstone_card", "Redstone Card");
         add("item.appliedenergistics2.fuzzy_card", "Fuzzy Card");
+        add("tooltip.appliedenergistics2.speed_card", "Speeds up transfer rate");
+        add("tooltip.appliedenergistics2.capacity_card", "Moves more items per operation");
+        add("tooltip.appliedenergistics2.redstone_card", "Enables redstone control for buses");
+        add("tooltip.appliedenergistics2.fuzzy_card", "Ignores damage and NBT when filtering");
         add("item.appliedenergistics2.inscriber_silicon_press", "Inscriber Silicon Press");
         add("item.appliedenergistics2.inscriber_logic_press", "Inscriber Logic Press");
         add("item.appliedenergistics2.inscriber_engineering_press", "Inscriber Engineering Press");

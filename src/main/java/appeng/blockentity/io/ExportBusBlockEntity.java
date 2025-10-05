@@ -22,7 +22,6 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.util.IConfigManager;
 import appeng.api.stacks.AEKey;
 import appeng.core.definitions.AEBlocks;
-import appeng.core.settings.TickRates;
 import appeng.core.definitions.AEItems;
 import appeng.parts.automation.StackTransferContextImpl;
 import appeng.parts.automation.StackWorldBehaviors;
@@ -55,7 +54,8 @@ public class ExportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(TickRates.ExportBus, false);
+        int cooldown = getTransferCooldown();
+        return new TickingRequest(cooldown, cooldown, false);
     }
 
     @Override
