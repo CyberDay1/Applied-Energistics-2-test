@@ -14,8 +14,14 @@ import appeng.api.grid.IGridNode;
 public class SimpleGridNode implements IGridNode {
     private final Set<IGridNode> neighbors = ConcurrentHashMap.newKeySet();
     private UUID gridId = GridId.random().id();
+    private volatile NodeType nodeType;
 
     public SimpleGridNode() {
+        this(NodeType.UNKNOWN);
+    }
+
+    public SimpleGridNode(NodeType nodeType) {
+        this.nodeType = nodeType;
         GridIndex.get().getOrCreate(gridId).add(this);
     }
 
@@ -62,5 +68,13 @@ public class SimpleGridNode implements IGridNode {
     @Override
     public UUID getGridId() {
         return gridId;
+    }
+
+    public NodeType getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(NodeType nodeType) {
+        this.nodeType = nodeType;
     }
 }
