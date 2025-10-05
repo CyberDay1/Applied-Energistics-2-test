@@ -65,6 +65,8 @@ import appeng.block.misc.CondenserBlock;
 import appeng.block.misc.CrankBlock;
 import appeng.block.misc.GrowthAcceleratorBlock;
 import appeng.block.misc.InscriberBlock;
+import appeng.block.io.ExportBusBlock;
+import appeng.block.io.ImportBusBlock;
 import appeng.block.misc.InterfaceBlock;
 import appeng.block.misc.LightDetectorBlock;
 import appeng.block.misc.MysteriousCubeBlock;
@@ -88,6 +90,7 @@ import appeng.block.spatial.SpatialIOPortBlock;
 import appeng.block.spatial.SpatialPylonBlock;
 import appeng.block.storage.DriveBlock;
 import appeng.block.storage.IOPortBlock;
+import appeng.block.storage.StorageBusBlock;
 import appeng.block.storage.MEChestBlock;
 import appeng.block.storage.SkyChestBlock;
 import appeng.block.storage.SkyStoneTankBlock;
@@ -179,6 +182,12 @@ public final class AEBlocks {
     public static final BlockDefinition<InterfaceBlock> INTERFACE = block("ME Interface", AEBlockIds.INTERFACE, InterfaceBlock::new);
     public static final BlockDefinition<CellWorkbenchBlock> CELL_WORKBENCH = block("Cell Workbench", AEBlockIds.CELL_WORKBENCH, CellWorkbenchBlock::new);
     public static final BlockDefinition<IOPortBlock> IO_PORT = block("ME IO Port", AEBlockIds.IO_PORT, IOPortBlock::new);
+    public static final BlockDefinition<StorageBusBlock> STORAGE_BUS = block("ME Storage Bus", AEBlockIds.STORAGE_BUS,
+            StorageBusBlock::new);
+    public static final BlockDefinition<ImportBusBlock> IMPORT_BUS = block("ME Import Bus", AEBlockIds.IMPORT_BUS,
+            ImportBusBlock::new);
+    public static final BlockDefinition<ExportBusBlock> EXPORT_BUS = block("ME Export Bus", AEBlockIds.EXPORT_BUS,
+            ExportBusBlock::new);
     public static final BlockDefinition<CondenserBlock> CONDENSER = block("Matter Condenser", AEBlockIds.CONDENSER, CondenserBlock::new);
     public static final BlockDefinition<EnergyAcceptorBlock> ENERGY_ACCEPTOR = block("Energy Acceptor", AEBlockIds.ENERGY_ACCEPTOR, EnergyAcceptorBlock::new);
     public static final BlockDefinition<CrystalResonanceGeneratorBlock> CRYSTAL_RESONANCE_GENERATOR = block("Crystal Resonance Generator", AEBlockIds.CRYSTAL_RESONANCE_GENERATOR, CrystalResonanceGeneratorBlock::new);

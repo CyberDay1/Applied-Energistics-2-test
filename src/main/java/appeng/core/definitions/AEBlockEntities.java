@@ -42,6 +42,8 @@ import appeng.blockentity.crafting.CraftingCPUBlockEntity;
 import appeng.blockentity.crafting.CraftingMonitorBlockEntity;
 import appeng.blockentity.crafting.MolecularAssemblerBlockEntity;
 import appeng.blockentity.crafting.PatternProviderBlockEntity;
+import appeng.blockentity.io.ExportBusBlockEntity;
+import appeng.blockentity.io.ImportBusBlockEntity;
 import appeng.blockentity.misc.CellWorkbenchBlockEntity;
 import appeng.blockentity.misc.ChargerBlockEntity;
 import appeng.blockentity.misc.CondenserBlockEntity;
@@ -67,6 +69,7 @@ import appeng.blockentity.spatial.SpatialPylonBlockEntity;
 import appeng.blockentity.storage.DriveBlockEntity;
 import appeng.blockentity.storage.IOPortBlockEntity;
 import appeng.blockentity.storage.MEChestBlockEntity;
+import appeng.blockentity.storage.StorageBusBlockEntity;
 import appeng.blockentity.storage.SkyChestBlockEntity;
 import appeng.blockentity.storage.SkyStoneTankBlockEntity;
 import appeng.core.AppEng;
@@ -114,6 +117,12 @@ public final class AEBlockEntities {
             CellWorkbenchBlockEntity.class, CellWorkbenchBlockEntity::new, AEBlocks.CELL_WORKBENCH);
     public static final DeferredBlockEntityType<IOPortBlockEntity> IO_PORT = create("io_port", IOPortBlockEntity.class,
             IOPortBlockEntity::new, AEBlocks.IO_PORT);
+    public static final DeferredBlockEntityType<StorageBusBlockEntity> STORAGE_BUS = create("storage_bus",
+            StorageBusBlockEntity.class, StorageBusBlockEntity::new, AEBlocks.STORAGE_BUS);
+    public static final DeferredBlockEntityType<ImportBusBlockEntity> IMPORT_BUS = create("import_bus",
+            ImportBusBlockEntity.class, ImportBusBlockEntity::new, AEBlocks.IMPORT_BUS);
+    public static final DeferredBlockEntityType<ExportBusBlockEntity> EXPORT_BUS = create("export_bus",
+            ExportBusBlockEntity.class, ExportBusBlockEntity::new, AEBlocks.EXPORT_BUS);
     public static final DeferredBlockEntityType<CondenserBlockEntity> CONDENSER = create("condenser",
             CondenserBlockEntity.class,
             CondenserBlockEntity::new, AEBlocks.CONDENSER);
