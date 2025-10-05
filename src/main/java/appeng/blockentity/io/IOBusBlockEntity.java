@@ -1,6 +1,7 @@
 package appeng.blockentity.io;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -10,22 +11,35 @@ import appeng.api.config.FuzzyMode;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Setting;
 import appeng.api.config.Settings;
+import appeng.api.networking.GridFlags;
+import appeng.api.networking.IGridNodeListener;
+import appeng.api.orientation.BlockOrientation;
 import appeng.api.upgrades.IUpgradeableObject;
 import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
+import appeng.api.networking.security.IActionSource;
 import appeng.blockentity.grid.AENetworkedBlockEntity;
 import appeng.helpers.IConfigInvHost;
+import appeng.me.helpers.MachineSource;
 import appeng.util.ConfigInventory;
+import appeng.util.Platform;
+import appeng.util.prioritylist.DefaultPriorityList;
+import appeng.util.prioritylist.IPartitionList;
+import appeng.core.definitions.AEItems;
 
 public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
         implements IConfigInvHost, IConfigurableObject, IUpgradeableObject {
 
     private final ConfigInventory config = ConfigInventory.configTypes(63).changeListener(this::onConfigChanged).build();
     private final IConfigManager configManager;
+    protected final IActionSource source = new MachineSource(this);
+    private IPartitionList cachedFilter = DefaultPriorityList.INSTANCE;
+    private boolean filterDirty = true;
 
     protected IOBusBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         this.configManager = createConfigManager();
+        getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL);
     }
 
     protected IConfigManager createConfigManager() {
@@ -46,10 +60,12 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     }
 
     protected void onFiltersChanged() {
+        filterDirty = true;
         wakeDevice();
     }
 
     protected void onSettingsChanged() {
+        filterDirty = true;
         wakeDevice();
     }
 
@@ -58,7 +74,17 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     }
 
     public void onNeighborChanged() {
+        onTargetChanged();
         wakeDevice();
+    }
+
+    protected void onTargetChanged() {
+    }
+
+    @Override
+    protected void onOrientationChanged(BlockOrientation orientation) {
+        super.onOrientationChanged(orientation);
+        onTargetChanged();
     }
 
     @Override
@@ -83,5 +109,83 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     @Override
     public IConfigManager getConfigManager() {
         return configManager;
+    }
+
+    protected IPartitionList getFilterList() {
+        if (filterDirty) {
+            cachedFilter = buildFilter();
+            filterDirty = false;
+        }
+        return cachedFilter;
+    }
+
+    protected IPartitionList buildFilter() {
+        var builder = IPartitionList.builder();
+        if (isUpgradedWith(AEItems.FUZZY_CARD)) {
+            builder.fuzzyMode(getConfigManager().getSetting(Settings.FUZZY_MODE));
+        }
+
+        int slotsToUse = getAvailableConfigSlots();
+        for (int i = 0; i < slotsToUse; i++) {
+            builder.add(config.getKey(i));
+        }
+
+        return builder.build();
+    }
+
+    protected int getAvailableConfigSlots() {
+        return Math.min(config.size(), 18 + getUpgrades().getInstalledUpgrades(AEItems.CAPACITY_CARD) * 9);
+    }
+
+    @Override
+    public void onReady() {
+        super.onReady();
+        wakeDevice();
+    }
+
+    @Override
+    public void onMainNodeStateChanged(IGridNodeListener.State reason) {
+        super.onMainNodeStateChanged(reason);
+        wakeDevice();
+    }
+
+    protected boolean canDoBusWork() {
+        var level = getLevel();
+        if (level == null || level.isClientSide()) {
+            return false;
+        }
+
+        if (!getMainNode().isActive()) {
+            return false;
+        }
+
+        if (!isRedstoneEnabled()) {
+            return false;
+        }
+
+        Direction front = getFront();
+        var targetPos = getBlockPos().relative(front);
+        return Platform.areBlockEntitiesTicking(level, targetPos);
+    }
+
+    protected boolean isRedstoneEnabled() {
+        var mode = getConfigManager().getSetting(Settings.REDSTONE_CONTROLLED);
+        if (mode == RedstoneMode.IGNORE) {
+            return true;
+        }
+
+        var level = getLevel();
+        boolean powered = level != null && level.hasNeighborSignal(getBlockPos());
+
+        return switch (mode) {
+            case HIGH_SIGNAL, SIGNAL_PULSE -> powered;
+            case LOW_SIGNAL -> !powered;
+            case IGNORE -> true;
+        };
+    }
+
+    protected int getOperationsPerTick() {
+        // TODO: Integrate upgrade cards and config-based rates.
+        return 4;
     }
 }

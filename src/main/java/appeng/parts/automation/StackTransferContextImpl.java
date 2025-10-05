@@ -16,7 +16,7 @@ import appeng.util.prioritylist.IPartitionList;
 /**
  * Context for stack transfer operations, regardless of whether they occur in or out of the network.
  */
-class StackTransferContextImpl implements StackTransferContext {
+public class StackTransferContextImpl implements StackTransferContext {
     private final IStorageService internalStorage;
     private final IEnergySource energySource;
     private final IActionSource actionSource;

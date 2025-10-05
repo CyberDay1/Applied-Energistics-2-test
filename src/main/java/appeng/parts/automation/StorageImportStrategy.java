@@ -19,6 +19,8 @@ import appeng.core.AELog;
 public class StorageImportStrategy<T, S> implements StackImportStrategy {
     private final BlockCapabilityCache<T, Direction> cache;
     private final HandlerStrategy<T, S> conversion;
+    private final BlockPos busPos;
+    private final BlockPos targetPos;
 
     public StorageImportStrategy(BlockCapability<T, Direction> capability,
             HandlerStrategy<T, S> conversion,
@@ -27,6 +29,8 @@ public class StorageImportStrategy<T, S> implements StackImportStrategy {
             Direction fromSide) {
         this.cache = BlockCapabilityCache.create(capability, level, fromPos, fromSide);
         this.conversion = conversion;
+        this.targetPos = fromPos;
+        this.busPos = fromPos.relative(fromSide);
     }
 
     @Override
@@ -83,6 +87,10 @@ public class StorageImportStrategy<T, S> implements StackImportStrategy {
                 var opsUsed = Math.max(1, inserted / conversion.getKeyType().getAmountPerOperation());
                 context.reduceOperationsRemaining(opsUsed);
                 remainingTransferAmount -= inserted;
+
+                if (inserted > 0) {
+                    AELog.debug("Import bus at {} pulled {}x{} from {}", busPos, inserted, resource.what(), targetPos);
+                }
             }
         }
 
