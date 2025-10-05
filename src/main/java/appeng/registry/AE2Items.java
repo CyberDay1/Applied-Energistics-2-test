@@ -6,6 +6,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.neoforged.neoforge.registries.RegistryObject;
 
+import appeng.items.patterns.BlankPatternItem;
+import appeng.items.patterns.EncodedPatternItem;
 import appeng.items.storage.BasicCell16kItem;
 import appeng.items.storage.BasicCell1kItem;
 import appeng.items.storage.BasicCell4kItem;
@@ -110,6 +112,18 @@ public final class AE2Items {
     public static final RegistryObject<Item> CRAFTING_TERMINAL = AE2Registries.ITEMS.register(
             "crafting_terminal",
             () -> new BlockItem(AE2Blocks.CRAFTING_TERMINAL.get(), new Properties()));
+
+    public static final RegistryObject<Item> PATTERN_TERMINAL = AE2Registries.ITEMS.register(
+            "pattern_terminal",
+            () -> new BlockItem(AE2Blocks.PATTERN_TERMINAL.get(), new Properties()));
+
+    public static final RegistryObject<Item> BLANK_PATTERN = AE2Registries.ITEMS.register(
+            "blank_pattern",
+            () -> new BlankPatternItem(new Properties()));
+
+    public static final RegistryObject<Item> ENCODED_PATTERN = AE2Registries.ITEMS.register(
+            "encoded_pattern",
+            () -> new EncodedPatternItem(new Properties()));
 
     public static final RegistryObject<Item> BASIC_CELL_1K = AE2Registries.ITEMS.register(
             "basic_cell_1k",
