@@ -1,8 +1,12 @@
 package appeng.api.grid;
 
+import java.util.Set;
+
 /**
- * Placeholder grid node interface for future capability-based integration.
+ * Basic grid node abstraction used to connect blocks into a graph.
  */
 public interface IGridNode {
-    // TODO: Add network management functions
+    void connect(IGridNode other);
+
+    Set<IGridNode> neighbors();
 }

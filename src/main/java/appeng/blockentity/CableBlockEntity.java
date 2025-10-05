@@ -2,13 +2,15 @@ package appeng.blockentity;
 
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
+import appeng.grid.SimpleGridNode;
 import appeng.registry.AE2BlockEntities;
+import appeng.util.GridHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class CableBlockEntity extends BlockEntity implements IGridHost {
-    private final IGridNode gridNode = new IGridNode() { };
+    private final IGridNode gridNode = new SimpleGridNode();
 
     public CableBlockEntity(BlockPos pos, BlockState state) {
         super(AE2BlockEntities.CABLE.get(), pos, state);
@@ -17,5 +19,17 @@ public class CableBlockEntity extends BlockEntity implements IGridHost {
     @Override
     public IGridNode getGridNode() {
         return gridNode;
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        GridHelper.discover(this);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        // TODO: Prune connections when nodes are removed
     }
 }
