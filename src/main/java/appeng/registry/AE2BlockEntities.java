@@ -1,6 +1,7 @@
 package appeng.registry;
 
 import appeng.AE2Registries;
+import appeng.blockentity.CableBlockEntity;
 import appeng.blockentity.ChargerBlockEntity;
 import appeng.blockentity.ControllerBlockEntity;
 import appeng.blockentity.EnergyAcceptorBlockEntity;
@@ -28,6 +29,10 @@ public final class AE2BlockEntities {
         AE2Registries.BLOCK_ENTITIES.register("energy_acceptor",
             () -> BlockEntityType.Builder.of(EnergyAcceptorBlockEntity::new,
                 AE2Blocks.ENERGY_ACCEPTOR.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<CableBlockEntity>> CABLE =
+        AE2Registries.BLOCK_ENTITIES.register("cable",
+            () -> BlockEntityType.Builder.of(CableBlockEntity::new, AE2Blocks.CABLE.get()).build(null));
 
     private AE2BlockEntities() {}
 }
