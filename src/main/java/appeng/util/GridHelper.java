@@ -1,9 +1,10 @@
 package appeng.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -11,9 +12,12 @@ import java.util.WeakHashMap;
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
 import appeng.blockentity.ControllerBlockEntity;
+import appeng.blockentity.EnergyAcceptorBlockEntity;
 import appeng.core.AELog;
 import appeng.grid.GridIndex;
 import appeng.grid.GridSet;
+import appeng.grid.NodeType;
+import appeng.grid.SimpleGridNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -80,18 +84,51 @@ public final class GridHelper {
             return;
         }
 
-        boolean hasController = set.nodes().stream()
-                .map(HOSTS::get)
-                .filter(Objects::nonNull)
-                .anyMatch(GridHelper::isController);
+        boolean hasController = false;
+        long tickCost = 0;
+        long energyBudget = 0;
+        List<ControllerBlockEntity> controllers = new ArrayList<>();
+
+        for (IGridNode node : set.nodes()) {
+            BlockEntity host = HOSTS.get(node);
+            if (host == null) {
+                continue;
+            }
+
+            if (host instanceof ControllerBlockEntity controller) {
+                hasController = true;
+                controllers.add(controller);
+                tickCost += 1;
+                energyBudget += controller.available();
+            }
+
+            if (host instanceof EnergyAcceptorBlockEntity acceptor) {
+                energyBudget += acceptor.available();
+            }
+
+            if (node instanceof SimpleGridNode simpleNode) {
+                NodeType nodeType = simpleNode.getNodeType();
+                if (nodeType == NodeType.MACHINE || nodeType == NodeType.TERMINAL) {
+                    tickCost += 1;
+                }
+            }
+        }
 
         set.setHasController(hasController);
-        set.setOnline(hasController);
+        set.setTickCost(tickCost);
+        set.setEnergyBudget(energyBudget);
+        boolean changed = set.recomputeOnline();
 
-        AELog.debug("GridSet {} size={} hasController={}", gridId, set.nodes().size(), hasController);
-    }
+        for (ControllerBlockEntity controller : controllers) {
+            controller.setGridOnline(set.isOnline());
+        }
 
-    private static boolean isController(Object be) {
-        return be instanceof ControllerBlockEntity;
+        if (changed) {
+            AELog.debug("GridSet %s online=%s energyBudget=%s tickCost=%s",
+                    gridId,
+                    set.isOnline(),
+                    energyBudget,
+                    tickCost);
+        }
     }
 }

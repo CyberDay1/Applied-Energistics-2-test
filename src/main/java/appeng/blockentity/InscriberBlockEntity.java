@@ -18,6 +18,7 @@ import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
 import appeng.api.storage.IStorageHost;
 import appeng.api.storage.IStorageService;
+import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
 import appeng.registry.AE2BlockEntities;
 import appeng.recipe.AE2RecipeTypes;
@@ -113,7 +114,7 @@ public class InscriberBlockEntity extends BlockEntity implements IStorageHost, I
         }
     };
     private final InvWrapper itemHandler = new InvWrapper(this.container);
-    private final IGridNode gridNode = new SimpleGridNode();
+    private final SimpleGridNode gridNode = new SimpleGridNode(NodeType.MACHINE);
     private final IStorageService storageService = new StorageService();
 
     public InscriberBlockEntity(BlockPos pos, BlockState state) {

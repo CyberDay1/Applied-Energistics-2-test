@@ -12,6 +12,7 @@ public final class GridSet {
     private volatile boolean hasController;
     private volatile boolean online;
     private volatile long energyBudget;
+    private volatile long tickCost;
 
     public GridSet(GridId id) {
         this.id = id;
@@ -46,7 +47,7 @@ public final class GridSet {
     }
 
     public void setOnline(boolean v) {
-        online = v;
+        this.online = v;
     }
 
     public long energyBudget() {
@@ -55,5 +56,20 @@ public final class GridSet {
 
     public void setEnergyBudget(long b) {
         energyBudget = b;
+    }
+
+    public long tickCost() {
+        return tickCost;
+    }
+
+    public void setTickCost(long tickCost) {
+        this.tickCost = tickCost;
+    }
+
+    public boolean recomputeOnline() {
+        boolean newOnline = hasController && energyBudget >= tickCost;
+        boolean changed = newOnline != this.online;
+        this.online = newOnline;
+        return changed;
     }
 }

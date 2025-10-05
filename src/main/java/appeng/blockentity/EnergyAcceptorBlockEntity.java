@@ -2,6 +2,7 @@ package appeng.blockentity;
 
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
+import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
 import appeng.registry.AE2BlockEntities;
 import appeng.util.GridHelper;
@@ -11,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public class EnergyAcceptorBlockEntity extends BlockEntity implements IGridHost {
-    private final IGridNode gridNode = new SimpleGridNode();
+    private final SimpleGridNode gridNode = new SimpleGridNode(NodeType.ENERGY_PROVIDER);
     private final EnergyBuffer buffer = new EnergyBuffer();
 
     public EnergyAcceptorBlockEntity(BlockPos pos, BlockState state) {
@@ -37,6 +38,10 @@ public class EnergyAcceptorBlockEntity extends BlockEntity implements IGridHost 
 
     public IEnergyStorage getEnergyStorage() {
         return buffer;
+    }
+
+    public long available() {
+        return buffer.getEnergyStored();
     }
 
     private static class EnergyBuffer implements IEnergyStorage {
