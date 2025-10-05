@@ -46,7 +46,12 @@ public class CraftingTerminalMenu extends TerminalMenu {
     private RecipeHolder<CraftingRecipe> currentRecipe;
 
     public CraftingTerminalMenu(int id, Inventory inv, CraftingTerminalBlockEntity terminal) {
-        super(TYPE, id, inv, terminal);
+        this(TYPE, id, inv, terminal);
+    }
+
+    protected CraftingTerminalMenu(MenuType<? extends CraftingTerminalMenu> type, int id, Inventory inv,
+            CraftingTerminalBlockEntity terminal) {
+        super(type, id, inv, terminal);
         this.craftingTerminal = terminal;
         this.craftingMatrix = terminal.getCraftingMatrix();
         this.resultInventory = terminal.getResultInventory();

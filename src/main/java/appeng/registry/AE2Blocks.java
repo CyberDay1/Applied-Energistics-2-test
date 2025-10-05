@@ -16,6 +16,7 @@ import net.neoforged.neoforge.registries.RegistryObject;
 
 import appeng.block.simple.DriveBlock;
 import appeng.block.terminal.CraftingTerminalBlock;
+import appeng.block.terminal.PatternTerminalBlock;
 import appeng.block.terminal.TerminalBlock;
 
 public final class AE2Blocks {
@@ -67,6 +68,9 @@ public final class AE2Blocks {
 
     public static final RegistryObject<Block> CRAFTING_TERMINAL =
         AE2Registries.BLOCKS.register("crafting_terminal", CraftingTerminalBlock::new);
+
+    public static final RegistryObject<Block> PATTERN_TERMINAL =
+        AE2Registries.BLOCKS.register("pattern_terminal", PatternTerminalBlock::new);
 
     private AE2Blocks() {}
 }
