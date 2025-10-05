@@ -40,5 +40,6 @@ public class AE2ItemModelProvider extends ItemModelProvider {
         basicItem(AE2Items.BASIC_CELL_4K.get());
         basicItem(AE2Items.BASIC_CELL_16K.get());
         basicItem(AE2Items.BASIC_CELL_64K.get());
+        basicItem(AE2Items.PARTITIONED_CELL.get());
     }
 }

@@ -12,6 +12,8 @@ import appeng.items.storage.BasicCellItem;
 import appeng.api.storage.ItemStackView;
 import appeng.util.GridHelper;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -61,7 +63,12 @@ final class NetworkItemStorage {
             return 0;
         }
         int remaining = amount;
+        var itemId = BuiltInRegistries.ITEM.getKey(item);
         for (var cell : cells()) {
+            var whitelist = cell.item().getWhitelist(cell.stack());
+            if (!whitelist.isEmpty() && !whitelist.contains(itemId)) {
+                continue;
+            }
             var view = new ItemStackView(item, remaining);
             if (!cell.item().accepts(view)) {
                 continue;
@@ -125,6 +132,23 @@ final class NetworkItemStorage {
         return result;
     }
 
+    synchronized ItemWhitelistSummary getWhitelistSummary() {
+        boolean hasRestrictions = false;
+        Set<ResourceLocation> allowed = new LinkedHashSet<>();
+        for (var cell : cells()) {
+            var whitelist = cell.item().getWhitelist(cell.stack());
+            if (whitelist.isEmpty()) {
+                return new ItemWhitelistSummary(false, Set.of());
+            }
+            hasRestrictions = true;
+            allowed.addAll(whitelist);
+        }
+        if (!hasRestrictions) {
+            return new ItemWhitelistSummary(false, Set.of());
+        }
+        return new ItemWhitelistSummary(true, Set.copyOf(allowed));
+    }
+
     private List<Cell> cells() {
         List<Cell> result = new ArrayList<>();
         for (var drive : drives) {
@@ -156,5 +180,8 @@ final class NetworkItemStorage {
     }
 
     private record Cell(BasicCellItem item, ItemStack stack) {
+    }
+
+    record ItemWhitelistSummary(boolean restricted, Set<ResourceLocation> allowedItems) {
     }
 }

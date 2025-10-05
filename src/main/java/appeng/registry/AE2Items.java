@@ -12,6 +12,7 @@ import appeng.items.storage.BasicCell16kItem;
 import appeng.items.storage.BasicCell1kItem;
 import appeng.items.storage.BasicCell4kItem;
 import appeng.items.storage.BasicCell64kItem;
+import appeng.items.storage.PartitionedCellItem;
 
 public final class AE2Items {
     public static final RegistryObject<Item> CERTUS_QUARTZ_CRYSTAL = AE2Registries.ITEMS.register(
@@ -140,6 +141,10 @@ public final class AE2Items {
     public static final RegistryObject<Item> BASIC_CELL_64K = AE2Registries.ITEMS.register(
             "basic_cell_64k",
             () -> new BasicCell64kItem(new Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> PARTITIONED_CELL = AE2Registries.ITEMS.register(
+            "partitioned_cell",
+            () -> new PartitionedCellItem(new Properties().stacksTo(1)));
 
     private AE2Items() {}
 }

@@ -9,6 +9,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
@@ -51,6 +52,12 @@ public class AE2RecipeProvider extends RecipeProvider {
                 .define('C', AE2Items.BASIC_CELL_16K.get())
                 .unlockedBy("has_basic_cell_16k", has(AE2Items.BASIC_CELL_16K.get()))
                 .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/basic_cell_64k"));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, AE2Items.PARTITIONED_CELL.get())
+                .requires(AE2Items.ENGINEERING_PROCESSOR.get())
+                .requires(AE2Items.BASIC_CELL_1K.get())
+                .unlockedBy("has_basic_cell_1k", has(AE2Items.BASIC_CELL_1K.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/partitioned_cell"));
     }
 
     private static final class SkyStoneBrickRecipe implements FinishedRecipe {

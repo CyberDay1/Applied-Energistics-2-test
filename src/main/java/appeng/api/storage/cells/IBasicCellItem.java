@@ -31,6 +31,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import appeng.api.storage.ItemStackView;
 import appeng.api.stacks.AEKey;
@@ -136,5 +137,12 @@ public interface IBasicCellItem extends ICellWorkbenchItem {
     default Optional<TooltipComponent> getCellTooltipImage(ItemStack is) {
         Preconditions.checkArgument(is.getItem() == this);
         return BasicCellHandler.INSTANCE.getTooltipImage(is);
+    }
+
+    /**
+     * @return The whitelist of items that this cell allows. An empty whitelist means the cell accepts all items.
+     */
+    default List<ResourceLocation> getWhitelist(ItemStack cellItem) {
+        return List.of();
     }
 }
