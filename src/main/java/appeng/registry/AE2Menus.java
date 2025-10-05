@@ -3,6 +3,7 @@ package appeng.registry;
 import appeng.AE2Registries;
 import appeng.menu.ChargerMenu;
 import appeng.menu.InscriberMenu;
+import appeng.menu.me.crafting.CraftingMonitorMenu;
 import appeng.menu.terminal.CraftingTerminalMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -20,6 +21,9 @@ public final class AE2Menus {
 
     public static final RegistryObject<MenuType<PatternTerminalMenu>> PATTERN_TERMINAL_MENU =
         AE2Registries.MENUS.register("pattern_terminal", () -> PatternTerminalMenu.TYPE);
+
+    public static final RegistryObject<MenuType<CraftingMonitorMenu>> CRAFTING_MONITOR_MENU =
+        AE2Registries.MENUS.register("crafting_monitor", () -> CraftingMonitorMenu.TYPE);
 
     private AE2Menus() {}
 }

@@ -18,6 +18,7 @@
 
 package appeng.blockentity.crafting;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
@@ -35,10 +36,12 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import appeng.api.implementations.blockentities.IColorableBlockEntity;
 import appeng.api.stacks.GenericStack;
 import appeng.api.util.AEColor;
+import appeng.crafting.monitor.CraftingMonitorEntry;
 
 public class CraftingMonitorBlockEntity extends CraftingBlockEntity implements IColorableBlockEntity {
 
     private GenericStack display;
+    private List<CraftingMonitorEntry> jobStates = List.of();
     private AEColor paintedColor = AEColor.TRANSPARENT;
 
     public CraftingMonitorBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
@@ -88,6 +91,24 @@ public class CraftingMonitorBlockEntity extends CraftingBlockEntity implements I
     @Nullable
     public GenericStack getJobProgress() {
         return this.display;
+    }
+
+    public List<CraftingMonitorEntry> getCurrentJobs() {
+        if (!isClientSide()) {
+            var cluster = getCluster();
+            if (cluster == null) {
+                updateTrackedJobs(List.of());
+            } else {
+                updateTrackedJobs(cluster.getMonitorJobs());
+            }
+        }
+        return jobStates;
+    }
+
+    public void updateTrackedJobs(List<CraftingMonitorEntry> jobs) {
+        if (!Objects.equals(this.jobStates, jobs)) {
+            this.jobStates = List.copyOf(jobs);
+        }
     }
 
     @Override

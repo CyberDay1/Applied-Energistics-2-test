@@ -138,6 +138,10 @@ public final class AE2Items {
             "pattern_terminal",
             () -> new BlockItem(AE2Blocks.PATTERN_TERMINAL.get(), new Properties()));
 
+    public static final RegistryObject<Item> CRAFTING_MONITOR = AE2Registries.ITEMS.register(
+            "crafting_monitor",
+            () -> new BlockItem(AE2Blocks.CRAFTING_MONITOR.get(), new Properties()));
+
     public static final RegistryObject<Item> BLANK_PATTERN = AE2Registries.ITEMS.register(
             "blank_pattern",
             () -> new BlankPatternItem(new Properties()));

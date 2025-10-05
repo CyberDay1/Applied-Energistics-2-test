@@ -18,13 +18,23 @@
 
 package appeng.block.crafting;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.BlockHitResult;
 
 import appeng.api.orientation.IOrientationStrategy;
 import appeng.api.orientation.OrientationStrategies;
 import appeng.blockentity.crafting.CraftingMonitorBlockEntity;
+import appeng.core.definitions.AEBlocks;
+import appeng.menu.MenuOpener;
+import appeng.menu.locator.MenuLocators;
+import appeng.menu.me.crafting.CraftingMonitorMenu;
+import appeng.util.InteractionUtil;
 
 public class CraftingMonitorBlock extends AbstractCraftingUnitBlock<CraftingMonitorBlockEntity> {
     public CraftingMonitorBlock(ICraftingUnitType type) {
@@ -39,5 +49,26 @@ public class CraftingMonitorBlock extends AbstractCraftingUnitBlock<CraftingMoni
     @Override
     public IOrientationStrategy getOrientationStrategy() {
         return OrientationStrategies.full();
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+            BlockHitResult hitResult) {
+        if (InteractionUtil.isInAlternateUseMode(player)) {
+            var result = this.removeUpgrade(level, player, pos, AEBlocks.CRAFTING_UNIT.block().defaultBlockState());
+            if (result != InteractionResult.FAIL) {
+                return result;
+            }
+        }
+
+        if (level.getBlockEntity(pos) instanceof CraftingMonitorBlockEntity monitor && monitor.isFormed()
+                && monitor.isActive()) {
+            if (!level.isClientSide()) {
+                MenuOpener.open(CraftingMonitorMenu.TYPE, player, MenuLocators.forBlockEntity(monitor));
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+
+        return super.useWithoutItem(state, level, pos, player, hitResult);
     }
 }
