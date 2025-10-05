@@ -114,11 +114,30 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
         return BASE_CAPACITY;
     }
 
+    public int getCoProcessorCount() {
+        return 0;
+    }
+
     public int getTotalCapacity() {
         if (this.multiblock != null) {
             return this.multiblock.getTotalCapacity();
         }
         return BASE_CAPACITY;
+    }
+
+    public int getTotalCoProcessors() {
+        if (this.multiblock != null) {
+            return this.multiblock.getTotalCoProcessors();
+        }
+        return getCoProcessorCount();
+    }
+
+    public int getMaxParallelJobCount() {
+        return 1 + getTotalCoProcessors();
+    }
+
+    public int getAvailableJobSlots() {
+        return Math.max(0, getMaxParallelJobCount() - activeReservations.size());
     }
 
     public int getAvailableCapacity() {
@@ -171,6 +190,10 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
             return true;
         }
 
+        if (getAvailableJobSlots() <= 0) {
+            return false;
+        }
+
         int normalizedCapacity = Math.max(0, requiredCapacity);
         if (normalizedCapacity > getAvailableCapacity()) {
             return false;
@@ -210,6 +233,14 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
             LOG.debug("Crafting CPU at {} has {} units reserved but only {} available; clamping.",
                     getBlockPos(), reservedCapacity, totalCapacity);
             reservedCapacity = Math.min(reservedCapacity, totalCapacity);
+        }
+
+        int maxParallel = getMaxParallelJobCount();
+        int reservations = activeReservations.size();
+        if (reservations > maxParallel) {
+            LOG.debug(
+                    "Crafting CPU at {} has {} job reservations but supports {} parallel jobs; additional reservations will be processed sequentially.",
+                    getBlockPos(), reservations, maxParallel);
         }
     }
 

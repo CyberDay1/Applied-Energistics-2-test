@@ -44,6 +44,7 @@ public final class CraftingCPUMultiblock {
     private final BlockPos minCorner;
     private final BlockPos maxCorner;
     private final int totalCapacity;
+    private final int totalCoProcessors;
 
     private CraftingCPUMultiblock(CraftingCPUBlockEntity controller,
             Set<CraftingCPUBlockEntity> members,
@@ -54,6 +55,7 @@ public final class CraftingCPUMultiblock {
         this.minCorner = minCorner;
         this.maxCorner = maxCorner;
         this.totalCapacity = this.members.stream().mapToInt(CraftingCPUBlockEntity::getBaseCapacity).sum();
+        this.totalCoProcessors = this.members.stream().mapToInt(CraftingCPUBlockEntity::getCoProcessorCount).sum();
     }
 
     public static CraftingCPUMultiblock build(ServerLevel level, CraftingCPUBlockEntity controller) {
@@ -185,6 +187,10 @@ public final class CraftingCPUMultiblock {
 
     public int getTotalCapacity() {
         return totalCapacity;
+    }
+
+    public int getTotalCoProcessors() {
+        return totalCoProcessors;
     }
 
     private record DiscoveryResult(Set<CraftingCPUBlockEntity> members, BlockPos minCorner, BlockPos maxCorner,
