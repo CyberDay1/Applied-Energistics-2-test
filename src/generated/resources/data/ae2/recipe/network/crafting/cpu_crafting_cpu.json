@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "qeq",
+    "clc",
+    "qeq"
+  ],
+  "key": {
+    "q": {
+      "item": "ae2:quartz_block"
+    },
+    "e": {
+      "item": "ae2:engineering_processor"
+    },
+    "c": {
+      "item": "ae2:calculation_processor"
+    },
+    "l": {
+      "item": "ae2:logic_processor"
+    }
+  },
+  "result": {
+    "item": "ae2:crafting_cpu"
+  }
+}

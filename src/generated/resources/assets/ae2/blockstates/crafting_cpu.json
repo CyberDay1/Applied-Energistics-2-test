@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "ae2:block/crafting/cpu"
+    },
+    "facing=east": {
+      "model": "ae2:block/crafting/cpu"
+    },
+    "facing=north": {
+      "model": "ae2:block/crafting/cpu"
+    },
+    "facing=south": {
+      "model": "ae2:block/crafting/cpu"
+    },
+    "facing=up": {
+      "model": "ae2:block/crafting/cpu"
+    },
+    "facing=west": {
+      "model": "ae2:block/crafting/cpu"
+    }
+  }
+}

@@ -581,6 +581,17 @@ public class CraftingRecipes extends AE2RecipeProvider {
                 .unlockedBy("has_calculation_processor", has(AEItems.CALCULATION_PROCESSOR))
                 .save(consumer, AppEng.makeId("network/crafting/cpu_crafting_unit"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEBlocks.CRAFTING_CPU)
+                .pattern("qeq")
+                .pattern("clc")
+                .pattern("qeq")
+                .define('q', AEBlocks.QUARTZ_BLOCK)
+                .define('e', AEItems.ENGINEERING_PROCESSOR)
+                .define('c', AEItems.CALCULATION_PROCESSOR)
+                .define('l', AEItems.LOGIC_PROCESSOR)
+                .unlockedBy("has_engineering_processor", has(AEItems.ENGINEERING_PROCESSOR))
+                .save(consumer, AppEng.makeId("network/crafting/cpu_crafting_cpu"));
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, AEBlocks.CRAFTING_STORAGE_1K)
                 .requires(AEBlocks.CRAFTING_UNIT)
                 .requires(AEItems.CELL_COMPONENT_1K)
