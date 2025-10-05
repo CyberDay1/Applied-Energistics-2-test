@@ -10,6 +10,7 @@ import appeng.blockentity.simple.DriveBlockEntity;
 import appeng.blockentity.terminal.CraftingTerminalBlockEntity;
 import appeng.blockentity.terminal.PatternTerminalBlockEntity;
 import appeng.blockentity.terminal.TerminalBlockEntity;
+import appeng.blockentity.crafting.CraftingMonitorBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.RegistryObject;
 
@@ -56,6 +57,11 @@ public final class AE2BlockEntities {
         AE2Registries.BLOCK_ENTITIES.register("pattern_terminal",
             () -> BlockEntityType.Builder.of(PatternTerminalBlockEntity::new,
                 AE2Blocks.PATTERN_TERMINAL.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<CraftingMonitorBlockEntity>> CRAFTING_MONITOR =
+        AE2Registries.BLOCK_ENTITIES.register("crafting_monitor",
+            () -> BlockEntityType.Builder.of(CraftingMonitorBlockEntity::new,
+                AE2Blocks.CRAFTING_MONITOR.get()).build(null));
 
     private AE2BlockEntities() {}
 }

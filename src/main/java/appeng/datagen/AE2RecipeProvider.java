@@ -81,6 +81,17 @@ public class AE2RecipeProvider extends RecipeProvider {
                 .unlockedBy("has_engineering_processor", has(AE2Items.ENGINEERING_PROCESSOR.get()))
                 .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/speed_card"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, AE2Items.CRAFTING_MONITOR.get())
+                .pattern("QIQ")
+                .pattern("PGP")
+                .pattern("QIQ")
+                .define('Q', Items.QUARTZ)
+                .define('I', Items.IRON_INGOT)
+                .define('P', AE2Items.CALCULATION_PROCESSOR.get())
+                .define('G', Items.GLASS)
+                .unlockedBy("has_calculation_processor", has(AE2Items.CALCULATION_PROCESSOR.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/crafting_monitor"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.FUZZY_CARD.get())
                 .pattern("SWS")
                 .pattern("WPW")

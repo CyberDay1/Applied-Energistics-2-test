@@ -21,6 +21,7 @@ public class AE2ItemModelProvider extends ItemModelProvider {
         withExistingParent(AE2Items.CONTROLLER.getId().getPath(), modLoc("block/controller"));
         withExistingParent(AE2Items.ENERGY_ACCEPTOR.getId().getPath(), modLoc("block/energy_acceptor"));
         withExistingParent(AE2Items.CABLE.getId().getPath(), modLoc("block/cable"));
+        withExistingParent(AE2Items.CRAFTING_MONITOR.getId().getPath(), modLoc("block/crafting_monitor"));
 
         basicItem(AE2Items.SILICON.get());
         basicItem(AE2Items.CERTUS_QUARTZ_CRYSTAL.get());

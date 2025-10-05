@@ -48,6 +48,7 @@ import appeng.api.stacks.GenericStack;
 import appeng.api.util.IConfigManager;
 import appeng.blockentity.crafting.CraftingBlockEntity;
 import appeng.blockentity.crafting.CraftingMonitorBlockEntity;
+import appeng.crafting.monitor.CraftingMonitorEntry;
 import appeng.crafting.execution.CraftingCpuLogic;
 import appeng.me.cluster.IAECluster;
 import appeng.me.cluster.MBCalculator;
@@ -232,6 +233,20 @@ public final class CraftingCPUCluster implements IAECluster, ICraftingCPU {
         } else {
             return null;
         }
+    }
+
+    public List<CraftingMonitorEntry> getMonitorJobs() {
+        var status = getJobStatus();
+        if (status == null) {
+            return List.of();
+        }
+        var done = status.totalItems() > 0 && status.progress() >= status.totalItems();
+        return List.of(new CraftingMonitorEntry(
+                status.crafting(),
+                status.totalItems(),
+                status.progress(),
+                status.elapsedTimeNanos(),
+                done));
     }
 
     @Override

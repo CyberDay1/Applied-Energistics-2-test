@@ -14,6 +14,7 @@ import appeng.core.network.clientbound.ClearPatternAccessTerminalPacket;
 import appeng.core.network.clientbound.CompassResponsePacket;
 import appeng.core.network.clientbound.CraftConfirmPlanPacket;
 import appeng.core.network.clientbound.CraftingJobStatusPacket;
+import appeng.core.network.clientbound.CraftingMonitorUpdatePacket;
 import appeng.core.network.clientbound.CraftingStatusPacket;
 import appeng.core.network.clientbound.ExportedGridContent;
 import appeng.core.network.clientbound.GuiDataSyncPacket;
@@ -57,6 +58,7 @@ public class InitNetwork {
         clientbound(registrar, CompassResponsePacket.TYPE, CompassResponsePacket.STREAM_CODEC);
         clientbound(registrar, CraftConfirmPlanPacket.TYPE, CraftConfirmPlanPacket.STREAM_CODEC);
         clientbound(registrar, CraftingJobStatusPacket.TYPE, CraftingJobStatusPacket.STREAM_CODEC);
+        clientbound(registrar, CraftingMonitorUpdatePacket.TYPE, CraftingMonitorUpdatePacket.STREAM_CODEC);
         clientbound(registrar, CraftingStatusPacket.TYPE, CraftingStatusPacket.STREAM_CODEC);
         clientbound(registrar, GuiDataSyncPacket.TYPE, GuiDataSyncPacket.STREAM_CODEC);
         clientbound(registrar, ItemTransitionEffectPacket.TYPE, ItemTransitionEffectPacket.STREAM_CODEC);

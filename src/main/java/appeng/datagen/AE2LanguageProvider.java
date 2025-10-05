@@ -18,6 +18,7 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("block.appliedenergistics2.sky_stone", "Sky Stone");
         add("block.appliedenergistics2.controller", "Controller");
         add("block.appliedenergistics2.energy_acceptor", "Energy Acceptor");
+        add("block.appliedenergistics2.crafting_monitor", "Crafting Monitor");
         add("block.appliedenergistics2.storage_bus", "ME Storage Bus");
         add("block.appliedenergistics2.import_bus", "ME Import Bus");
         add("block.appliedenergistics2.export_bus", "ME Export Bus");
