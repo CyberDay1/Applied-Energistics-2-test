@@ -12,7 +12,6 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.networking.IGrid;
 import appeng.core.definitions.AEBlocks;
-import appeng.core.settings.TickRates;
 import appeng.api.behaviors.StackImportStrategy;
 import appeng.parts.automation.StackTransferContextImpl;
 import appeng.parts.automation.StackWorldBehaviors;
@@ -35,7 +34,8 @@ public class ImportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(TickRates.ImportBus, false);
+        int cooldown = getTransferCooldown();
+        return new TickingRequest(cooldown, cooldown, false);
     }
 
     @Override

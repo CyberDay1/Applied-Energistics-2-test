@@ -28,6 +28,7 @@ import appeng.util.ConfigInventory;
 import appeng.util.Platform;
 import appeng.util.prioritylist.DefaultPriorityList;
 import appeng.util.prioritylist.IPartitionList;
+import appeng.core.AELog;
 import appeng.core.definitions.AEItems;
 
 public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
@@ -134,7 +135,7 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
 
     protected IPartitionList buildFilter() {
         var builder = IPartitionList.builder();
-        if (isUpgradedWith(AEItems.FUZZY_CARD)) {
+        if (hasFuzzyUpgrade()) {
             builder.fuzzyMode(getConfigManager().getSetting(Settings.FUZZY_MODE));
         }
 
@@ -182,6 +183,10 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     }
 
     protected boolean isRedstoneEnabled() {
+        if (!hasRedstoneUpgrade()) {
+            return true;
+        }
+
         var mode = getConfigManager().getSetting(Settings.REDSTONE_CONTROLLED);
         if (mode == RedstoneMode.IGNORE) {
             return true;
@@ -197,9 +202,32 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
         };
     }
 
+    protected int getTransferCooldown() {
+        var speedUpgrades = Math.min(getSpeedUpgradeCount(), 4);
+        var baseCooldown = 20;
+        var reductionPerCard = 5;
+        var minCooldown = 5;
+
+        var cooldown = baseCooldown - speedUpgrades * reductionPerCard;
+        return Math.max(minCooldown, cooldown);
+    }
+
     protected int getOperationsPerTick() {
-        // TODO: Integrate upgrade cards and config-based rates.
-        return 4;
+        var baseAmount = 8;
+        var perCardIncrease = 8;
+        return baseAmount + getCapacityUpgradeCount() * perCardIncrease;
+    }
+
+    protected void logUpgradeEffects() {
+        AELog.debug(
+                "IO bus at {} upgrades: speed={}, capacity={}, redstone={}, fuzzy={}, cooldown={} ticks, ops/tick={}",
+                getBlockPos(),
+                getSpeedUpgradeCount(),
+                getCapacityUpgradeCount(),
+                hasRedstoneUpgrade(),
+                hasFuzzyUpgrade(),
+                getTransferCooldown(),
+                getOperationsPerTick());
     }
 
     @Override
@@ -226,5 +254,7 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
     private void onUpgradesChanged() {
         setChanged();
         onFiltersChanged();
+        wakeDevice();
+        logUpgradeEffects();
     }
 }
