@@ -37,7 +37,9 @@ import appeng.api.grid.IGridNode;
 import appeng.blockentity.ServerTickingBlockEntity;
 import appeng.blockentity.grid.AENetworkedBlockEntity;
 import appeng.core.definitions.AEBlocks;
+import appeng.core.network.AE2Packets;
 import appeng.crafting.CraftingJob;
+import appeng.crafting.CraftingJobManager;
 import appeng.crafting.cpu.CraftingCPUMultiblock;
 
 /**
@@ -61,6 +63,10 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
 
     private int reservedCapacity;
 
+    @Nullable
+    private UUID runningJobId;
+    private int runningJobProgress;
+
     public CraftingCPUBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         this.getMainNode().setIdlePowerUsage(1.0);
@@ -79,18 +85,24 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
 
     @Override
     public void serverTick() {
-        if (this.level instanceof ServerLevel serverLevel) {
-            if (this.multiblockDirty) {
-                this.multiblockDirty = false;
+        if (!(this.level instanceof ServerLevel serverLevel)) {
+            return;
+        }
 
-                if (this.multiblock != null) {
-                    this.multiblock.detach();
-                }
+        if (this.multiblockDirty) {
+            this.multiblockDirty = false;
 
-                var newCluster = CraftingCPUMultiblock.build(serverLevel, this);
-                newCluster.attach();
-                validateReservations();
+            if (this.multiblock != null) {
+                this.multiblock.detach();
             }
+
+            var newCluster = CraftingCPUMultiblock.build(serverLevel, this);
+            newCluster.attach();
+            validateReservations();
+        }
+
+        if (isController()) {
+            tickCraftingJobs();
         }
     }
 
@@ -203,7 +215,57 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
                     activeReservations.size(), getBlockPos());
             activeReservations.clear();
             reservedCapacity = 0;
+            runningJobId = null;
+            runningJobProgress = 0;
         }
+    }
+
+    private void tickCraftingJobs() {
+        CraftingJobManager manager = CraftingJobManager.getInstance();
+        ServerLevel serverLevel = (ServerLevel) this.level;
+
+        if (runningJobId == null) {
+            CraftingJob job = manager.claimReservedJob(this);
+            if (job != null) {
+                runningJobId = job.getId();
+                runningJobProgress = job.getTicksCompleted();
+                AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
+                setChanged();
+            }
+        }
+
+        if (runningJobId == null) {
+            return;
+        }
+
+        CraftingJob job = manager.getJob(runningJobId);
+        if (job == null) {
+            LOG.debug("Running job {} disappeared from manager; releasing reservation.", runningJobId);
+            releaseReservation(runningJobId);
+            runningJobId = null;
+            runningJobProgress = 0;
+            setChanged();
+            return;
+        }
+
+        int previous = job.getTicksCompleted();
+        job.advanceTicksCompleted(1);
+        runningJobProgress = job.getTicksCompleted();
+        if (job.getTicksCompleted() != previous) {
+            AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
+        }
+
+        if (runningJobProgress >= job.getTicksRequired()) {
+            job.setTicksCompleted(job.getTicksRequired());
+            manager.jobExecutionCompleted(job, this);
+            AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
+            releaseReservation(job.getId());
+            runningJobId = null;
+            runningJobProgress = 0;
+            setChanged();
+            return;
+        }
+        setChanged();
     }
 
     public void handleRemoved() {

@@ -18,6 +18,7 @@ import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
+import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.crafting.CraftingJob;
 import appeng.crafting.CraftingJobManager;
 import appeng.items.patterns.EncodedPatternItem;
@@ -113,6 +114,35 @@ public final class AE2NetworkHandlers {
             }
 
             player.displayClientMessage(message, false);
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleJobUpdateClient(final S2CJobUpdatePayload payload, final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+
+            String translationKey = null;
+            Object[] args = new Object[0];
+            if (payload.state() == CraftingJob.State.RUNNING) {
+                if (payload.ticksCompleted() == 0) {
+                    translationKey = "message.ae2.crafting_job_started";
+                    args = new Object[] { payload.jobId() };
+                } else {
+                    translationKey = "message.ae2.crafting_job_progress";
+                    args = new Object[] { payload.jobId(), payload.ticksCompleted(), payload.ticksRequired() };
+                }
+            } else if (payload.state() == CraftingJob.State.COMPLETE) {
+                translationKey = "message.ae2.crafting_job_complete";
+                args = new Object[] { payload.jobId() };
+            }
+
+            if (translationKey != null) {
+                player.displayClientMessage(Component.translatable(translationKey, args), false);
+            }
         });
         ctx.setPacketHandled(true);
     }

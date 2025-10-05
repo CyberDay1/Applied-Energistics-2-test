@@ -13,6 +13,7 @@ import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
+import appeng.core.network.payload.S2CJobUpdatePayload;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class AE2Network {
@@ -31,6 +32,8 @@ public final class AE2Network {
                 AE2NetworkHandlers::handleHelloClient);
         play.playToClient(PlannedCraftingJobS2CPayload.TYPE, PlannedCraftingJobS2CPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handlePlannedCraftingJobClient);
+        play.playToClient(S2CJobUpdatePayload.TYPE, S2CJobUpdatePayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleJobUpdateClient);
 
         play.playToServer(AE2ActionC2SPayload.TYPE, AE2ActionC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleActionServer);

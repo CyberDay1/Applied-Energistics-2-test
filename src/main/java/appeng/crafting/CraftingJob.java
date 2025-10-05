@@ -23,6 +23,14 @@ import appeng.items.patterns.EncodedPatternItem;
  * job for now. Actual execution is handled in later phases.
  */
 public final class CraftingJob {
+    public static final int DEFAULT_TICKS_REQUIRED = 200;
+
+    public enum State {
+        PLANNED,
+        RESERVED,
+        RUNNING,
+        COMPLETE
+    }
     private static final String INPUTS_TAG = "Inputs";
     private static final String OUTPUTS_TAG = "Outputs";
     private static final String ITEM_TAG = "item";
@@ -35,11 +43,18 @@ public final class CraftingJob {
     private final List<ItemStackView> outputs;
     private final boolean simulated;
 
+    private State state;
+    private int ticksCompleted;
+    private int ticksRequired;
+
     private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated) {
         this.id = id;
         this.inputs = List.copyOf(inputs);
         this.outputs = List.copyOf(outputs);
         this.simulated = simulated;
+        this.state = State.PLANNED;
+        this.ticksCompleted = 0;
+        this.ticksRequired = DEFAULT_TICKS_REQUIRED;
     }
 
     public static CraftingJob fromPattern(ItemStack patternStack) {
@@ -76,6 +91,37 @@ public final class CraftingJob {
 
     public boolean isSimulated() {
         return simulated;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public int getTicksCompleted() {
+        return ticksCompleted;
+    }
+
+    public void setTicksCompleted(int ticksCompleted) {
+        this.ticksCompleted = Math.max(0, ticksCompleted);
+    }
+
+    public void advanceTicksCompleted(int amount) {
+        if (amount <= 0) {
+            return;
+        }
+        setTicksCompleted(this.ticksCompleted + amount);
+    }
+
+    public int getTicksRequired() {
+        return ticksRequired;
+    }
+
+    public void setTicksRequired(int ticksRequired) {
+        this.ticksRequired = Math.max(1, ticksRequired);
     }
 
     /**
