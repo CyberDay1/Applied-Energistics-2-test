@@ -2,8 +2,10 @@ package appeng.crafting;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 
 import appeng.blockentity.crafting.CraftingCPUBlockEntity;
 import appeng.api.storage.ItemStackView;
+import appeng.blockentity.crafting.MolecularAssemblerBlockEntity;
 
 /**
  * Tracks planned crafting jobs server-side.
@@ -26,12 +29,79 @@ public final class CraftingJobManager {
     private final Map<UUID, CraftingJob> jobs = new ConcurrentHashMap<>();
     private final Map<UUID, CraftingJob> completedJobs = new ConcurrentHashMap<>();
     private final Map<UUID, CraftingJobReservation> reservations = new ConcurrentHashMap<>();
+    private final Set<MolecularAssemblerBlockEntity> assemblers = ConcurrentHashMap.newKeySet();
+    private final ConcurrentMap<UUID, MolecularAssemblerBlockEntity> jobAssemblers = new ConcurrentHashMap<>();
 
     private CraftingJobManager() {
     }
 
     public static CraftingJobManager getInstance() {
         return INSTANCE;
+    }
+
+    public void registerAssembler(MolecularAssemblerBlockEntity assembler) {
+        if (assembler != null) {
+            assemblers.add(assembler);
+        }
+    }
+
+    public void unregisterAssembler(MolecularAssemblerBlockEntity assembler) {
+        if (assembler == null) {
+            return;
+        }
+
+        assemblers.remove(assembler);
+
+        for (var entry : jobAssemblers.entrySet()) {
+            if (entry.getValue() == assembler) {
+                UUID jobId = entry.getKey();
+                jobAssemblers.remove(jobId, assembler);
+                assembler.cancelJob(jobId);
+            }
+        }
+    }
+
+    @Nullable
+    public MolecularAssemblerBlockEntity allocateAssembler(CraftingJob job) {
+        if (job == null) {
+            return null;
+        }
+
+        synchronized (this) {
+            var existing = jobAssemblers.get(job.getId());
+            if (existing != null) {
+                return existing;
+            }
+
+            for (var assembler : assemblers) {
+                if (assembler == null || assembler.isRemoved()) {
+                    continue;
+                }
+                if (assembler.beginJob(job)) {
+                    jobAssemblers.put(job.getId(), assembler);
+                    return assembler;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void releaseAssembler(UUID jobId) {
+        if (jobId == null) {
+            return;
+        }
+        var assembler = jobAssemblers.remove(jobId);
+        if (assembler != null) {
+            assembler.cancelJob(jobId);
+        }
+    }
+
+    public boolean isAssemblerAssignedToJob(UUID jobId, MolecularAssemblerBlockEntity assembler) {
+        if (jobId == null || assembler == null) {
+            return false;
+        }
+        return jobAssemblers.get(jobId) == assembler;
     }
 
     public CraftingJob planJob(ItemStack patternStack) {
@@ -91,6 +161,7 @@ public final class CraftingJobManager {
         jobs.remove(job.getId());
         completedJobs.put(job.getId(), job);
         reservations.remove(job.getId());
+        releaseAssembler(job.getId());
         int inserted = job.getInsertedOutputs();
         int dropped = job.getDroppedOutputs();
         if (dropped > 0) {

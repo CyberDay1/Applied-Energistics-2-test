@@ -21,12 +21,13 @@ package appeng.client.gui.implementations;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.ProgressBar;
 import appeng.client.gui.widgets.ProgressBar.Direction;
 import appeng.menu.implementations.MolecularAssemblerMenu;
 
-public class MolecularAssemblerScreen extends UpgradeableScreen<MolecularAssemblerMenu> {
+public class MolecularAssemblerScreen extends AEBaseScreen<MolecularAssemblerMenu> {
 
     private final ProgressBar pb;
 

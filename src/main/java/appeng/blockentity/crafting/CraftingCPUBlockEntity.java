@@ -37,6 +37,7 @@ import net.minecraft.world.item.ItemStack;
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
 import appeng.blockentity.ServerTickingBlockEntity;
+import appeng.blockentity.crafting.MolecularAssemblerBlockEntity;
 import appeng.blockentity.grid.AENetworkedBlockEntity;
 import appeng.core.definitions.AEBlocks;
 import appeng.core.network.AE2Packets;
@@ -70,6 +71,8 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
     @Nullable
     private UUID runningJobId;
     private int runningJobProgress;
+    @Nullable
+    private MolecularAssemblerBlockEntity runningAssembler;
 
     public CraftingCPUBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
@@ -250,8 +253,12 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
                     activeReservations.size(), getBlockPos());
             activeReservations.clear();
             reservedCapacity = 0;
+            if (runningJobId != null) {
+                CraftingJobManager.getInstance().releaseAssembler(runningJobId);
+            }
             runningJobId = null;
             runningJobProgress = 0;
+            runningAssembler = null;
         }
     }
 
@@ -264,6 +271,7 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
             if (job != null) {
                 runningJobId = job.getId();
                 runningJobProgress = job.getTicksCompleted();
+                runningAssembler = null;
                 AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
                 setChanged();
             }
@@ -276,17 +284,30 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
         CraftingJob job = manager.getJob(runningJobId);
         if (job == null) {
             LOG.debug("Running job {} disappeared from manager; releasing reservation.", runningJobId);
+            manager.releaseAssembler(runningJobId);
             releaseReservation(runningJobId);
             runningJobId = null;
             runningJobProgress = 0;
+            runningAssembler = null;
             setChanged();
             return;
         }
 
-        int previous = job.getTicksCompleted();
-        job.advanceTicksCompleted(1);
+        if (runningAssembler != null
+                && !manager.isAssemblerAssignedToJob(runningJobId, runningAssembler)) {
+            runningAssembler = null;
+        }
+
+        if (runningAssembler == null) {
+            runningAssembler = manager.allocateAssembler(job);
+            if (runningAssembler == null) {
+                return;
+            }
+        }
+
+        int previous = runningJobProgress;
         runningJobProgress = job.getTicksCompleted();
-        if (job.getTicksCompleted() != previous) {
+        if (runningJobProgress != previous) {
             AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
         }
 
@@ -297,8 +318,10 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
             manager.jobExecutionCompleted(job, this);
             AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
             releaseReservation(job.getId());
+            manager.releaseAssembler(job.getId());
             runningJobId = null;
             runningJobProgress = 0;
+            runningAssembler = null;
             setChanged();
             return;
         }
@@ -309,6 +332,11 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
         if (this.multiblock != null) {
             this.multiblock.detach();
         }
+        if (runningJobId != null) {
+            CraftingJobManager.getInstance().releaseAssembler(runningJobId);
+            runningJobId = null;
+        }
+        runningAssembler = null;
         clearReservations();
     }
 
