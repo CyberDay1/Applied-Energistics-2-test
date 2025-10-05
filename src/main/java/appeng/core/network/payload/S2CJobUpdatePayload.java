@@ -10,7 +10,8 @@ import net.minecraft.network.codec.StreamCodec;
 import appeng.core.AppEng;
 import appeng.crafting.CraftingJob;
 
-public record S2CJobUpdatePayload(UUID jobId, CraftingJob.State state, int ticksCompleted, int ticksRequired)
+public record S2CJobUpdatePayload(UUID jobId, CraftingJob.State state, int ticksCompleted, int ticksRequired,
+        int insertedOutputs, int droppedOutputs)
         implements CustomPacketPayload {
     public static final Type<S2CJobUpdatePayload> TYPE = new Type<>(AppEng.makeId("s2c_job_update"));
 
@@ -22,7 +23,9 @@ public record S2CJobUpdatePayload(UUID jobId, CraftingJob.State state, int ticks
         CraftingJob.State state = buf.readEnum(CraftingJob.State.class);
         int ticksCompleted = buf.readVarInt();
         int ticksRequired = buf.readVarInt();
-        return new S2CJobUpdatePayload(jobId, state, ticksCompleted, ticksRequired);
+        int insertedOutputs = buf.readVarInt();
+        int droppedOutputs = buf.readVarInt();
+        return new S2CJobUpdatePayload(jobId, state, ticksCompleted, ticksRequired, insertedOutputs, droppedOutputs);
     }
 
     private static void write(FriendlyByteBuf buf, S2CJobUpdatePayload payload) {
@@ -30,6 +33,8 @@ public record S2CJobUpdatePayload(UUID jobId, CraftingJob.State state, int ticks
         buf.writeEnum(payload.state());
         buf.writeVarInt(payload.ticksCompleted());
         buf.writeVarInt(payload.ticksRequired());
+        buf.writeVarInt(payload.insertedOutputs());
+        buf.writeVarInt(payload.droppedOutputs());
     }
 
     @Override
