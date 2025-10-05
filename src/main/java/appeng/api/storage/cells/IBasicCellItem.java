@@ -145,4 +145,18 @@ public interface IBasicCellItem extends ICellWorkbenchItem {
     default List<ResourceLocation> getWhitelist(ItemStack cellItem) {
         return List.of();
     }
+
+    /**
+     * Determines the priority of this storage cell when the storage service chooses a destination for inserted
+     * stacks. Higher values are preferred. Defaults to {@code 0}.
+     */
+    default int getPriority(ItemStack cellItem) {
+        return 0;
+    }
+
+    /**
+     * Updates the priority of this storage cell. The default implementation ignores the new value.
+     */
+    default void setPriority(ItemStack cellItem, int priority) {
+    }
 }

@@ -428,6 +428,7 @@
   "gui.ae2.PartialPlan": "Partial Plan (Missing Ingredients)",
   "gui.ae2.Partitioned": "Partitioned",
   "gui.ae2.PartitionedStorageCell": "Partitioned Storage Cell",
+  "gui.ae2.PartitionedCellPriority": "Priority",
   "gui.ae2.PatternAccessTerminal": "Pattern Access Terminal",
   "gui.ae2.PatternAccessTerminalHint": "Show Or Hide on Pattern Access Terminal.",
   "gui.ae2.PatternAccessTerminalShort": "Pattern A. Terminal",

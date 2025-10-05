@@ -125,6 +125,10 @@ public class BasicCellInventory implements StorageCell {
         this.hasVoidUpgrade = upgrades.isInstalled(AEItems.VOID_CARD);
     }
 
+    public int getPriority() {
+        return cellType.getPriority(i);
+    }
+
     private List<GenericStack> getStoredStacks() {
         return i.getOrDefault(AEComponents.STORAGE_CELL_INV, List.of());
     }

@@ -36,6 +36,7 @@ import appeng.api.stacks.AEKey;
 import appeng.api.stacks.KeyCounter;
 import appeng.api.storage.MEStorage;
 import appeng.core.localization.GuiText;
+import appeng.me.cells.BasicCellInventory;
 
 /**
  * Manages all available {@link MEStorage} on the network.
@@ -102,9 +103,11 @@ public class NetworkStorage implements MEStorage {
             for (var invList : this.priorityInventory.values()) {
                 secondPassInventories.clear();
 
+                var prioritizedInventories = getPrioritizedInventories(invList);
+
                 // First give every inventory a chance to accept the item if it's preferential storage for the given
                 // stack
-                var ii = invList.iterator();
+                var ii = prioritizedInventories.iterator();
                 while (ii.hasNext() && remaining > 0) {
                     var inv = ii.next();
 
@@ -168,6 +171,35 @@ public class NetworkStorage implements MEStorage {
             }
         }
         return false;
+    }
+
+    private List<MEStorage> getPrioritizedInventories(List<MEStorage> inventories) {
+        if (inventories.size() <= 1) {
+            return inventories;
+        }
+
+        boolean hasPriority = false;
+        for (var inventory : inventories) {
+            if (getCellPriority(inventory) != 0) {
+                hasPriority = true;
+                break;
+            }
+        }
+
+        if (!hasPriority) {
+            return inventories;
+        }
+
+        var sorted = new ArrayList<>(inventories);
+        sorted.sort((a, b) -> Integer.compare(getCellPriority(b), getCellPriority(a)));
+        return sorted;
+    }
+
+    private static int getCellPriority(MEStorage storage) {
+        if (storage instanceof BasicCellInventory cellInventory) {
+            return cellInventory.getPriority();
+        }
+        return 0;
     }
 
     public long extract(AEKey what, long amount, Actionable mode, IActionSource source) {
