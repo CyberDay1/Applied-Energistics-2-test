@@ -59,7 +59,7 @@ public class BlockTagsProvider extends IntrinsicHolderTagsProvider<Block> implem
                         Blocks.CHISELED_BOOKSHELF, Blocks.JUKEBOX, Blocks.FURNACE, Blocks.BLAST_FURNACE, Blocks.DROPPER,
                         Blocks.DISPENSER, Blocks.CRAFTER, Blocks.BARREL, Blocks.BEE_NEST, Blocks.BEEHIVE,
                         Blocks.SCULK_CATALYST, Blocks.SOUL_SAND, Blocks.HONEY_BLOCK,
-                        AEBlocks.CONTROLLER.block(), AEBlocks.CRAFTING_STORAGE_1K.block(),
+                        AEBlocks.CONTROLLER.block(), AEBlocks.CRAFTING_CPU.block(), AEBlocks.CRAFTING_STORAGE_1K.block(),
                         AEBlocks.CRAFTING_STORAGE_4K.block(), AEBlocks.CRAFTING_STORAGE_16K.block(),
                         AEBlocks.CRAFTING_STORAGE_64K.block(), AEBlocks.CRAFTING_STORAGE_256K.block(),
                         AEBlocks.CRAFTING_MONITOR.block(), AEBlocks.CRAFTING_UNIT.block(),
