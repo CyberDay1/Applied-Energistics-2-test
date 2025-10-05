@@ -18,6 +18,9 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("block.appliedenergistics2.sky_stone", "Sky Stone");
         add("block.appliedenergistics2.controller", "Controller");
         add("block.appliedenergistics2.energy_acceptor", "Energy Acceptor");
+        add("block.appliedenergistics2.cable", "Cable");
+        add("block.appliedenergistics2.meteorite", "Meteorite");
+        add("block.appliedenergistics2.meteorite_hint", "Meteorite Hint");
 
         add("item.appliedenergistics2.silicon", "Silicon");
         add("item.appliedenergistics2.certus_quartz_crystal", "Certus Quartz Crystal");
@@ -33,5 +36,7 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("item.appliedenergistics2.inscriber_logic_press", "Inscriber Logic Press");
         add("item.appliedenergistics2.inscriber_engineering_press", "Inscriber Engineering Press");
         add("item.appliedenergistics2.inscriber_calculation_press", "Inscriber Calculation Press");
+        add("item.appliedenergistics2.inscriber_press", "Inscriber Press");
+        add("item.appliedenergistics2.cable", "Cable");
     }
 }

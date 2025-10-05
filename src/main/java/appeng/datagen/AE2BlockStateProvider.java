@@ -20,5 +20,6 @@ public class AE2BlockStateProvider extends BlockStateProvider {
         simpleBlock(AE2Blocks.SKY_STONE.get());
         simpleBlock(AE2Blocks.CONTROLLER.get());
         simpleBlock(AE2Blocks.ENERGY_ACCEPTOR.get());
+        simpleBlock(AE2Blocks.CABLE.get());
     }
 }
