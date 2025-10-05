@@ -5,12 +5,15 @@ import com.google.gson.JsonObject;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import appeng.AE2Registries;
+import appeng.registry.AE2Items;
 
 public class AE2RecipeProvider extends RecipeProvider {
     public AE2RecipeProvider(PackOutput output) {
@@ -21,6 +24,33 @@ public class AE2RecipeProvider extends RecipeProvider {
     protected void buildRecipes(RecipeOutput output) {
         var recipeId = new ResourceLocation(AE2Registries.MODID, "crafting/sky_stone_brick_placeholder");
         output.accept(recipeId, new SkyStoneBrickRecipe(recipeId), null);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.BASIC_CELL_4K.get())
+                .pattern("PPP")
+                .pattern("PCP")
+                .pattern("PPP")
+                .define('P', AE2Items.LOGIC_PROCESSOR.get())
+                .define('C', AE2Items.BASIC_CELL_1K.get())
+                .unlockedBy("has_basic_cell_1k", has(AE2Items.BASIC_CELL_1K.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/basic_cell_4k"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.BASIC_CELL_16K.get())
+                .pattern("PPP")
+                .pattern("PCP")
+                .pattern("PPP")
+                .define('P', AE2Items.CALCULATION_PROCESSOR.get())
+                .define('C', AE2Items.BASIC_CELL_4K.get())
+                .unlockedBy("has_basic_cell_4k", has(AE2Items.BASIC_CELL_4K.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/basic_cell_16k"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.BASIC_CELL_64K.get())
+                .pattern("PPP")
+                .pattern("PCP")
+                .pattern("PPP")
+                .define('P', AE2Items.ENGINEERING_PROCESSOR.get())
+                .define('C', AE2Items.BASIC_CELL_16K.get())
+                .unlockedBy("has_basic_cell_16k", has(AE2Items.BASIC_CELL_16K.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/basic_cell_64k"));
     }
 
     private static final class SkyStoneBrickRecipe implements FinishedRecipe {

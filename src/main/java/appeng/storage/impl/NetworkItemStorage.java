@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import appeng.blockentity.simple.DriveBlockEntity;
 import appeng.core.AELog;
-import appeng.items.storage.BasicCell1kItem;
+import appeng.items.storage.BasicCellItem;
 import appeng.api.storage.ItemStackView;
 import appeng.util.GridHelper;
 
@@ -27,21 +27,24 @@ final class NetworkItemStorage {
 
     synchronized void mountDrive(DriveBlockEntity drive) {
         drives.add(drive);
-        recalcTotals();
-        AELog.debug("Mounted drive %s on grid %s capacity=%s", drive.getBlockPos(), gridId, totalCapacity);
+        int totalCells = recalcTotals();
+        AELog.debug("Mounted drive %s on grid %s cells=%s capacity=%s", drive.getBlockPos(), gridId, totalCells,
+                totalCapacity);
     }
 
     synchronized void unmountDrive(DriveBlockEntity drive) {
         if (drives.remove(drive)) {
-            recalcTotals();
-            AELog.debug("Unmounted drive %s on grid %s capacity=%s", drive.getBlockPos(), gridId, totalCapacity);
+            int totalCells = recalcTotals();
+            AELog.debug("Unmounted drive %s on grid %s cells=%s capacity=%s", drive.getBlockPos(), gridId, totalCells,
+                    totalCapacity);
         }
     }
 
     synchronized void refreshDrive(DriveBlockEntity drive) {
         if (drives.contains(drive)) {
-            recalcTotals();
-            AELog.debug("Refreshed drive %s on grid %s capacity=%s", drive.getBlockPos(), gridId, totalCapacity);
+            int totalCells = recalcTotals();
+            AELog.debug("Refreshed drive %s on grid %s cells=%s capacity=%s", drive.getBlockPos(), gridId, totalCells,
+                    totalCapacity);
         }
     }
 
@@ -59,6 +62,10 @@ final class NetworkItemStorage {
         }
         int remaining = amount;
         for (var cell : cells()) {
+            var view = new ItemStackView(item, remaining);
+            if (!cell.item().accepts(view)) {
+                continue;
+            }
             int inserted = cell.item().insert(cell.stack(), item, remaining, simulate);
             remaining -= inserted;
             if (remaining <= 0) {
@@ -124,26 +131,30 @@ final class NetworkItemStorage {
             int slots = drive.getCellSlotCount();
             for (int i = 0; i < slots; i++) {
                 ItemStack stack = drive.getCellInSlot(i);
-                if (stack.isEmpty() || !(stack.getItem() instanceof BasicCell1kItem cellItem)) {
+                if (stack.isEmpty()) {
                     continue;
                 }
-                result.add(new Cell(cellItem, stack));
+                if (stack.getItem() instanceof BasicCellItem cellItem) {
+                    result.add(new Cell(cellItem, stack));
+                }
             }
         }
         return result;
     }
 
-    private void recalcTotals() {
+    private int recalcTotals() {
+        var cells = cells();
         long capacity = 0;
         long used = 0;
-        for (var cell : cells()) {
+        for (var cell : cells) {
             capacity += cell.item().getBytes(cell.stack());
             used += cell.item().getTotalStored(cell.stack());
         }
         this.totalCapacity = capacity;
         this.totalUsed = used;
+        return cells.size();
     }
 
-    private record Cell(BasicCell1kItem item, ItemStack stack) {
+    private record Cell(BasicCellItem item, ItemStack stack) {
     }
 }
