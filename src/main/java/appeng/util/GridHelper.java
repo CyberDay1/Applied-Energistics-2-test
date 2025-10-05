@@ -11,13 +11,16 @@ import java.util.WeakHashMap;
 
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
+import appeng.api.storage.IStorageHost;
 import appeng.blockentity.ControllerBlockEntity;
 import appeng.blockentity.EnergyAcceptorBlockEntity;
+import appeng.blockentity.simple.DriveBlockEntity;
 import appeng.core.AELog;
 import appeng.grid.GridIndex;
 import appeng.grid.GridSet;
 import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
+import appeng.storage.impl.StorageService;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -78,7 +81,10 @@ public final class GridHelper {
         index.getOrCreate(b.getGridId()).add(b);
     }
 
-    private static void updateSetMetadata(UUID gridId) {
+    public static void updateSetMetadata(UUID gridId) {
+        if (gridId == null) {
+            return;
+        }
         GridSet set = GridIndex.get().get(gridId);
         if (set == null) {
             return;
@@ -93,6 +99,17 @@ public final class GridHelper {
             BlockEntity host = HOSTS.get(node);
             if (host == null) {
                 continue;
+            }
+
+            if (host instanceof IStorageHost storageHost) {
+                var service = storageHost.getStorageService();
+                if (service instanceof StorageService impl) {
+                    impl.attachToGrid(node.getGridId());
+                }
+            }
+
+            if (host instanceof DriveBlockEntity drive) {
+                drive.notifyGridChanged();
             }
 
             if (host instanceof ControllerBlockEntity controller) {
@@ -117,7 +134,12 @@ public final class GridHelper {
         set.setHasController(hasController);
         set.setTickCost(tickCost);
         set.setEnergyBudget(energyBudget);
+        var totals = StorageService.getTotals(gridId);
+        set.setItemCellCapacity(totals.totalCapacity());
+        set.setItemCellUsage(totals.used());
         boolean changed = set.recomputeOnline();
+
+        AELog.debug("GridSet %s storage capacity=%s used=%s", gridId, totals.totalCapacity(), totals.used());
 
         for (ControllerBlockEntity controller : controllers) {
             controller.setGridOnline(set.isOnline());

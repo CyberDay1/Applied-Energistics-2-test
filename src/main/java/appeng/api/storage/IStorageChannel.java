@@ -1,7 +1,5 @@
 package appeng.api.storage;
 
-import java.util.Collection;
-
 /**
  * Represents a storage channel capable of storing, extracting and querying a specific type of
  * resource.
@@ -37,10 +35,4 @@ public interface IStorageChannel<T> {
      */
     long getStoredAmount(T resource);
 
-    /**
-     * Gets a collection of all resources currently stored in this channel.
-     *
-     * @return The resources currently available in this channel.
-     */
-    Collection<T> getAll();
 }

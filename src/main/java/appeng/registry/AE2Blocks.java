@@ -10,6 +10,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.RegistryObject;
 
+import appeng.block.simple.DriveBlock;
+
 public final class AE2Blocks {
     public static final RegistryObject<Block> CERTUS_QUARTZ_ORE = AE2Registries.BLOCKS.register(
         "certus_quartz_ore",
@@ -39,6 +41,9 @@ public final class AE2Blocks {
 
     public static final RegistryObject<Block> CABLE =
         AE2Registries.BLOCKS.register("cable", CableBlock::new);
+
+    public static final RegistryObject<Block> DRIVE =
+        AE2Registries.BLOCKS.register("drive", DriveBlock::new);
 
     private AE2Blocks() {}
 }

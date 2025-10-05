@@ -6,6 +6,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.neoforged.neoforge.registries.RegistryObject;
 
+import appeng.items.storage.BasicCell1kItem;
+
 public final class AE2Items {
     public static final RegistryObject<Item> CERTUS_QUARTZ_CRYSTAL = AE2Registries.ITEMS.register(
             "certus_quartz_crystal",
@@ -90,6 +92,14 @@ public final class AE2Items {
     public static final RegistryObject<Item> CABLE = AE2Registries.ITEMS.register(
             "cable",
             () -> new BlockItem(AE2Blocks.CABLE.get(), new Properties()));
+
+    public static final RegistryObject<Item> DRIVE = AE2Registries.ITEMS.register(
+            "drive",
+            () -> new BlockItem(AE2Blocks.DRIVE.get(), new Properties()));
+
+    public static final RegistryObject<Item> BASIC_CELL_1K = AE2Registries.ITEMS.register(
+            "basic_cell_1k",
+            () -> new BasicCell1kItem(new Properties().stacksTo(1)));
 
     private AE2Items() {}
 }

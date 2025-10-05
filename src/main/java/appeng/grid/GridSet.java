@@ -13,6 +13,8 @@ public final class GridSet {
     private volatile boolean online;
     private volatile long energyBudget;
     private volatile long tickCost;
+    private volatile long itemCellCapacity;
+    private volatile long itemCellUsage;
 
     public GridSet(GridId id) {
         this.id = id;
@@ -71,5 +73,21 @@ public final class GridSet {
         boolean changed = newOnline != this.online;
         this.online = newOnline;
         return changed;
+    }
+
+    public long itemCellCapacity() {
+        return itemCellCapacity;
+    }
+
+    public void setItemCellCapacity(long capacity) {
+        this.itemCellCapacity = capacity;
+    }
+
+    public long itemCellUsage() {
+        return itemCellUsage;
+    }
+
+    public void setItemCellUsage(long usage) {
+        this.itemCellUsage = usage;
     }
 }
