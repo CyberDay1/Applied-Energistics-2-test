@@ -1,8 +1,5 @@
 package appeng.parts.automation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -15,11 +12,13 @@ import appeng.api.behaviors.StackTransferContext;
 import appeng.api.config.Actionable;
 import appeng.api.stacks.AEKey;
 import appeng.api.storage.StorageHelper;
+import appeng.core.AELog;
 
 public class StorageExportStrategy<T, S> implements StackExportStrategy {
-    private static final Logger LOG = LoggerFactory.getLogger(StorageExportStrategy.class);
     private final BlockCapabilityCache<T, Direction> cache;
     private final HandlerStrategy<T, S> handlerStrategy;
+    private final BlockPos busPos;
+    private final BlockPos targetPos;
 
     public StorageExportStrategy(BlockCapability<T, Direction> capability,
             HandlerStrategy<T, S> handlerStrategy,
@@ -28,6 +27,8 @@ public class StorageExportStrategy<T, S> implements StackExportStrategy {
             Direction fromSide) {
         this.handlerStrategy = handlerStrategy;
         this.cache = BlockCapabilityCache.create(capability, level, fromPos, fromSide);
+        this.targetPos = fromPos;
+        this.busPos = fromPos.relative(fromSide);
     }
 
     @Override
@@ -51,7 +52,17 @@ public class StorageExportStrategy<T, S> implements StackExportStrategy {
                 context.getActionSource(),
                 Actionable.SIMULATE);
 
+        if (extracted <= 0) {
+            AELog.debug("Export bus at {} found no {} available to push", busPos, what);
+            return 0;
+        }
+
         long wasInserted = handlerStrategy.insert(adjacentStorage, what, extracted, Actionable.SIMULATE);
+
+        if (wasInserted <= 0) {
+            AELog.debug("Export bus at {} could not insert {} into {}", busPos, what, targetPos);
+            return 0;
+        }
 
         if (wasInserted > 0) {
             extracted = StorageHelper.poweredExtraction(
@@ -69,9 +80,13 @@ public class StorageExportStrategy<T, S> implements StackExportStrategy {
                 long leftover = extracted - wasInserted;
                 leftover -= inv.getInventory().insert(what, leftover, Actionable.MODULATE, context.getActionSource());
                 if (leftover > 0) {
-                    LOG.error("Storage export: adjacent block unexpectedly refused insert, voided {}x{}", leftover,
+                    AELog.warn("Storage export: adjacent block unexpectedly refused insert, voided {}x{}", leftover,
                             what);
                 }
+            }
+
+            if (wasInserted > 0) {
+                AELog.debug("Export bus at {} pushed {}x{} into {}", busPos, wasInserted, what, targetPos);
             }
         }
 
