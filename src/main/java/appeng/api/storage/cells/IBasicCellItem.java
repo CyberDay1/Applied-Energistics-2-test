@@ -32,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 
+import appeng.api.storage.ItemStackView;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AEKeyType;
 import appeng.me.cells.BasicCellHandler;
@@ -105,6 +106,14 @@ public interface IBasicCellItem extends ICellWorkbenchItem {
      * @return if the ItemStack should currently be usable as a storage cell.
      */
     default boolean isStorageCell(ItemStack i) {
+        return true;
+    }
+
+    /**
+     * Determines if this cell accepts the given stack. Item storage cells accept all item stacks, while future fluid
+     * cells will reject them.
+     */
+    default boolean accepts(ItemStackView stack) {
         return true;
     }
 

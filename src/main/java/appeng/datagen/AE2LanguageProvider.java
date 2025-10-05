@@ -38,5 +38,9 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("item.appliedenergistics2.inscriber_calculation_press", "Inscriber Calculation Press");
         add("item.appliedenergistics2.inscriber_press", "Inscriber Press");
         add("item.appliedenergistics2.cable", "Cable");
+        add("item.appliedenergistics2.basic_cell_1k", "1k Storage Cell");
+        add("item.appliedenergistics2.basic_cell_4k", "4k Storage Cell");
+        add("item.appliedenergistics2.basic_cell_16k", "16k Storage Cell");
+        add("item.appliedenergistics2.basic_cell_64k", "64k Storage Cell");
     }
 }
