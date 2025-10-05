@@ -7,6 +7,7 @@ import appeng.blockentity.ControllerBlockEntity;
 import appeng.blockentity.EnergyAcceptorBlockEntity;
 import appeng.blockentity.InscriberBlockEntity;
 import appeng.blockentity.simple.DriveBlockEntity;
+import appeng.blockentity.terminal.CraftingTerminalBlockEntity;
 import appeng.blockentity.terminal.TerminalBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -44,6 +45,11 @@ public final class AE2BlockEntities {
     public static final RegistryObject<BlockEntityType<TerminalBlockEntity>> TERMINAL =
         AE2Registries.BLOCK_ENTITIES.register("terminal",
             () -> BlockEntityType.Builder.of(TerminalBlockEntity::new, AE2Blocks.TERMINAL.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<CraftingTerminalBlockEntity>> CRAFTING_TERMINAL =
+        AE2Registries.BLOCK_ENTITIES.register("crafting_terminal",
+            () -> BlockEntityType.Builder.of(CraftingTerminalBlockEntity::new,
+                AE2Blocks.CRAFTING_TERMINAL.get()).build(null));
 
     private AE2BlockEntities() {}
 }

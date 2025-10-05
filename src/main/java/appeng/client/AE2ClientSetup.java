@@ -8,6 +8,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 import appeng.AE2Registries;
 import appeng.client.screen.ChargerScreen;
+import appeng.client.screen.CraftingTerminalScreen;
 import appeng.client.screen.InscriberScreen;
 import appeng.client.screen.TerminalScreen;
 import appeng.registry.AE2Menus;
@@ -22,6 +23,7 @@ public final class AE2ClientSetup {
         event.enqueueWork(() -> {
             MenuScreens.register(AE2Menus.INSCRIBER_MENU.get(), InscriberScreen::new);
             MenuScreens.register(AE2Menus.CHARGER_MENU.get(), ChargerScreen::new);
+            MenuScreens.register(AE2Menus.CRAFTING_TERMINAL_MENU.get(), CraftingTerminalScreen::new);
             MenuScreens.register(TerminalMenu.TYPE, TerminalScreen::new);
         });
     }
