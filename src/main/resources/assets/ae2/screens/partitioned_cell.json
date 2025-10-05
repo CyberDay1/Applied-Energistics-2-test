@@ -24,6 +24,23 @@
         "left": 8,
         "top": 6
       }
+    },
+    "priority_label": {
+      "text": {
+        "translate": "gui.ae2.PartitionedCellPriority"
+      },
+      "position": {
+        "left": 8,
+        "top": 104
+      }
+    }
+  },
+  "widgets": {
+    "priorityInput": {
+      "left": 80,
+      "top": 100,
+      "width": 88,
+      "height": 14
     }
   }
 }

@@ -35,6 +35,7 @@ public class PartitionedCellItem extends BasicCellItem implements IMenuItem {
     private static final int CAPACITY = 1024;
     private static final String CELL_TAG = "CellData";
     private static final String WHITELIST_TAG = "Whitelist";
+    private static final String PRIORITY_TAG = "Priority";
 
     public PartitionedCellItem(Properties properties) {
         super(properties, CAPACITY);
@@ -86,12 +87,64 @@ public class PartitionedCellItem extends BasicCellItem implements IMenuItem {
         }
         var cellTag = tag.getCompound(CELL_TAG);
         cellTag.remove(WHITELIST_TAG);
+        if (cellTag.contains(PRIORITY_TAG, Tag.TAG_INT) && cellTag.getInt(PRIORITY_TAG) == 0) {
+            cellTag.remove(PRIORITY_TAG);
+        }
         if (cellTag.isEmpty()) {
             tag.remove(CELL_TAG);
         }
         if (tag.isEmpty()) {
             cellItem.setTag(null);
         }
+    }
+
+    @Override
+    public int getPriority(ItemStack cellItem) {
+        var tag = cellItem.getTag();
+        if (tag == null || !tag.contains(CELL_TAG, Tag.TAG_COMPOUND)) {
+            return 0;
+        }
+
+        var cellTag = tag.getCompound(CELL_TAG);
+        if (!cellTag.contains(PRIORITY_TAG, Tag.TAG_INT)) {
+            return 0;
+        }
+
+        return cellTag.getInt(PRIORITY_TAG);
+    }
+
+    @Override
+    public void setPriority(ItemStack cellItem, int priority) {
+        var tag = cellItem.getTag();
+        if (priority == 0) {
+            if (tag == null || !tag.contains(CELL_TAG, Tag.TAG_COMPOUND)) {
+                return;
+            }
+            var cellTag = tag.getCompound(CELL_TAG);
+            cellTag.remove(PRIORITY_TAG);
+            if (cellTag.isEmpty()) {
+                tag.remove(CELL_TAG);
+            }
+            if (tag.isEmpty()) {
+                cellItem.setTag(null);
+            }
+            return;
+        }
+
+        if (tag == null) {
+            tag = new CompoundTag();
+            cellItem.setTag(tag);
+        }
+
+        CompoundTag cellTag;
+        if (tag.contains(CELL_TAG, Tag.TAG_COMPOUND)) {
+            cellTag = tag.getCompound(CELL_TAG);
+        } else {
+            cellTag = new CompoundTag();
+            tag.put(CELL_TAG, cellTag);
+        }
+
+        cellTag.putInt(PRIORITY_TAG, priority);
     }
 
     private static ListTag getWhitelistTag(ItemStack cellItem, boolean create) {

@@ -43,6 +43,7 @@ import appeng.core.network.serverbound.SwapSlotsPacket;
 import appeng.core.network.serverbound.SwitchGuisPacket;
 import appeng.core.network.serverbound.TerminalExtractPacket;
 import appeng.core.network.serverbound.UpdateHoldingCtrlPacket;
+import appeng.core.network.serverbound.UpdatePartitionedCellPriorityPacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistPacket;
 
 public class InitNetwork {
@@ -87,6 +88,8 @@ public class InitNetwork {
         serverbound(registrar, SwitchGuisPacket.TYPE, SwitchGuisPacket.STREAM_CODEC);
         serverbound(registrar, TerminalExtractPacket.TYPE, TerminalExtractPacket.STREAM_CODEC);
         serverbound(registrar, UpdateHoldingCtrlPacket.TYPE, UpdateHoldingCtrlPacket.STREAM_CODEC);
+        serverbound(registrar, UpdatePartitionedCellPriorityPacket.TYPE,
+                UpdatePartitionedCellPriorityPacket.STREAM_CODEC);
         serverbound(registrar, UpdatePartitionedCellWhitelistPacket.TYPE,
                 UpdatePartitionedCellWhitelistPacket.STREAM_CODEC);
 

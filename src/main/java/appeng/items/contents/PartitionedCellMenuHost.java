@@ -23,6 +23,7 @@ import appeng.items.storage.PartitionedCellItem;
 import appeng.menu.locator.ItemMenuHostLocator;
 import appeng.util.ConfigInventory;
 import appeng.util.ConfigMenuInventory;
+import appeng.core.network.serverbound.UpdatePartitionedCellPriorityPacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistPacket;
 
 /**
@@ -33,6 +34,7 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
 
     private final ConfigInventory whitelistInventory;
     private boolean syncing;
+    private int priority;
 
     public PartitionedCellMenuHost(PartitionedCellItem item, Player player, ItemMenuHostLocator locator) {
         super(item, player, locator);
@@ -41,6 +43,8 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
                 .supportedType(AEKeyType.items())
                 .changeListener(this::onWhitelistChanged)
                 .build();
+
+        this.priority = item.getPriority(getItemStack());
 
         if (!isClientSide()) {
             applyWhitelist(getItem().getWhitelist(getItemStack()));
@@ -55,7 +59,40 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
         return whitelistInventory.createMenuWrapper();
     }
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        if (this.priority == priority) {
+            return;
+        }
+
+        setPriorityInternal(priority);
+
+        if (isClientSide()) {
+            PacketDistributor.sendToServer(new UpdatePartitionedCellPriorityPacket(priority));
+        }
+    }
+
+    public void acceptPriority(int priority) {
+        setPriorityInternal(priority);
+    }
+
+    private void setPriorityInternal(int priority) {
+        if (this.priority == priority) {
+            return;
+        }
+
+        this.priority = priority;
+
+        if (!isClientSide()) {
+            getItem().setPriority(getItemStack(), priority);
+        }
+    }
+
     public void writeInitialData(RegistryFriendlyByteBuf buffer) {
+        buffer.writeVarInt(priority);
         var whitelist = getWhitelistEntries();
         buffer.writeVarInt(whitelist.size());
         for (var id : whitelist) {
@@ -64,6 +101,7 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
     }
 
     public void readInitialData(RegistryFriendlyByteBuf buffer) {
+        setPriorityInternal(buffer.readVarInt());
         int size = buffer.readVarInt();
         List<ResourceLocation> whitelist = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {

@@ -61,4 +61,22 @@ public class PartitionedCellMenu extends AEBaseMenu {
             broadcastChanges();
         }
     }
+
+    public int getPriority() {
+        return host.getPriority();
+    }
+
+    public void setPriority(int priority) {
+        host.setPriority(priority);
+        if (!isClientSide()) {
+            broadcastChanges();
+        }
+    }
+
+    public void updatePriorityFromClient(int priority) {
+        if (!isClientSide()) {
+            host.acceptPriority(priority);
+            broadcastChanges();
+        }
+    }
 }
