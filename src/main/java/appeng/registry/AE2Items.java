@@ -97,6 +97,10 @@ public final class AE2Items {
             "drive",
             () -> new BlockItem(AE2Blocks.DRIVE.get(), new Properties()));
 
+    public static final RegistryObject<Item> TERMINAL = AE2Registries.ITEMS.register(
+            "terminal",
+            () -> new BlockItem(AE2Blocks.TERMINAL.get(), new Properties()));
+
     public static final RegistryObject<Item> BASIC_CELL_1K = AE2Registries.ITEMS.register(
             "basic_cell_1k",
             () -> new BasicCell1kItem(new Properties().stacksTo(1)));

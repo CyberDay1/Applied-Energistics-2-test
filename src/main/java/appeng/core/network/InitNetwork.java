@@ -24,6 +24,7 @@ import appeng.core.network.clientbound.MatterCannonPacket;
 import appeng.core.network.clientbound.MockExplosionPacket;
 import appeng.core.network.clientbound.NetworkStatusPacket;
 import appeng.core.network.clientbound.PatternAccessTerminalPacket;
+import appeng.core.network.clientbound.TerminalItemUpdatePacket;
 import appeng.core.network.clientbound.SetLinkStatusPacket;
 import appeng.core.network.serverbound.ColorApplicatorSelectColorPacket;
 import appeng.core.network.serverbound.ConfigButtonPacket;
@@ -40,6 +41,7 @@ import appeng.core.network.serverbound.RequestClosestMeteoritePacket;
 import appeng.core.network.serverbound.SelectKeyTypePacket;
 import appeng.core.network.serverbound.SwapSlotsPacket;
 import appeng.core.network.serverbound.SwitchGuisPacket;
+import appeng.core.network.serverbound.TerminalExtractPacket;
 import appeng.core.network.serverbound.UpdateHoldingCtrlPacket;
 
 public class InitNetwork {
@@ -62,6 +64,7 @@ public class InitNetwork {
         clientbound(registrar, MockExplosionPacket.TYPE, MockExplosionPacket.STREAM_CODEC);
         clientbound(registrar, NetworkStatusPacket.TYPE, NetworkStatusPacket.STREAM_CODEC);
         clientbound(registrar, PatternAccessTerminalPacket.TYPE, PatternAccessTerminalPacket.STREAM_CODEC);
+        clientbound(registrar, TerminalItemUpdatePacket.TYPE, TerminalItemUpdatePacket.STREAM_CODEC);
         clientbound(registrar, SetLinkStatusPacket.TYPE, SetLinkStatusPacket.STREAM_CODEC);
         clientbound(registrar, ExportedGridContent.TYPE, ExportedGridContent.STREAM_CODEC);
 
@@ -81,6 +84,7 @@ public class InitNetwork {
         serverbound(registrar, SelectKeyTypePacket.TYPE, SelectKeyTypePacket.STREAM_CODEC);
         serverbound(registrar, SwapSlotsPacket.TYPE, SwapSlotsPacket.STREAM_CODEC);
         serverbound(registrar, SwitchGuisPacket.TYPE, SwitchGuisPacket.STREAM_CODEC);
+        serverbound(registrar, TerminalExtractPacket.TYPE, TerminalExtractPacket.STREAM_CODEC);
         serverbound(registrar, UpdateHoldingCtrlPacket.TYPE, UpdateHoldingCtrlPacket.STREAM_CODEC);
 
         // Bidirectional

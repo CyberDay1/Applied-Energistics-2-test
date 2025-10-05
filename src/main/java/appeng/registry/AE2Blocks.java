@@ -11,6 +11,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.RegistryObject;
 
 import appeng.block.simple.DriveBlock;
+import appeng.block.terminal.TerminalBlock;
 
 public final class AE2Blocks {
     public static final RegistryObject<Block> CERTUS_QUARTZ_ORE = AE2Registries.BLOCKS.register(
@@ -44,6 +45,9 @@ public final class AE2Blocks {
 
     public static final RegistryObject<Block> DRIVE =
         AE2Registries.BLOCKS.register("drive", DriveBlock::new);
+
+    public static final RegistryObject<Block> TERMINAL =
+        AE2Registries.BLOCKS.register("terminal", TerminalBlock::new);
 
     private AE2Blocks() {}
 }
