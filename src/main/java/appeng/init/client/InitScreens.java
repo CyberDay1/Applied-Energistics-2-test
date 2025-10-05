@@ -68,6 +68,7 @@ import appeng.client.gui.me.networktool.NetworkToolScreen;
 import appeng.client.gui.me.patternaccess.PatternAccessTermScreen;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.style.StyleManager;
+import appeng.client.screen.PartitionedCellScreen;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.implementations.CellWorkbenchMenu;
 import appeng.menu.implementations.CondenserMenu;
@@ -104,6 +105,7 @@ import appeng.menu.me.items.PatternEncodingTermMenu;
 import appeng.menu.me.items.WirelessCraftingTermMenu;
 import appeng.menu.me.networktool.NetworkStatusMenu;
 import appeng.menu.me.networktool.NetworkToolMenu;
+import appeng.menu.PartitionedCellMenu;
 
 /**
  * The server sends the client a menu identifier, which the client then maps onto a screen using {@link MenuScreens}.
@@ -152,6 +154,7 @@ public final class InitScreens {
         registrar.register(SpatialIOPortMenu.TYPE, SpatialIOPortScreen::new, "/screens/spatial_io_port.json");
         registrar.register(InscriberMenu.TYPE, InscriberScreen::new, "/screens/inscriber.json");
         registrar.register(CellWorkbenchMenu.TYPE, CellWorkbenchScreen::new, "/screens/cell_workbench.json");
+        registrar.register(PartitionedCellMenu.TYPE, PartitionedCellScreen::new, "/screens/partitioned_cell.json");
         registrar.register(PatternProviderMenu.TYPE, PatternProviderScreen<PatternProviderMenu>::new, "/screens/pattern_provider.json");
         registrar.register(MolecularAssemblerMenu.TYPE, MolecularAssemblerScreen::new, "/screens/molecular_assembler.json");
         registrar.register(CraftAmountMenu.TYPE, CraftAmountScreen::new, "/screens/craft_amount.json");
