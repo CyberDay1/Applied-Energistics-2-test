@@ -6,7 +6,11 @@ import appeng.block.ControllerBlock;
 import appeng.block.EnergyAcceptorBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.RegistryObject;
 
@@ -33,6 +37,17 @@ public final class AE2Blocks {
         () -> new Block(BlockBehaviour.Properties.of()
             .mapColor(MapColor.COLOR_BLACK)
             .strength(50.0f, 1200.0f)));
+
+    public static final RegistryObject<Block> SKY_STONE_CHEST = AE2Registries.BLOCKS.register(
+        "sky_stone_chest",
+        () -> new ChestBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST)
+                .mapColor(MapColor.COLOR_BLACK)
+                .sound(SoundType.STONE)
+                .strength(5.0f)
+                .noOcclusion(),
+            () -> BlockEntityType.CHEST,
+            BlockSetType.STONE));
 
     public static final RegistryObject<Block> CONTROLLER =
         AE2Registries.BLOCKS.register("controller", ControllerBlock::new);

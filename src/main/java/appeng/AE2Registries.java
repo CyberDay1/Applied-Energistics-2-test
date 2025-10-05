@@ -1,6 +1,7 @@
 package appeng;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class AE2Registries {
@@ -22,6 +23,8 @@ public final class AE2Registries {
         DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
     public static final DeferredRegister<net.neoforged.neoforge.loot.GlobalLootModifierSerializer<?>> LOOT_MODIFIERS =
         DeferredRegister.create(Registries.LOOT_MODIFIER_SERIALIZER, MODID);
+    public static final DeferredRegister<Feature<?>> FEATURES =
+        DeferredRegister.create(Registries.FEATURE, MODID);
 
     private AE2Registries() {}
 }
