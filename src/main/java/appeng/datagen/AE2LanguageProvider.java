@@ -133,6 +133,7 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("tooltip.ae2.cell.types", "Types: %s / %s");
         add("tooltip.ae2.cell.priority", "Priority: %s");
         add("gui.appliedenergistics2.terminal.search", "Search Items");
+        add("gui.appliedenergistics2.terminal.search_hint", "Type to filter stored items");
         add("gui.ae2.ClearWhitelist", "Clear Whitelist");
     }
 }

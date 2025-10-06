@@ -335,6 +335,7 @@
   "gui.appliedenergistics2.pattern_encoding.mode_toggle_hint": "Click to switch pattern type.",
   "gui.appliedenergistics2.crafting_job.dependencies": "Dependencies",
   "gui.appliedenergistics2.terminal.search": "Search Items",
+  "gui.appliedenergistics2.terminal.search_hint": "Type to filter stored items",
   "gui.appliedenergistics2.redstone.button": "RS",
   "gui.appliedenergistics2.redstone.mode.always_active": "Always active",
   "gui.appliedenergistics2.redstone.mode.active_with_signal": "Active with redstone signal",

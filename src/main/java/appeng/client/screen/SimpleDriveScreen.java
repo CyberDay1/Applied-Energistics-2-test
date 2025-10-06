@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Inventory;
 
 import appeng.api.config.RedstoneMode;
 import appeng.client.gui.OfflineOverlayRenderer;
-import appeng.grid.SimpleGridNode.OfflineReason;
 import appeng.menu.simple.SimpleDriveMenu;
 
 public class SimpleDriveScreen extends AbstractContainerScreen<SimpleDriveMenu> {
@@ -124,15 +123,6 @@ public class SimpleDriveScreen extends AbstractContainerScreen<SimpleDriveMenu> 
         int y = this.topPos + 20;
         int width = 18 * 2;
         int height = 18 * 2;
-        OfflineOverlayRenderer.renderWithMessage(graphics, this.font, getOfflineMessage(), x, y, width, height);
-    }
-
-    private Component getOfflineMessage() {
-        OfflineReason reason = this.menu.getOfflineReason();
-        return switch (reason) {
-            case REDSTONE -> Component.translatable("gui.appliedenergistics2.offline.redstone");
-            case CHANNELS -> Component.translatable("gui.appliedenergistics2.offline.channels");
-            default -> Component.translatable("gui.appliedenergistics2.offline.power");
-        };
+        OfflineOverlayRenderer.renderForReason(graphics, this.font, this.menu.getOfflineReason(), x, y, width, height);
     }
 }
