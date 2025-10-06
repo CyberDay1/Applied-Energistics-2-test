@@ -167,19 +167,27 @@ public final class AE2NetworkHandlers {
             Object[] args = new Object[0];
             if (payload.state() == CraftingJob.State.RUNNING) {
                 if (payload.ticksCompleted() == 0) {
-                    translationKey = "message.ae2.crafting_job_started";
+                    translationKey = payload.processing() ? "message.ae2.processing_job_started"
+                            : "message.ae2.crafting_job_started";
                     args = new Object[] { payload.jobId() };
                 } else {
-                    translationKey = "message.ae2.crafting_job_progress";
+                    translationKey = payload.processing() ? "message.ae2.processing_job_progress"
+                            : "message.ae2.crafting_job_progress";
                     args = new Object[] { payload.jobId(), payload.ticksCompleted(), payload.ticksRequired() };
                 }
             } else if (payload.state() == CraftingJob.State.COMPLETE) {
-                translationKey = "message.ae2.crafting_job_complete";
+                translationKey = payload.processing() ? "message.ae2.processing_job_complete"
+                        : "message.ae2.crafting_job_complete";
                 args = new Object[] { payload.jobId(), payload.insertedOutputs(), payload.droppedOutputs() };
             }
 
             if (translationKey != null) {
-                player.displayClientMessage(Component.translatable(translationKey, args), false);
+                var message = Component.translatable(translationKey, args);
+                if (payload.processing()) {
+                    message = Component.translatable("tooltip.appliedenergistics2.processing_pattern_job")
+                            .append(" ").append(message);
+                }
+                player.displayClientMessage(message, false);
             }
         });
         ctx.setPacketHandled(true);

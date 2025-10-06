@@ -107,7 +107,7 @@ public final class CraftingJobManager {
     public CraftingJob planJob(ItemStack patternStack) {
         CraftingJob job = CraftingJob.fromPattern(patternStack.copy());
         jobs.put(job.getId(), job);
-        LOG.debug("Planned crafting job {} (state={})", job.describeOutputs(), job.getState());
+        LOG.debug("Planned {} job {} (state={})", describeJobType(job), job.describeOutputs(), job.getState());
         return job;
     }
 
@@ -127,8 +127,9 @@ public final class CraftingJobManager {
         int availableSlots = controller.getAvailableJobSlots();
 
         if (availableSlots <= 0) {
-            LOG.info("Failed to reserve crafting job {} on CPU at {} (parallel jobs in use: {}/{})", job.describeOutputs(),
-                    controller.getBlockPos(), controller.getActiveReservations().size(),
+            LOG.info("Failed to reserve {} job {} on CPU at {} (parallel jobs in use: {}/{})",
+                    describeJobType(job), job.describeOutputs(), controller.getBlockPos(),
+                    controller.getActiveReservations().size(),
                     controller.getMaxParallelJobCount());
             return false;
         }
@@ -138,12 +139,13 @@ public final class CraftingJobManager {
             job.setState(CraftingJob.State.RESERVED);
             job.setTicksCompleted(0);
             reservations.put(job.getId(), new CraftingJobReservation(controller.getBlockPos(), requiredCapacity));
-            LOG.info("Reserved crafting job {} ({} units) on CPU at {}", job.describeOutputs(), requiredCapacity,
+            LOG.info("Reserved {} job {} ({} units) on CPU at {}", describeJobType(job), job.describeOutputs(),
+                    requiredCapacity,
                     controller.getBlockPos());
             LOG.debug("Job {} transitioned to {}", job.getId(), job.getState());
         } else {
-            LOG.info("Failed to reserve crafting job {} ({} units) on CPU at {} (available: {})",
-                    job.describeOutputs(), requiredCapacity, controller.getBlockPos(),
+            LOG.info("Failed to reserve {} job {} ({} units) on CPU at {} (available: {})",
+                    describeJobType(job), job.describeOutputs(), requiredCapacity, controller.getBlockPos(),
                     controller.getAvailableCapacity());
         }
 
@@ -153,7 +155,8 @@ public final class CraftingJobManager {
     public void jobExecutionStarted(CraftingJob job, CraftingCPUBlockEntity cpu) {
         jobs.putIfAbsent(job.getId(), job);
         job.setState(CraftingJob.State.RUNNING);
-        LOG.debug("Job {} started on CPU at {}", job.getId(), cpu.getBlockPos());
+        LOG.debug("{} job {} started on CPU at {}", capitalize(describeJobType(job)), job.getId(),
+                cpu.getBlockPos());
     }
 
     public void jobExecutionCompleted(CraftingJob job, CraftingCPUBlockEntity cpu) {
@@ -165,10 +168,11 @@ public final class CraftingJobManager {
         int inserted = job.getInsertedOutputs();
         int dropped = job.getDroppedOutputs();
         if (dropped > 0) {
-            LOG.warn("Job {} completed on CPU at {} with {} items dropped ({} inserted).", job.getId(),
-                    cpu.getBlockPos(), dropped, inserted);
+            LOG.warn("{} job {} completed on CPU at {} with {} items dropped ({} inserted).",
+                    capitalize(describeJobType(job)), job.getId(), cpu.getBlockPos(), dropped, inserted);
         } else {
-            LOG.info("Job {} completed on CPU at {} ({} items inserted).", job.getId(), cpu.getBlockPos(), inserted);
+            LOG.info("{} job {} completed on CPU at {} ({} items inserted).",
+                    capitalize(describeJobType(job)), job.getId(), cpu.getBlockPos(), inserted);
         }
         LOG.debug("Job {} transitioned to {}", job.getId(), job.getState());
     }
@@ -205,6 +209,17 @@ public final class CraftingJobManager {
         int inputs = job.getInputs().stream().mapToInt(ItemStackView::count).sum();
         int outputs = job.getOutputs().stream().mapToInt(ItemStackView::count).sum();
         return Math.max(1, inputs + outputs);
+    }
+
+    private static String describeJobType(CraftingJob job) {
+        return job.isProcessing() ? "processing" : "crafting";
+    }
+
+    private static String capitalize(String text) {
+        if (text.isEmpty()) {
+            return text;
+        }
+        return Character.toUpperCase(text.charAt(0)) + text.substring(1);
     }
 
     public record CraftingJobReservation(BlockPos cpuPos, int capacity) {

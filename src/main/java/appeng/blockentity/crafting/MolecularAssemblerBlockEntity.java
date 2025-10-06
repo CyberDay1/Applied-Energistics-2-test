@@ -55,6 +55,10 @@ import appeng.core.definitions.AEBlocks;
 import appeng.crafting.CraftingJob;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.crafting.CraftingJobManager;
+import appeng.api.storage.ItemStackView;
+import appeng.storage.impl.StorageService;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
 
 /**
  * Simplified molecular assembler implementation used by the NeoForge port. It exposes a single pattern slot and keeps
@@ -80,6 +84,9 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
     private int jobTicksRequired;
     private boolean powered;
     private boolean registeredWithManager;
+    private boolean processingJob;
+    private boolean processingInputsExtracted;
+    private boolean processingOutputsDelivered;
 
     @OnlyIn(Dist.CLIENT)
     @Nullable
@@ -160,6 +167,9 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
         this.activeJobId = job.getId();
         this.jobTicksRequired = Math.max(1, job.getTicksRequired());
         this.jobProgress = Math.min(jobTicksRequired, Math.max(0, job.getTicksCompleted()));
+        this.processingJob = job.isProcessing();
+        this.processingInputsExtracted = !processingJob;
+        this.processingOutputsDelivered = !processingJob;
         job.setTicksRequired(this.jobTicksRequired);
         job.setTicksCompleted(this.jobProgress);
         setPowered(true);
@@ -174,6 +184,9 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
         this.activeJobId = null;
         this.jobProgress = 0;
         this.jobTicksRequired = 0;
+        this.processingJob = false;
+        this.processingInputsExtracted = false;
+        this.processingOutputsDelivered = false;
         setPowered(false);
         setChanged();
     }
@@ -183,6 +196,12 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
      */
     public void cancelJob(@Nullable UUID jobId) {
         if (jobId != null && Objects.equals(jobId, this.activeJobId)) {
+            if (processingJob && processingInputsExtracted && !processingOutputsDelivered) {
+                var job = CraftingJobManager.getInstance().getJob(jobId);
+                if (job != null) {
+                    refundProcessingInputs(job);
+                }
+            }
             clearJob();
         }
     }
@@ -360,11 +379,40 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
 
         setPowered(true);
         this.jobTicksRequired = Math.max(1, job.getTicksRequired());
-        this.jobProgress = Math.max(this.jobProgress, job.getTicksCompleted());
+        this.processingJob = job.isProcessing();
+
+        if (!processingJob) {
+            this.jobProgress = Math.max(this.jobProgress, job.getTicksCompleted());
+
+            if (this.jobProgress < this.jobTicksRequired) {
+                this.jobProgress++;
+                job.setTicksCompleted(this.jobProgress);
+                setChanged();
+            } else if (job.getTicksCompleted() < this.jobTicksRequired) {
+                job.setTicksCompleted(this.jobTicksRequired);
+            }
+            return;
+        }
+
+        if (!processingInputsExtracted) {
+            if (!tryExtractProcessingInputs(job)) {
+                return;
+            }
+            processingInputsExtracted = true;
+            this.jobProgress = 0;
+            job.setTicksCompleted(0);
+            setChanged();
+        }
 
         if (this.jobProgress < this.jobTicksRequired) {
             this.jobProgress++;
             job.setTicksCompleted(this.jobProgress);
+            setChanged();
+            return;
+        }
+
+        if (!processingOutputsDelivered) {
+            deliverProcessingOutputs(job);
             setChanged();
         } else if (job.getTicksCompleted() < this.jobTicksRequired) {
             job.setTicksCompleted(this.jobTicksRequired);
@@ -374,5 +422,129 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
     @Override
     public boolean isActive() {
         return isPowered();
+    }
+
+    private boolean tryExtractProcessingInputs(CraftingJob job) {
+        Level level = getLevel();
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        var node = getMainNode().getNode();
+        UUID gridId = node != null ? node.getGridId() : null;
+        if (gridId == null) {
+            return false;
+        }
+
+        var inputs = job.getInputs();
+        if (inputs.isEmpty()) {
+            return true;
+        }
+
+        for (ItemStackView view : inputs) {
+            int available = StorageService.extractFromNetwork(gridId, view.item(), view.count(), true);
+            if (available < view.count()) {
+                return false;
+            }
+        }
+
+        for (int i = 0; i < inputs.size(); i++) {
+            var view = inputs.get(i);
+            int removed = StorageService.extractFromNetwork(gridId, view.item(), view.count(), false);
+            if (removed < view.count()) {
+                if (removed > 0) {
+                    int reinjected = StorageService.insertIntoNetwork(gridId, view.item(), removed, false);
+                    int leftover = removed - reinjected;
+                    if (leftover > 0) {
+                        dropItems(serverLevel, view, leftover);
+                    }
+                }
+                for (int j = 0; j < i; j++) {
+                    var previous = inputs.get(j);
+                    int reinjected = StorageService.insertIntoNetwork(gridId, previous.item(), previous.count(),
+                            false);
+                    int leftover = previous.count() - reinjected;
+                    if (leftover > 0) {
+                        dropItems(serverLevel, previous, leftover);
+                    }
+                }
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void deliverProcessingOutputs(CraftingJob job) {
+        Level level = getLevel();
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        var node = getMainNode().getNode();
+        UUID gridId = node != null ? node.getGridId() : null;
+
+        int inserted = 0;
+        int dropped = 0;
+
+        for (ItemStackView view : job.getOutputs()) {
+            int remaining = view.count();
+            if (gridId != null) {
+                int accepted = StorageService.insertIntoNetwork(gridId, view.item(), remaining, false);
+                if (accepted > 0) {
+                    inserted += accepted;
+                    remaining -= accepted;
+                }
+            }
+
+            if (remaining > 0) {
+                dropped += dropItems(serverLevel, view, remaining);
+            }
+        }
+
+        this.processingOutputsDelivered = true;
+        job.recordOutputDelivery(inserted, dropped);
+        if (job.getTicksCompleted() < this.jobTicksRequired) {
+            job.setTicksCompleted(this.jobTicksRequired);
+        }
+    }
+
+    private void refundProcessingInputs(CraftingJob job) {
+        Level level = getLevel();
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        var node = getMainNode().getNode();
+        UUID gridId = node != null ? node.getGridId() : null;
+
+        for (ItemStackView view : job.getInputs()) {
+            int remaining = view.count();
+            if (gridId != null) {
+                int accepted = StorageService.insertIntoNetwork(gridId, view.item(), remaining, false);
+                remaining -= accepted;
+            }
+
+            if (remaining > 0) {
+                dropItems(serverLevel, view, remaining);
+            }
+        }
+    }
+
+    private int dropItems(ServerLevel level, ItemStackView view, int amount) {
+        int dropped = 0;
+        int maxStackSize = Math.max(1, new ItemStack(view.item()).getMaxStackSize());
+        int remaining = amount;
+
+        while (remaining > 0) {
+            int toDrop = Math.min(remaining, maxStackSize);
+            ItemStack stack = new ItemStack(view.item(), toDrop);
+            Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
+                    worldPosition.getZ() + 0.5, stack);
+            dropped += toDrop;
+            remaining -= toDrop;
+        }
+
+        return dropped;
     }
 }
