@@ -28,6 +28,7 @@ import appeng.api.config.FuzzyMode;
 import appeng.api.config.Settings;
 import appeng.api.config.StorageFilter;
 import appeng.api.config.YesNo;
+import appeng.client.gui.OfflineOverlayRenderer;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.ActionButton;
@@ -76,6 +77,9 @@ public class StorageBusScreen extends UpgradeableScreen<StorageBusMenu> {
     @Override
     public void drawFG(GuiGraphics guiGraphics, int offsetX, int offsetY, int mouseX, int mouseY) {
         super.drawFG(guiGraphics, offsetX, offsetY, mouseX, mouseY);
+
+        OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
+                offsetX + 8, offsetY + 29, 18 * 9, 18 * 7);
 
         var poseStack = guiGraphics.pose();
         poseStack.pushPose();
