@@ -26,16 +26,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Setting;
 import appeng.api.config.Settings;
+import appeng.api.integration.machines.IProcessingMachine;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionSource;
@@ -55,6 +58,7 @@ import appeng.core.settings.TickRates;
 import appeng.helpers.IConfigInvHost;
 import appeng.items.parts.PartModels;
 import appeng.me.helpers.MachineSource;
+import appeng.integration.processing.ProcessingMachineRegistry;
 import appeng.menu.ISubMenu;
 import appeng.menu.MenuOpener;
 import appeng.menu.locator.MenuLocators;
@@ -88,6 +92,9 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
      * act on this during its next tick.
      */
     private boolean pendingPulse = false;
+
+    @Nullable
+    private IProcessingMachine externalMachine;
 
     public IOBusPart(TickRates tickRates, Set<AEKeyType> supportedKeyTypes, IPartItem<?> partItem) {
         super(partItem);
@@ -185,6 +192,8 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
             // This handles waking up the bus if the adjacent redstone has changed
             updateRedstoneState();
         }
+
+        updateExternalMachineRegistration();
     }
 
     protected int availableSlots() {
@@ -303,6 +312,46 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
 
     protected abstract boolean doBusWork(IGrid grid);
 
+    private void updateExternalMachineRegistration() {
+        if (isClientSide()) {
+            return;
+        }
+
+        var host = getHost().getBlockEntity();
+        if (host == null) {
+            unregisterExternalMachine();
+            return;
+        }
+
+        var level = host.getLevel();
+        if (!(level instanceof ServerLevel serverLevel)) {
+            unregisterExternalMachine();
+            return;
+        }
+
+        var targetPos = host.getBlockPos().relative(getSide());
+        BlockEntity neighbor = serverLevel.getBlockEntity(targetPos);
+        IProcessingMachine machine = neighbor instanceof IProcessingMachine processingMachine ? processingMachine : null;
+
+        if (externalMachine == machine) {
+            return;
+        }
+
+        unregisterExternalMachine();
+
+        if (machine != null) {
+            externalMachine = machine;
+            ProcessingMachineRegistry.getInstance().register(machine);
+        }
+    }
+
+    private void unregisterExternalMachine() {
+        if (externalMachine != null) {
+            ProcessingMachineRegistry.getInstance().unregister(externalMachine);
+            externalMachine = null;
+        }
+    }
+
     @Override
     public void addToWorld() {
         super.addToWorld();
@@ -315,6 +364,14 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
         if (pendingPulse) {
             getMainNode().ifPresent((grid, node) -> grid.getTickManager().alertDevice(node));
         }
+
+        updateExternalMachineRegistration();
+    }
+
+    @Override
+    public void removeFromWorld() {
+        unregisterExternalMachine();
+        super.removeFromWorld();
     }
 
     @Override

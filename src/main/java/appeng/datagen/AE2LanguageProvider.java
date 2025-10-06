@@ -58,6 +58,11 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("message.appliedenergistics2.pattern_encoding.no_ingredients", "Place a recipe in the crafting grid.");
         add("message.appliedenergistics2.pattern_encoding.invalid_recipe", "No valid crafting recipe found.");
         add("message.appliedenergistics2.pattern_encoding.no_processing_outputs", "Specify at least one output item.");
+        add("integration.appliedenergistics2.processing_stub", "External Machine Integration (stub)");
+        add("message.appliedenergistics2.processing_job.external_attempt",
+                "Attempting to route processing job %s to external machinery.");
+        add("message.appliedenergistics2.processing_job.external_fallback",
+                "External routing unavailable for processing job %s. Using assembler.");
         add("gui.appliedenergistics2.pattern_encoding.mode.crafting", "Crafting Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode.processing", "Processing Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode_toggle_hint", "Click to switch pattern type.");

@@ -237,6 +237,7 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
         CraftingJobManager.getInstance().releaseAssembler(activeJobId);
+        CraftingJobManager.getInstance().releaseMachine(activeJobId);
         unregisterFromManager();
     }
 
@@ -244,6 +245,7 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
     public void setRemoved() {
         super.setRemoved();
         CraftingJobManager.getInstance().releaseAssembler(activeJobId);
+        CraftingJobManager.getInstance().releaseMachine(activeJobId);
         unregisterFromManager();
     }
 
@@ -299,6 +301,7 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
         saveChanges();
         if (inv == this.patternInventory && this.patternInventory.getStackInSlot(0).isEmpty()) {
             CraftingJobManager.getInstance().releaseAssembler(activeJobId);
+            CraftingJobManager.getInstance().releaseMachine(activeJobId);
             clearJob();
         }
     }
@@ -374,6 +377,7 @@ public class MolecularAssemblerBlockEntity extends AENetworkedInvBlockEntity
         var job = manager.getJob(activeJobId);
         if (job == null) {
             manager.releaseAssembler(activeJobId);
+            manager.releaseMachine(activeJobId);
             return;
         }
 
