@@ -34,7 +34,14 @@ public class AE2BlockTagsProvider extends BlockTagsProvider {
                 .add(AE2Blocks.SKY_STONE.get())
                 .add(AE2Blocks.CONTROLLER.get())
                 .add(AE2Blocks.ENERGY_ACCEPTOR.get())
-                .add(AE2Blocks.CABLE.get());
+                .add(AE2Blocks.CABLE.get())
+                .add(AE2Blocks.SKY_STONE_CHEST.get())
+                .add(AE2Blocks.DRIVE.get())
+                .add(AE2Blocks.TERMINAL.get())
+                .add(AE2Blocks.CRAFTING_TERMINAL.get())
+                .add(AE2Blocks.PATTERN_TERMINAL.get())
+                .add(AE2Blocks.PATTERN_ENCODING_TERMINAL.get())
+                .add(AE2Blocks.CRAFTING_MONITOR.get());
 
         tag(METEORITE_REPLACEABLE)
                 .addTag(BlockTags.STONE_ORE_REPLACEABLES)

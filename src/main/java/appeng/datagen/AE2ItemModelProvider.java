@@ -22,6 +22,12 @@ public class AE2ItemModelProvider extends ItemModelProvider {
         withExistingParent(AE2Items.ENERGY_ACCEPTOR.getId().getPath(), modLoc("block/energy_acceptor"));
         withExistingParent(AE2Items.CABLE.getId().getPath(), modLoc("block/cable"));
         withExistingParent(AE2Items.CRAFTING_MONITOR.getId().getPath(), modLoc("block/crafting_monitor"));
+        withExistingParent(AE2Items.DRIVE.getId().getPath(), modLoc("block/drive"));
+        withExistingParent(AE2Items.TERMINAL.getId().getPath(), modLoc("block/terminal"));
+        withExistingParent(AE2Items.CRAFTING_TERMINAL.getId().getPath(), modLoc("block/crafting_terminal"));
+        withExistingParent(AE2Items.PATTERN_TERMINAL.getId().getPath(), modLoc("block/pattern_terminal"));
+        withExistingParent(AE2Items.PATTERN_ENCODING_TERMINAL_BLOCK.getId().getPath(),
+                modLoc("block/pattern_encoding_terminal"));
 
         basicItem(AE2Items.SILICON.get());
         basicItem(AE2Items.CERTUS_QUARTZ_CRYSTAL.get());
@@ -46,5 +52,7 @@ public class AE2ItemModelProvider extends ItemModelProvider {
         basicItem(AE2Items.BASIC_CELL_16K.get());
         basicItem(AE2Items.BASIC_CELL_64K.get());
         basicItem(AE2Items.PARTITIONED_CELL.get());
+        basicItem(AE2Items.BLANK_PATTERN.get());
+        basicItem(AE2Items.ENCODED_PATTERN.get());
     }
 }

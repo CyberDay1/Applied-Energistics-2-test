@@ -16,6 +16,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import appeng.api.storage.ItemStackView;
+import appeng.client.gui.OfflineOverlayRenderer;
+import appeng.core.localization.InGameTooltip;
 import appeng.core.network.serverbound.TerminalExtractPacket;
 import appeng.menu.terminal.TerminalMenu;
 
@@ -279,10 +281,8 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
         int y = getListTop();
         int width = getItemsPerRow() * getSlotSize();
         int height = getVisibleRows() * getSlotSize();
-        graphics.fill(x, y, x + width, y + height, 0xAA000000);
-        Component offline = Component.literal("OFFLINE");
-        int textWidth = this.font.width(offline);
-        graphics.drawString(this.font, offline, x + (width - textWidth) / 2, y + height / 2 - 4, 0xFFFFFFFF, false);
+        OfflineOverlayRenderer.renderWithMessage(graphics, this.font, InGameTooltip.DeviceOffline.text(), x, y, width,
+                height);
     }
 
     private String formatAmount(int count) {

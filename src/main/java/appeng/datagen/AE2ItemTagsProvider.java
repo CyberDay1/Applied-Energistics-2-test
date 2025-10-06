@@ -22,6 +22,11 @@ public class AE2ItemTagsProvider extends ItemTagsProvider {
     private static final TagKey<Item> CONTROLLERS = tag("controllers");
     private static final TagKey<Item> TERMINALS = tag("terminals");
     private static final TagKey<Item> CABLES = tag("cables");
+    private static final TagKey<Item> MONITORS = tag("monitors");
+    private static final TagKey<Item> FORGE_SILICON = forgeTag("silicon");
+    private static final TagKey<Item> COMMON_SILICON = commonTag("silicon");
+    private static final TagKey<Item> FORGE_PROCESSORS = forgeTag("processors");
+    private static final TagKey<Item> COMMON_PROCESSORS = commonTag("processors");
 
     public AE2ItemTagsProvider(PackOutput output,
             CompletableFuture<HolderLookup.Provider> lookup,
@@ -32,9 +37,13 @@ public class AE2ItemTagsProvider extends ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         tag(ItemTags.GEMS_QUARTZ).add(AE2Items.CERTUS_QUARTZ_CRYSTAL.get());
-        tag(ItemTags.create(new ResourceLocation("forge", "silicon")))
-                .add(AE2Items.SILICON.get());
-        tag(ItemTags.create(new ResourceLocation("forge", "processors")))
+        tag(FORGE_SILICON).add(AE2Items.SILICON.get());
+        tag(COMMON_SILICON).add(AE2Items.SILICON.get());
+        tag(FORGE_PROCESSORS)
+                .add(AE2Items.LOGIC_PROCESSOR.get())
+                .add(AE2Items.ENGINEERING_PROCESSOR.get())
+                .add(AE2Items.CALCULATION_PROCESSOR.get());
+        tag(COMMON_PROCESSORS)
                 .add(AE2Items.LOGIC_PROCESSOR.get())
                 .add(AE2Items.ENGINEERING_PROCESSOR.get())
                 .add(AE2Items.CALCULATION_PROCESSOR.get());
@@ -49,22 +58,34 @@ public class AE2ItemTagsProvider extends ItemTagsProvider {
                 .addOptional(new ResourceLocation(AE2Registries.MODID, "1k_storage_cell"))
                 .addOptional(new ResourceLocation(AE2Registries.MODID, "4k_storage_cell"))
                 .addOptional(new ResourceLocation(AE2Registries.MODID, "16k_storage_cell"))
-                .addOptional(new ResourceLocation(AE2Registries.MODID, "64k_storage_cell"));
+                .addOptional(new ResourceLocation(AE2Registries.MODID, "64k_storage_cell"))
+                .add(AE2Items.PARTITIONED_CELL.get());
 
         tag(CONTROLLERS).add(AE2Items.CONTROLLER.get());
 
         tag(TERMINALS)
-                .addOptional(new ResourceLocation(AE2Registries.MODID, "terminal"))
-                .addOptional(new ResourceLocation(AE2Registries.MODID, "crafting_terminal"))
-                .addOptional(new ResourceLocation(AE2Registries.MODID, "pattern_terminal"))
-                .addOptional(new ResourceLocation(AE2Registries.MODID, "pattern_encoding_terminal_block"));
+                .add(AE2Items.TERMINAL.get())
+                .add(AE2Items.CRAFTING_TERMINAL.get())
+                .add(AE2Items.PATTERN_TERMINAL.get())
+                .add(AE2Items.PATTERN_ENCODING_TERMINAL_BLOCK.get());
 
         tag(CABLES)
                 .add(AE2Items.CABLE.get())
                 .add(AE2Blocks.CABLE.get().asItem());
+
+        // Mirrors the mainline "monitors" tag so downstream integrations can share recipes/config.
+        tag(MONITORS).add(AE2Items.CRAFTING_MONITOR.get());
     }
 
     private static TagKey<Item> tag(String path) {
         return TagKey.create(Registries.ITEM, new ResourceLocation(AE2Registries.MODID, path));
+    }
+
+    private static TagKey<Item> forgeTag(String path) {
+        return TagKey.create(Registries.ITEM, new ResourceLocation("forge", path));
+    }
+
+    private static TagKey<Item> commonTag(String path) {
+        return TagKey.create(Registries.ITEM, new ResourceLocation("c", path));
     }
 }

@@ -4,6 +4,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.client.gui.OfflineOverlayRenderer;
+import appeng.core.localization.InGameTooltip;
 import appeng.menu.terminal.CraftingTerminalMenu;
 
 public class CraftingTerminalScreen extends TerminalScreen {
@@ -55,12 +57,11 @@ public class CraftingTerminalScreen extends TerminalScreen {
     private void renderGridOfflineOverlay(GuiGraphics graphics) {
         int left = this.leftPos + GRID_LEFT_OFFSET;
         int top = this.topPos + GRID_TOP_OFFSET;
-        int width = GRID_SIZE * SLOT_SIZE;
-        int height = GRID_SIZE * SLOT_SIZE;
-        graphics.fill(left, top, left + width, top + height, 0xAA000000);
+        OfflineOverlayRenderer.renderWithMessage(graphics, this.font, InGameTooltip.DeviceOffline.text(), left, top,
+                GRID_SIZE * SLOT_SIZE, GRID_SIZE * SLOT_SIZE);
 
         int resultX = this.leftPos + RESULT_LEFT_OFFSET;
         int resultY = this.topPos + RESULT_TOP_OFFSET;
-        graphics.fill(resultX, resultY, resultX + 16, resultY + 16, 0xAA000000);
+        OfflineOverlayRenderer.render(graphics, resultX, resultY, 16, 16);
     }
 }
