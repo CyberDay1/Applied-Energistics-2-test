@@ -155,6 +155,15 @@ public class AELangProvider extends LanguageProvider {
         add("gui.appliedenergistics2.terminal.search_hint", "Type to filter stored items");
         add("gui.appliedenergistics2.terminal.offline_search_hint", "Network offline – search limited to cached view");
         add("gui.ae2.ClearWhitelist", "Clear Whitelist");
+        add("ae2.hint.search", "Search…");
+        add("ae2.partitioned_cell.mode.whitelist", "Whitelist");
+        add("ae2.partitioned_cell.mode.blacklist", "Blacklist");
+        add("ae2.partitioned_cell.mode.tooltip",
+                "Controls whether the filter allows (whitelist) or blocks (blacklist) matching items.");
+        add("ae2.partitioned_cell.priority.label", "Priority");
+        add("ae2.partitioned_cell.priority.tooltip",
+                "Higher numbers win when multiple storages can accept the same item.");
+        add("ae2.partitioned_cell.title", "Partitioned Cell");
         add("gui.appliedenergistics2.offline.power", "Network offline – missing power");
         add("gui.appliedenergistics2.offline.channels", "Network offline – channel capacity exceeded");
         add("gui.appliedenergistics2.offline.redstone", "Network offline – redstone disabled");

@@ -9,6 +9,7 @@ import java.util.UUID;
 import appeng.blockentity.simple.DriveBlockEntity;
 import appeng.core.AELog;
 import appeng.items.storage.BasicCellItem;
+import appeng.items.storage.PartitionedCellItem;
 import appeng.api.storage.ItemStackView;
 import appeng.util.GridHelper;
 
@@ -66,8 +67,15 @@ final class NetworkItemStorage {
         var itemId = BuiltInRegistries.ITEM.getKey(item);
         for (var cell : cells()) {
             var whitelist = cell.item().getWhitelist(cell.stack());
-            if (!whitelist.isEmpty() && !whitelist.contains(itemId)) {
-                continue;
+            boolean whitelistMode = !(cell.item() instanceof PartitionedCellItem partitioned)
+                    || partitioned.isWhitelist(cell.stack());
+            if (!whitelist.isEmpty()) {
+                if (whitelistMode && !whitelist.contains(itemId)) {
+                    continue;
+                }
+                if (!whitelistMode && whitelist.contains(itemId)) {
+                    continue;
+                }
             }
             var view = new ItemStackView(item, remaining);
             if (!cell.item().accepts(view)) {
@@ -133,20 +141,29 @@ final class NetworkItemStorage {
     }
 
     synchronized ItemWhitelistSummary getWhitelistSummary() {
-        boolean hasRestrictions = false;
+        boolean hasWhitelist = false;
+        boolean hasBlacklist = false;
         Set<ResourceLocation> allowed = new LinkedHashSet<>();
+        Set<ResourceLocation> blocked = new LinkedHashSet<>();
         for (var cell : cells()) {
             var whitelist = cell.item().getWhitelist(cell.stack());
             if (whitelist.isEmpty()) {
-                return new ItemWhitelistSummary(false, Set.of());
+                continue;
             }
-            hasRestrictions = true;
-            allowed.addAll(whitelist);
+            boolean whitelistMode = !(cell.item() instanceof PartitionedCellItem partitioned)
+                    || partitioned.isWhitelist(cell.stack());
+            if (whitelistMode) {
+                hasWhitelist = true;
+                allowed.addAll(whitelist);
+            } else {
+                hasBlacklist = true;
+                blocked.addAll(whitelist);
+            }
         }
-        if (!hasRestrictions) {
-            return new ItemWhitelistSummary(false, Set.of());
+        if (!hasWhitelist && !hasBlacklist) {
+            return new ItemWhitelistSummary(false, Set.of(), Set.of());
         }
-        return new ItemWhitelistSummary(true, Set.copyOf(allowed));
+        return new ItemWhitelistSummary(true, Set.copyOf(allowed), Set.copyOf(blocked));
     }
 
     private List<Cell> cells() {
@@ -182,6 +199,7 @@ final class NetworkItemStorage {
     private record Cell(BasicCellItem item, ItemStack stack) {
     }
 
-    record ItemWhitelistSummary(boolean restricted, Set<ResourceLocation> allowedItems) {
+    record ItemWhitelistSummary(boolean restricted, Set<ResourceLocation> allowedItems,
+            Set<ResourceLocation> blockedItems) {
     }
 }

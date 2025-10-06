@@ -36,6 +36,7 @@ public class PartitionedCellItem extends BasicCellItem implements IMenuItem {
     private static final String CELL_TAG = "CellData";
     private static final String WHITELIST_TAG = "Whitelist";
     private static final String PRIORITY_TAG = "Priority";
+    private static final String WHITELIST_MODE_TAG = "WhitelistMode";
 
     public PartitionedCellItem(Properties properties) {
         super(properties, CAPACITY);
@@ -87,15 +88,49 @@ public class PartitionedCellItem extends BasicCellItem implements IMenuItem {
         }
         var cellTag = tag.getCompound(CELL_TAG);
         cellTag.remove(WHITELIST_TAG);
-        if (cellTag.contains(PRIORITY_TAG, Tag.TAG_INT) && cellTag.getInt(PRIORITY_TAG) == 0) {
-            cellTag.remove(PRIORITY_TAG);
+        cleanupEmptyCellTag(cellItem, tag, cellTag);
+    }
+
+    public boolean isWhitelist(ItemStack cellItem) {
+        var tag = cellItem.getTag();
+        if (tag == null || !tag.contains(CELL_TAG, Tag.TAG_COMPOUND)) {
+            return true;
         }
-        if (cellTag.isEmpty()) {
-            tag.remove(CELL_TAG);
+
+        var cellTag = tag.getCompound(CELL_TAG);
+        if (!cellTag.contains(WHITELIST_MODE_TAG, Tag.TAG_BYTE)) {
+            return true;
         }
-        if (tag.isEmpty()) {
-            cellItem.setTag(null);
+
+        return cellTag.getBoolean(WHITELIST_MODE_TAG);
+    }
+
+    public void setWhitelistMode(ItemStack cellItem, boolean whitelist) {
+        var tag = cellItem.getTag();
+        if (whitelist) {
+            if (tag == null || !tag.contains(CELL_TAG, Tag.TAG_COMPOUND)) {
+                return;
+            }
+            var cellTag = tag.getCompound(CELL_TAG);
+            cellTag.remove(WHITELIST_MODE_TAG);
+            cleanupEmptyCellTag(cellItem, tag, cellTag);
+            return;
         }
+
+        if (tag == null) {
+            tag = new CompoundTag();
+            cellItem.setTag(tag);
+        }
+
+        CompoundTag cellTag;
+        if (tag.contains(CELL_TAG, Tag.TAG_COMPOUND)) {
+            cellTag = tag.getCompound(CELL_TAG);
+        } else {
+            cellTag = new CompoundTag();
+            tag.put(CELL_TAG, cellTag);
+        }
+
+        cellTag.putBoolean(WHITELIST_MODE_TAG, false);
     }
 
     @Override
@@ -122,12 +157,7 @@ public class PartitionedCellItem extends BasicCellItem implements IMenuItem {
             }
             var cellTag = tag.getCompound(CELL_TAG);
             cellTag.remove(PRIORITY_TAG);
-            if (cellTag.isEmpty()) {
-                tag.remove(CELL_TAG);
-            }
-            if (tag.isEmpty()) {
-                cellItem.setTag(null);
-            }
+            cleanupEmptyCellTag(cellItem, tag, cellTag);
             return;
         }
 
@@ -145,6 +175,21 @@ public class PartitionedCellItem extends BasicCellItem implements IMenuItem {
         }
 
         cellTag.putInt(PRIORITY_TAG, priority);
+    }
+
+    private static void cleanupEmptyCellTag(ItemStack cellItem, CompoundTag tag, CompoundTag cellTag) {
+        if (cellTag.contains(PRIORITY_TAG, Tag.TAG_INT) && cellTag.getInt(PRIORITY_TAG) == 0) {
+            cellTag.remove(PRIORITY_TAG);
+        }
+        if (cellTag.contains(WHITELIST_MODE_TAG, Tag.TAG_BYTE) && cellTag.getBoolean(WHITELIST_MODE_TAG)) {
+            cellTag.remove(WHITELIST_MODE_TAG);
+        }
+        if (cellTag.isEmpty()) {
+            tag.remove(CELL_TAG);
+        }
+        if (tag.isEmpty()) {
+            cellItem.setTag(null);
+        }
     }
 
     private static ListTag getWhitelistTag(ItemStack cellItem, boolean create) {

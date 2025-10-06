@@ -228,7 +228,13 @@ public class StorageService implements IStorageService {
             return true;
         }
         var itemId = BuiltInRegistries.ITEM.getKey(item);
-        return summary.allowedItems().contains(itemId);
+        if (!summary.allowedItems().isEmpty() && !summary.allowedItems().contains(itemId)) {
+            return false;
+        }
+        if (!summary.blockedItems().isEmpty() && summary.blockedItems().contains(itemId)) {
+            return false;
+        }
+        return true;
     }
 
     static void logPartitionedInsert(UUID gridId, Item item, boolean simulate) {
@@ -236,12 +242,20 @@ public class StorageService implements IStorageService {
             return;
         }
         var itemId = BuiltInRegistries.ITEM.getKey(item);
-        var whitelist = getItemWhitelist(gridId);
-        AELog.debug("Rejected %s insert of %s on grid %s due to whitelist %s",
+        var network = NETWORKS.get(gridId);
+        Set<ResourceLocation> whitelist = Set.of();
+        Set<ResourceLocation> blacklist = Set.of();
+        if (network != null) {
+            var summary = network.getItemWhitelistSummary();
+            whitelist = summary.allowedItems();
+            blacklist = summary.blockedItems();
+        }
+        AELog.debug("Rejected %s insert of %s on grid %s due to whitelist %s and blacklist %s",
                 simulate ? "simulated" : "real",
                 itemId,
                 gridId,
-                whitelist);
+                whitelist,
+                blacklist);
     }
 
     static int insertFluidIntoNetwork(UUID gridId, Fluid fluid, int amount, boolean simulate) {

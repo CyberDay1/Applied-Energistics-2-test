@@ -18,7 +18,7 @@
   "text": {
     "dialog_title": {
       "text": {
-        "translate": "gui.ae2.PartitionedStorageCell"
+        "translate": "ae2.partitioned_cell.title"
       },
       "position": {
         "left": 8,
@@ -27,7 +27,7 @@
     },
     "priority_label": {
       "text": {
-        "translate": "gui.ae2.PartitionedCellPriority"
+        "translate": "ae2.partitioned_cell.priority.label"
       },
       "position": {
         "left": 8,

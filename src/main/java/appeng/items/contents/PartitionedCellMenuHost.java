@@ -24,6 +24,7 @@ import appeng.menu.locator.ItemMenuHostLocator;
 import appeng.util.ConfigInventory;
 import appeng.util.ConfigMenuInventory;
 import appeng.core.network.serverbound.UpdatePartitionedCellPriorityPacket;
+import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistModePacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistPacket;
 
 /**
@@ -35,6 +36,7 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
     private final ConfigInventory whitelistInventory;
     private boolean syncing;
     private int priority;
+    private boolean whitelistMode;
 
     public PartitionedCellMenuHost(PartitionedCellItem item, Player player, ItemMenuHostLocator locator) {
         super(item, player, locator);
@@ -45,6 +47,7 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
                 .build();
 
         this.priority = item.getPriority(getItemStack());
+        this.whitelistMode = item.isWhitelist(getItemStack());
 
         if (!isClientSide()) {
             applyWhitelist(getItem().getWhitelist(getItemStack()));
@@ -91,8 +94,41 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
         }
     }
 
+    public boolean isWhitelist() {
+        return whitelistMode;
+    }
+
+    public void setWhitelist(boolean whitelist) {
+        if (this.whitelistMode == whitelist) {
+            return;
+        }
+
+        setWhitelistInternal(whitelist);
+
+        if (isClientSide()) {
+            PacketDistributor.sendToServer(new UpdatePartitionedCellWhitelistModePacket(whitelist));
+        }
+    }
+
+    public void acceptWhitelist(boolean whitelist) {
+        setWhitelistInternal(whitelist);
+    }
+
+    private void setWhitelistInternal(boolean whitelist) {
+        if (this.whitelistMode == whitelist) {
+            return;
+        }
+
+        this.whitelistMode = whitelist;
+
+        if (!isClientSide()) {
+            getItem().setWhitelistMode(getItemStack(), whitelist);
+        }
+    }
+
     public void writeInitialData(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(priority);
+        buffer.writeBoolean(whitelistMode);
         var whitelist = getWhitelistEntries();
         buffer.writeVarInt(whitelist.size());
         for (var id : whitelist) {
@@ -102,6 +138,7 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
 
     public void readInitialData(RegistryFriendlyByteBuf buffer) {
         setPriorityInternal(buffer.readVarInt());
+        setWhitelistInternal(buffer.readBoolean());
         int size = buffer.readVarInt();
         List<ResourceLocation> whitelist = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
