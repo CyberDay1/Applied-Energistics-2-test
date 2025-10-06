@@ -2,6 +2,7 @@ package appeng.core.localization;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +53,14 @@ public final class Tooltips {
 
     public static List<Component> slotTooltip(MutableComponent text) {
         return List.of(text.withStyle(MUTED_COLOR));
+    }
+
+    public static List<Component> slotTooltip(Component... lines) {
+        var tooltip = new ArrayList<Component>(lines.length);
+        for (var line : lines) {
+            tooltip.add(line.copy().withStyle(MUTED_COLOR));
+        }
+        return tooltip;
     }
 
     public static List<Component> inputSlot(Side... sides) {

@@ -20,8 +20,10 @@ package appeng.menu.implementations;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.google.common.collect.Iterators;
 
@@ -40,8 +42,10 @@ import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import appeng.api.util.IConfigManager;
 import appeng.client.gui.implementations.StorageBusScreen;
-import appeng.core.network.AE2Packets;
 import appeng.core.definitions.AEItems;
+import appeng.core.localization.Tooltips;
+import appeng.core.network.AE2Packets;
+import appeng.grid.SimpleGridNode.OfflineReason;
 import appeng.menu.guisync.GuiSync;
 import appeng.parts.storagebus.StorageBusPart;
 
@@ -50,6 +54,11 @@ import appeng.parts.storagebus.StorageBusPart;
  * @see StorageBusScreen
  */
 public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
+
+    static final Supplier<List<Component>> STORAGE_BUS_UPGRADE_TOOLTIP = () -> Tooltips.slotTooltip(
+            Component.translatable("gui.ae2.upgrades.capacity"),
+            Component.translatable("gui.ae2.upgrades.fuzzy"),
+            Component.translatable("gui.ae2.upgrades.inverter"));
 
     private static final String ACTION_CLEAR = "clear";
     private static final String ACTION_PARTITION = "partition";
@@ -71,6 +80,10 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
     @Nullable
     public Component connectedTo;
 
+    @GuiSync(9)
+    @Nullable
+    public OfflineReason offlineReason;
+
     private AccessRestriction lastSentAccessMode;
     private StorageFilter lastSentStorageFilter;
     private YesNo lastSentFilterOnExtract;
@@ -89,6 +102,12 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
     @Override
     protected void setupConfig() {
         addExpandableConfigSlots(getHost().getConfig(), 2, 9, 5);
+    }
+
+    @Override
+    protected void setupUpgrades() {
+        super.setupUpgrades();
+        setUpgradeSlotTooltip(STORAGE_BUS_UPGRADE_TOOLTIP);
     }
 
     @Override
@@ -116,6 +135,11 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
                 lastSentStorageFilter = storageFilter;
                 lastSentFilterOnExtract = filterOnExtract;
                 lastSentConnectedTo = connectedToDescription;
+            }
+
+            var newOfflineReason = computeOfflineReason();
+            if (!Objects.equals(offlineReason, newOfflineReason)) {
+                offlineReason = newOfflineReason;
             }
         }
     }
@@ -214,5 +238,34 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
     @Nullable
     public Component getConnectedTo() {
         return connectedTo;
+    }
+
+    @Nullable
+    public OfflineReason getOfflineReason() {
+        return offlineReason;
+    }
+
+    @Nullable
+    private OfflineReason computeOfflineReason() {
+        var managedNode = getHost().getMainNode();
+
+        if (!managedNode.isPowered()) {
+            return OfflineReason.NONE;
+        }
+
+        var node = managedNode.getNode();
+        if (node == null) {
+            return OfflineReason.NONE;
+        }
+
+        if (!node.meetsChannelRequirements()) {
+            return OfflineReason.CHANNELS;
+        }
+
+        if (!managedNode.hasGridBooted()) {
+            return OfflineReason.NONE;
+        }
+
+        return null;
     }
 }

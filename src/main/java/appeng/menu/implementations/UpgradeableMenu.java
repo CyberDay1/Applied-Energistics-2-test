@@ -18,10 +18,14 @@
 
 package appeng.menu.implementations;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ItemLike;
 
 import appeng.api.config.FuzzyMode;
@@ -39,6 +43,7 @@ import appeng.menu.AEBaseMenu;
 import appeng.menu.SlotSemantics;
 import appeng.menu.ToolboxMenu;
 import appeng.menu.guisync.GuiSync;
+import appeng.menu.slot.AppEngSlot;
 import appeng.menu.slot.FakeSlot;
 import appeng.menu.slot.IOptionalSlotHost;
 import appeng.menu.slot.OptionalFakeSlot;
@@ -92,6 +97,14 @@ public abstract class UpgradeableMenu<T extends IUpgradeableObject> extends AEBa
     @ApiStatus.OverrideOnly
     protected void setupUpgrades() {
         setupUpgrades(this.getHost().getUpgrades());
+    }
+
+    protected final void setUpgradeSlotTooltip(Supplier<List<Component>> tooltipSupplier) {
+        for (var slot : getSlots(SlotSemantics.UPGRADE)) {
+            if (slot instanceof AppEngSlot appEngSlot) {
+                appEngSlot.setEmptyTooltip(tooltipSupplier);
+            }
+        }
     }
 
     protected final void addExpandableConfigSlots(GenericStackInv config, int rows, int cols, int optionalRows) {
