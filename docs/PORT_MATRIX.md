@@ -5,7 +5,8 @@ and the Phase 3 datagen checkpoints exercised during validation.
 
 | Stonecutter Target | NeoForge Build | Phase 3 Datagen Checkpoints |
 | ------------------ | -------------- | ---------------------------- |
-| Default (1.21.4)   | 21.4.154       | ✅ Storage cells, ✅ Crafting CPU, ✅ Pattern terminals, ✅ Processing registry, ✅ Lang diagnostics |
+| 1.21.1             | TBD            | ⚠️ Interop stubs and payload migration in progress |
+| Default (1.21.4)   | 21.4.154       | ⚠️ Interop stubs and payload migration in progress |
 | 1.21.5             | 21.5.95        | ✅ Storage cells, ✅ Pattern terminals, ✅ IO busses, ✅ Lang diagnostics |
 | 1.21.6             | 21.6.20-beta   | ✅ Upgrade cards, ✅ Processing registry, ✅ Lang diagnostics |
 | 1.21.7             | 21.7.25-beta   | 🔄 Pending validation |

@@ -79,6 +79,7 @@ import appeng.init.internal.InitStorageCells;
 import appeng.init.internal.InitUpgrades;
 import appeng.init.worldgen.InitStructures;
 import appeng.integration.Integrations;
+import appeng.integration.compat.InteropBootstrap;
 import appeng.registry.AE2Conditions;
 import appeng.registry.AE2RecipeSerializers;
 import appeng.registry.AE2RecipeTypes;
@@ -188,6 +189,8 @@ public abstract class AppEngBase implements AppEng {
         NeoForge.EVENT_BUS.addListener(SkyStoneBreakSpeed::handleBreakFaster);
 
         HotkeyActions.init();
+
+        InteropBootstrap.registerInterop();
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

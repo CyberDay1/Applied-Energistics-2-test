@@ -21,12 +21,14 @@ package appeng.menu.implementations;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.common.collect.Iterators;
 
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
@@ -38,6 +40,7 @@ import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import appeng.api.util.IConfigManager;
 import appeng.client.gui.implementations.StorageBusScreen;
+import appeng.core.network.AE2Packets;
 import appeng.core.definitions.AEItems;
 import appeng.menu.guisync.GuiSync;
 import appeng.parts.storagebus.StorageBusPart;
@@ -68,6 +71,12 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
     @Nullable
     public Component connectedTo;
 
+    private AccessRestriction lastSentAccessMode;
+    private StorageFilter lastSentStorageFilter;
+    private YesNo lastSentFilterOnExtract;
+    @Nullable
+    private Component lastSentConnectedTo;
+
     public StorageBusMenu(MenuType<StorageBusMenu> menuType, int id, Inventory ip, StorageBusPart te) {
         super(menuType, id, ip, te);
 
@@ -87,6 +96,28 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
         super.broadcastChanges();
 
         this.connectedTo = getHost().getConnectedToDescription();
+
+        if (!isClientSide() && getPlayer() instanceof ServerPlayer serverPlayer) {
+            var configManager = getHost().getConfigManager();
+            var accessMode = configManager.getSetting(Settings.ACCESS);
+            var storageFilter = configManager.getSetting(Settings.STORAGE_FILTER);
+            var filterOnExtract = configManager.getSetting(Settings.FILTER_ON_EXTRACT);
+            var connectedToDescription = getHost().getConnectedToDescription();
+
+            boolean changed = accessMode != lastSentAccessMode
+                    || storageFilter != lastSentStorageFilter
+                    || filterOnExtract != lastSentFilterOnExtract
+                    || !Objects.equals(connectedToDescription, lastSentConnectedTo);
+
+            if (changed) {
+                AE2Packets.sendStorageBusState(serverPlayer, containerId, accessMode, storageFilter, filterOnExtract,
+                        connectedToDescription);
+                lastSentAccessMode = accessMode;
+                lastSentStorageFilter = storageFilter;
+                lastSentFilterOnExtract = filterOnExtract;
+                lastSentConnectedTo = connectedToDescription;
+            }
+        }
     }
 
     @Override
@@ -166,6 +197,14 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
 
     public void setFilterOnExtract(YesNo filterOnExtract) {
         this.filterOnExtract = filterOnExtract;
+    }
+
+    public void applyState(AccessRestriction accessMode, StorageFilter storageFilter, YesNo filterOnExtract,
+            @Nullable Component connectedTo) {
+        setReadWriteMode(accessMode);
+        setStorageFilter(storageFilter);
+        setFilterOnExtract(filterOnExtract);
+        this.connectedTo = connectedTo;
     }
 
     public boolean supportsFuzzySearch() {

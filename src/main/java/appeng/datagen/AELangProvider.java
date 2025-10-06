@@ -125,6 +125,9 @@ public class AELangProvider extends LanguageProvider {
         add("message.appliedenergistics2.crafting_job.dependency_failed",
                 "Crafting job %s failed due to missing dependency.");
         add("message.appliedenergistics2.crafting_job.unknown_output", "Unknown output");
+        add("log.appliedenergistics2.interop.success", "Interop ready: %s");
+        add("log.appliedenergistics2.interop.skipped", "Interop skipped (mod missing): %s");
+        add("log.appliedenergistics2.interop.failed", "Interop failed: %s (%s)");
         add("gui.appliedenergistics2.pattern_encoding.mode.crafting", "Crafting Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode.processing", "Processing Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode_toggle_hint", "Click to switch pattern type.");

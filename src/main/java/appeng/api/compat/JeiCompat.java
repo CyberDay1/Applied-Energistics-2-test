@@ -14,6 +14,15 @@ public final class JeiCompat {
         return ModList.get().isLoaded(MOD_ID);
     }
 
+    public static boolean register() {
+        if (!isLoaded()) {
+            return false;
+        }
+
+        reportBridgeInitialized();
+        return true;
+    }
+
     public static void reportBridgeInitialized() {
         if (isLoaded()) {
             AE2InteropValidator.markBridgeInitialized("JEI plugin bridge");

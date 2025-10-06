@@ -14,6 +14,15 @@ public final class ReiCompat {
         return ModList.get().isLoaded(MOD_ID) || ModList.get().isLoaded("rei");
     }
 
+    public static boolean register() {
+        if (!isLoaded()) {
+            return false;
+        }
+
+        reportBridgeInitialized();
+        return true;
+    }
+
     public static void reportBridgeInitialized() {
         if (isLoaded()) {
             AE2InteropValidator.markBridgeInitialized("REI client bridge");

@@ -180,7 +180,7 @@ public class PartitionedCellMenuHost extends ItemMenuHost<PartitionedCellItem> {
         }
     }
 
-    private List<ResourceLocation> getWhitelistEntries() {
+    public List<ResourceLocation> getWhitelistEntries() {
         List<ResourceLocation> whitelist = new ArrayList<>();
         for (int i = 0; i < whitelistInventory.size(); i++) {
             AEKey key = whitelistInventory.getKey(i);

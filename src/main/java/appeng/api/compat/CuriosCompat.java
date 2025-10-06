@@ -33,6 +33,15 @@ public final class CuriosCompat {
         return Optional.ofNullable(player.getCapability(CuriosIntegration.ITEM_HANDLER));
     }
 
+    public static boolean register() {
+        if (!isLoaded()) {
+            return false;
+        }
+
+        reportBridgeInitialized();
+        return true;
+    }
+
     public static Optional<IItemHandler> getCuriosHandler(@Nullable Player player, int slot) {
         if (player == null) {
             return Optional.empty();

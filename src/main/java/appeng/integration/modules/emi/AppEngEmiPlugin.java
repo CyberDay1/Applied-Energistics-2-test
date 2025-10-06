@@ -29,6 +29,7 @@ import appeng.api.features.P2PTunnelAttunementInternal;
 import appeng.api.integrations.emi.EmiStackConverters;
 import appeng.api.upgrades.Upgrades;
 import appeng.core.AEConfig;
+import appeng.core.AE2InteropValidator;
 import appeng.core.AppEng;
 import appeng.core.FacadeCreativeTab;
 import appeng.core.definitions.AEBlocks;
@@ -46,9 +47,21 @@ import appeng.menu.me.items.WirelessCraftingTermMenu;
 import appeng.registry.AE2RecipeTypes;
 import appeng.recipes.game.StorageCellUpgradeRecipe;
 
+import net.neoforged.fml.ModList;
+
 @EmiEntrypoint
 public class AppEngEmiPlugin implements EmiPlugin {
+    public static final String MOD_ID = "emi";
     static final ResourceLocation TEXTURE = AppEng.makeId("textures/guis/jei.png");
+
+    public static boolean register() {
+        if (!ModList.get().isLoaded(MOD_ID)) {
+            return false;
+        }
+
+        AE2InteropValidator.markBridgeInitialized("EMI plugin bridge");
+        return true;
+    }
 
     @Override
     public void register(EmiRegistry registry) {
