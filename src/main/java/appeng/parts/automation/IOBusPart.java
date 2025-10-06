@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 import appeng.api.config.FuzzyMode;
@@ -61,6 +62,7 @@ import appeng.core.settings.TickRates;
 import appeng.helpers.IConfigInvHost;
 import appeng.items.parts.PartModels;
 import appeng.me.helpers.MachineSource;
+import appeng.integration.processing.BlastFurnaceProcessingMachine;
 import appeng.integration.processing.FurnaceProcessingMachine;
 import appeng.integration.processing.ProcessingMachineRegistry;
 import appeng.menu.ISubMenu;
@@ -338,6 +340,12 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
         IProcessingMachine machine = null;
         if (neighbor instanceof IProcessingMachine processingMachine) {
             machine = processingMachine;
+        } else if (neighbor instanceof BlastFurnaceBlockEntity) {
+            var node = getMainNode().getNode();
+            UUID gridId = node != null ? node.getGridId() : null;
+            if (gridId != null) {
+                machine = new BlastFurnaceProcessingMachine(serverLevel, targetPos, gridId);
+            }
         } else if (neighbor instanceof AbstractFurnaceBlockEntity) {
             var node = getMainNode().getNode();
             UUID gridId = node != null ? node.getGridId() : null;

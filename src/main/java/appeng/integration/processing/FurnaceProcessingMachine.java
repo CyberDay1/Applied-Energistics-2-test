@@ -11,9 +11,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 
 import appeng.api.integration.machines.SingleSlotProcessingMachine;
@@ -39,6 +39,7 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
         this.gridId = gridId;
     }
 
+    @Override
     public UUID getGridId() {
         return gridId;
     }
@@ -66,7 +67,7 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
             return false;
         }
         ItemStack input = job.getInputs().get(0).asStack();
-        return hasSmeltingRecipe(input);
+        return hasRecipe(input);
     }
 
     @Override
@@ -88,7 +89,8 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
     /**
      * Inserts the provided stack into the furnace input slot. Returns any remainder that could not be inserted.
      */
-    public ItemStack insertInput(ItemStack stack) {
+    @Override
+    protected ItemStack insertInput(ItemStack stack) {
         AbstractFurnaceBlockEntity furnace = getFurnace();
         if (furnace == null) {
             return stack;
@@ -97,9 +99,9 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
             return stack;
         }
 
-        Optional<RecipeHolder<SmeltingRecipe>> recipe = findSmeltingRecipe(stack);
+        Optional<RecipeHolder<? extends AbstractCookingRecipe>> recipe = findRecipe(stack);
         if (recipe.isEmpty()) {
-            LOG.debug("No smelting recipe found for {} at furnace {}", stack, furnacePos);
+            LOG.debug("No furnace recipe found for {} at {}", stack, furnacePos);
             return stack;
         }
 
@@ -127,7 +129,8 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
     /**
      * Removes any pending input from the furnace, returning it for network reinsertion.
      */
-    public ItemStack releaseInput() {
+    @Override
+    protected ItemStack releaseInput() {
         AbstractFurnaceBlockEntity furnace = getFurnace();
         ItemStack toReturn = ItemStack.EMPTY;
         if (furnace != null) {
@@ -150,7 +153,8 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
      *
      * @return The number of ticks that should be recorded for this job.
      */
-    public int process(CraftingJob job) {
+    @Override
+    protected int runMachine(CraftingJob job) {
         AbstractFurnaceBlockEntity furnace = getFurnace();
         if (furnace == null) {
             throw new IllegalStateException("Furnace block entity is no longer present.");
@@ -177,7 +181,8 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
     /**
      * Extracts the prepared output from the furnace.
      */
-    public ItemStack extractOutput(ItemStack requested) {
+    @Override
+    protected ItemStack extractOutput(ItemStack requested) {
         AbstractFurnaceBlockEntity furnace = getFurnace();
         if (furnace == null) {
             return ItemStack.EMPTY;
@@ -193,7 +198,8 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
         return output;
     }
 
-    public void dropItem(ItemStack stack) {
+    @Override
+    protected void dropItem(ItemStack stack) {
         if (stack.isEmpty()) {
             return;
         }
@@ -201,16 +207,16 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
                 stack);
     }
 
-    private boolean hasSmeltingRecipe(ItemStack stack) {
-        return findSmeltingRecipe(stack).isPresent();
+    private boolean hasRecipe(ItemStack stack) {
+        return findRecipe(stack).isPresent();
     }
 
-    private Optional<RecipeHolder<SmeltingRecipe>> findSmeltingRecipe(ItemStack stack) {
+    private Optional<RecipeHolder<? extends AbstractCookingRecipe>> findRecipe(ItemStack stack) {
         if (stack.isEmpty()) {
             return Optional.empty();
         }
         SimpleContainer container = new SimpleContainer(stack.copy());
-        return level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, container, level);
+        return level.getRecipeManager().getRecipeFor(getRecipeType(), container, level);
     }
 
     private AbstractFurnaceBlockEntity getFurnace() {
@@ -218,9 +224,19 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
             return null;
         }
         if (level.getBlockEntity(furnacePos) instanceof AbstractFurnaceBlockEntity furnace) {
-            return furnace;
+            if (isValidFurnace(furnace)) {
+                return furnace;
+            }
         }
         return null;
+    }
+
+    protected RecipeType<? extends AbstractCookingRecipe> getRecipeType() {
+        return RecipeType.SMELTING;
+    }
+
+    protected boolean isValidFurnace(AbstractFurnaceBlockEntity furnace) {
+        return true;
     }
 
     @Override
@@ -229,6 +245,21 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
         pendingInput = ItemStack.EMPTY;
         pendingOutput = ItemStack.EMPTY;
         pendingCookTime = CraftingJob.DEFAULT_TICKS_REQUIRED;
+    }
+
+    @Override
+    protected String getStartTranslationKey() {
+        return "message.appliedenergistics2.processing_job.external_furnace_started";
+    }
+
+    @Override
+    protected String getCompleteTranslationKey() {
+        return "message.appliedenergistics2.processing_job.external_furnace_complete";
+    }
+
+    @Override
+    protected String getFailedTranslationKey() {
+        return "message.appliedenergistics2.processing_job.external_furnace_failed";
     }
 
     @Override
