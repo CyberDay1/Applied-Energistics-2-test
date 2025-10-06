@@ -50,6 +50,7 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("tooltip.appliedenergistics2.encoded_pattern.inputs", "Inputs: %s");
         add("tooltip.appliedenergistics2.encoded_pattern.mode.crafting", "Crafting Pattern");
         add("tooltip.appliedenergistics2.encoded_pattern.mode.processing", "Processing Pattern");
+        add("tooltip.appliedenergistics2.processing_pattern_job", "Processing Pattern Job");
         add("message.appliedenergistics2.pattern_encoding.success", "Pattern encoded: %s");
         add("message.appliedenergistics2.pattern_encoding.internal", "Unable to encode pattern (internal error).");
         add("message.appliedenergistics2.pattern_encoding.output_occupied", "Remove the existing encoded pattern first.");

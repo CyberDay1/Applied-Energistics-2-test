@@ -313,8 +313,10 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
 
         if (runningJobProgress >= job.getTicksRequired()) {
             job.setTicksCompleted(job.getTicksRequired());
-            var delivery = deliverJobOutputs(job);
-            job.recordOutputDelivery(delivery.inserted(), delivery.dropped());
+            if (!job.isProcessing()) {
+                var delivery = deliverJobOutputs(job);
+                job.recordOutputDelivery(delivery.inserted(), delivery.dropped());
+            }
             manager.jobExecutionCompleted(job, this);
             AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
             releaseReservation(job.getId());

@@ -42,6 +42,7 @@ public final class CraftingJob {
     private final List<ItemStackView> inputs;
     private final List<ItemStackView> outputs;
     private final boolean simulated;
+    private final boolean processing;
     private final ItemStack patternStack;
 
     private State state;
@@ -51,11 +52,12 @@ public final class CraftingJob {
     private int droppedOutputs;
 
     private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated,
-            ItemStack patternStack) {
+            boolean processing, ItemStack patternStack) {
         this.id = id;
         this.inputs = List.copyOf(inputs);
         this.outputs = List.copyOf(outputs);
         this.simulated = simulated;
+        this.processing = processing;
         this.patternStack = patternStack;
         this.state = State.PLANNED;
         this.ticksCompleted = 0;
@@ -79,7 +81,12 @@ public final class CraftingJob {
 
         ItemStack storedPattern = patternStack.copy();
         storedPattern.setCount(1);
-        return new CraftingJob(UUID.randomUUID(), inputs, outputs, true, storedPattern);
+        boolean processing = false;
+        if (patternStack.getItem() instanceof EncodedPatternItem encodedPattern) {
+            processing = encodedPattern.isProcessing(patternStack);
+        }
+
+        return new CraftingJob(UUID.randomUUID(), inputs, outputs, true, processing, storedPattern);
     }
 
     public static CraftingJob fromPattern(EncodedPatternItem pattern) {
@@ -100,6 +107,10 @@ public final class CraftingJob {
 
     public boolean isSimulated() {
         return simulated;
+    }
+
+    public boolean isProcessing() {
+        return processing;
     }
 
     public ItemStack getPatternStack() {
@@ -139,7 +150,8 @@ public final class CraftingJob {
 
     /**
      * Records how many output items were successfully inserted into the ME network and how many had to be dropped in
-     * the world once the job completed.
+     * the world once the job completed. Processing pattern executions use this as soon as the assembler pushes their
+     * results, while regular crafting jobs update it after the CPU delivers items back into storage.
      */
     public void recordOutputDelivery(int inserted, int dropped) {
         this.insertedOutputs = Math.max(0, inserted);

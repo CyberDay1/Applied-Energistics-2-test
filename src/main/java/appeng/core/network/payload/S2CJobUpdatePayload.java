@@ -10,8 +10,8 @@ import net.minecraft.network.codec.StreamCodec;
 import appeng.core.AppEng;
 import appeng.crafting.CraftingJob;
 
-public record S2CJobUpdatePayload(UUID jobId, CraftingJob.State state, int ticksCompleted, int ticksRequired,
-        int insertedOutputs, int droppedOutputs)
+public record S2CJobUpdatePayload(UUID jobId, CraftingJob.State state, boolean processing, int ticksCompleted,
+        int ticksRequired, int insertedOutputs, int droppedOutputs)
         implements CustomPacketPayload {
     public static final Type<S2CJobUpdatePayload> TYPE = new Type<>(AppEng.makeId("s2c_job_update"));
 
@@ -21,16 +21,19 @@ public record S2CJobUpdatePayload(UUID jobId, CraftingJob.State state, int ticks
     private static S2CJobUpdatePayload read(FriendlyByteBuf buf) {
         UUID jobId = buf.readUUID();
         CraftingJob.State state = buf.readEnum(CraftingJob.State.class);
+        boolean processing = buf.readBoolean();
         int ticksCompleted = buf.readVarInt();
         int ticksRequired = buf.readVarInt();
         int insertedOutputs = buf.readVarInt();
         int droppedOutputs = buf.readVarInt();
-        return new S2CJobUpdatePayload(jobId, state, ticksCompleted, ticksRequired, insertedOutputs, droppedOutputs);
+        return new S2CJobUpdatePayload(jobId, state, processing, ticksCompleted, ticksRequired, insertedOutputs,
+                droppedOutputs);
     }
 
     private static void write(FriendlyByteBuf buf, S2CJobUpdatePayload payload) {
         buf.writeUUID(payload.jobId());
         buf.writeEnum(payload.state());
+        buf.writeBoolean(payload.processing());
         buf.writeVarInt(payload.ticksCompleted());
         buf.writeVarInt(payload.ticksRequired());
         buf.writeVarInt(payload.insertedOutputs());
