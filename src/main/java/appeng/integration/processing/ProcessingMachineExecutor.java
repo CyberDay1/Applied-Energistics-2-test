@@ -22,7 +22,12 @@ public final class ProcessingMachineExecutor {
         }
 
         if (machine instanceof AbstractProcessingMachine abstractMachine) {
-            return abstractMachine.execute(job);
+            boolean handled = abstractMachine.execute(job);
+            if (!handled) {
+                LOG.debug("External machine {} failed to complete job {}; falling back to assembler execution.", machine,
+                        job.getId());
+            }
+            return handled;
         }
 
         LOG.debug("Stub external machine executor invoked for job {} using {}", job.getId(), machine);
