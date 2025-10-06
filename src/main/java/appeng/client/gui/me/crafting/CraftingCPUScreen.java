@@ -38,6 +38,7 @@ import net.minecraft.world.entity.player.Inventory;
 import appeng.api.config.CpuSelectionMode;
 import appeng.api.config.Settings;
 import appeng.client.gui.AEBaseScreen;
+import appeng.client.gui.me.common.ClientCraftingJobTracker;
 import appeng.client.gui.StackWithBounds;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.Scrollbar;
@@ -135,6 +136,22 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
 
         if (status != null) {
             this.table.render(guiGraphics, mouseX, mouseY, status.getEntries(), scrollbar.getCurrentScroll());
+        }
+
+        var dependencyLines = ClientCraftingJobTracker.getDependencyLines();
+        if (!dependencyLines.isEmpty()) {
+            int textX = offsetX + 9;
+            int headerY = offsetY + 108;
+            guiGraphics.drawString(this.font, GuiText.CraftingDependencies.text(), textX, headerY, 0x404040, false);
+            int lineY = headerY + 10;
+            int maxY = offsetY + this.imageHeight - 8;
+            for (var line : dependencyLines) {
+                if (lineY >= maxY) {
+                    break;
+                }
+                guiGraphics.drawString(this.font, line.text(), textX, lineY, line.color(), false);
+                lineY += 9;
+            }
         }
     }
 

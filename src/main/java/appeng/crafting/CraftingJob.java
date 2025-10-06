@@ -1,7 +1,13 @@
 package appeng.crafting;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,7 +35,8 @@ public final class CraftingJob {
         PLANNED,
         RESERVED,
         RUNNING,
-        COMPLETE
+        COMPLETE,
+        FAILED
     }
 
     public enum Priority {
@@ -70,6 +77,9 @@ public final class CraftingJob {
     private int insertedOutputs;
     private int droppedOutputs;
     private Priority priority;
+    private final Map<UUID, SubJobStatus> subJobs;
+    @Nullable
+    private UUID parentJobId;
 
     private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated,
             boolean processing, ItemStack patternStack) {
@@ -85,6 +95,8 @@ public final class CraftingJob {
         this.insertedOutputs = 0;
         this.droppedOutputs = 0;
         this.priority = Priority.defaultPriority();
+        this.subJobs = new LinkedHashMap<>();
+        this.parentJobId = null;
     }
 
     public static CraftingJob fromPattern(ItemStack patternStack) {
@@ -197,6 +209,78 @@ public final class CraftingJob {
 
     public int getDroppedOutputs() {
         return droppedOutputs;
+    }
+
+    public synchronized void setParentJobId(@Nullable UUID parentJobId) {
+        this.parentJobId = parentJobId;
+    }
+
+    @Nullable
+    public synchronized UUID getParentJobId() {
+        return parentJobId;
+    }
+
+    public synchronized void registerSubJob(UUID subJobId) {
+        Objects.requireNonNull(subJobId, "subJobId");
+        subJobs.putIfAbsent(subJobId, SubJobStatus.PLANNED);
+    }
+
+    public synchronized void removeSubJob(UUID subJobId) {
+        subJobs.remove(subJobId);
+    }
+
+    public synchronized void updateSubJobStatus(UUID subJobId, SubJobStatus status) {
+        Objects.requireNonNull(subJobId, "subJobId");
+        Objects.requireNonNull(status, "status");
+        if (subJobs.containsKey(subJobId)) {
+            subJobs.put(subJobId, status);
+        }
+    }
+
+    public synchronized Map<UUID, SubJobStatus> getSubJobStatuses() {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(subJobs));
+    }
+
+    public synchronized boolean hasSubJobs() {
+        return !subJobs.isEmpty();
+    }
+
+    public synchronized boolean hasIncompleteSubJobs() {
+        for (var status : subJobs.values()) {
+            if (!status.isTerminal()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean hasFailedSubJobs() {
+        return subJobs.values().stream().anyMatch(status -> status == SubJobStatus.FAILED);
+    }
+
+    public synchronized Set<UUID> getSubJobsInState(SubJobStatus status) {
+        Objects.requireNonNull(status, "status");
+        return subJobs.entrySet().stream()
+                .filter(entry -> entry.getValue() == status)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.collectingAndThen(Collectors.toCollection(LinkedHashSet::new),
+                        Collections::unmodifiableSet));
+    }
+
+    public synchronized boolean isBlockedBySubJobs() {
+        return hasSubJobs() && (hasIncompleteSubJobs() || hasFailedSubJobs());
+    }
+
+    public enum SubJobStatus {
+        PLANNED,
+        RESERVED,
+        RUNNING,
+        COMPLETE,
+        FAILED;
+
+        public boolean isTerminal() {
+            return this == COMPLETE || this == FAILED;
+        }
     }
 
     /**

@@ -87,9 +87,19 @@ public class AE2LanguageProvider extends LanguageProvider {
                 "External Brewing Execution Complete: %s");
         add("message.appliedenergistics2.processing_job.external_brewing_failed",
                 "External Brewing Execution Failed: %s");
+        add("message.appliedenergistics2.crafting_job.sub_job_spawning", "Spawning sub-job: %s");
+        add("message.appliedenergistics2.crafting_job.sub_job_running", "Sub-job running: %s");
+        add("message.appliedenergistics2.crafting_job.sub_job_completed", "Sub-job completed: %s");
+        add("message.appliedenergistics2.crafting_job.sub_job_failed", "Sub-job failed: %s");
+        add("message.appliedenergistics2.crafting_job.sub_job_cycle",
+                "Unable to create sub-job for %s due to dependency cycle.");
+        add("message.appliedenergistics2.crafting_job.dependency_failed",
+                "Crafting job %s failed due to missing dependency.");
+        add("message.appliedenergistics2.crafting_job.unknown_output", "Unknown output");
         add("gui.appliedenergistics2.pattern_encoding.mode.crafting", "Crafting Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode.processing", "Processing Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode_toggle_hint", "Click to switch pattern type.");
+        add("gui.appliedenergistics2.crafting_job.dependencies", "Dependencies");
         add("item.appliedenergistics2.inscriber_silicon_press", "Inscriber Silicon Press");
         add("item.appliedenergistics2.inscriber_logic_press", "Inscriber Logic Press");
         add("item.appliedenergistics2.inscriber_engineering_press", "Inscriber Engineering Press");
