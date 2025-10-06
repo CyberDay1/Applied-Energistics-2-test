@@ -238,7 +238,7 @@ public final class AE2NetworkHandlers {
             }
 
             if (player.containerMenu instanceof PartitionedCellMenu menu) {
-                menu.applySync(payload.priority(), payload.whitelist());
+                menu.applySync(payload.priority(), payload.whitelistMode(), payload.whitelist());
             }
         });
         ctx.setPacketHandled(true);

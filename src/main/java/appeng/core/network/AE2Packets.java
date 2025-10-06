@@ -76,9 +76,9 @@ public final class AE2Packets {
     }
 
     public static void sendPartitionedCellSync(ServerPlayer player, int containerId, int priority,
-            List<ResourceLocation> whitelist) {
+            boolean whitelistMode, List<ResourceLocation> whitelist) {
         PacketDistributor.sendToPlayer(player,
-                new PartitionedCellSyncS2CPayload(containerId, priority, whitelist));
+                new PartitionedCellSyncS2CPayload(containerId, priority, whitelistMode, whitelist));
     }
 
     public static void sendStorageBusState(ServerPlayer player, int containerId, AccessRestriction accessMode,

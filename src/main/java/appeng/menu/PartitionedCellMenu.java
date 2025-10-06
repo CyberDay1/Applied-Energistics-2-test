@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
 import appeng.core.network.AE2Packets;
+import appeng.grid.SimpleGridNode.OfflineReason;
 import appeng.items.contents.PartitionedCellMenuHost;
 import appeng.menu.implementations.MenuTypeBuilder;
 import appeng.menu.SlotSemantics;
@@ -30,13 +31,18 @@ public class PartitionedCellMenu extends AEBaseMenu {
 
     private final PartitionedCellMenuHost host;
     private final ConfigMenuInventory whitelistInventory;
+    private int priority;
+    private boolean whitelistMode;
     private int lastSyncedPriority = Integer.MIN_VALUE;
+    private boolean lastSyncedWhitelistMode = true;
     private List<ResourceLocation> lastSyncedWhitelist = List.of();
 
     public PartitionedCellMenu(int id, Inventory playerInventory, PartitionedCellMenuHost host) {
         super(TYPE, id, playerInventory, host);
         this.host = host;
         this.whitelistInventory = host.getMenuInventory();
+        this.priority = host.getPriority();
+        this.whitelistMode = host.isWhitelist();
 
         addWhitelistSlots();
         createPlayerInventorySlots(playerInventory);
@@ -50,10 +56,11 @@ public class PartitionedCellMenu extends AEBaseMenu {
 
         if (!isClientSide() && getPlayer() instanceof ServerPlayer serverPlayer) {
             var whitelist = List.copyOf(host.getWhitelistEntries());
-            int priority = host.getPriority();
-            if (priority != lastSyncedPriority || !whitelist.equals(lastSyncedWhitelist)) {
-                AE2Packets.sendPartitionedCellSync(serverPlayer, containerId, priority, whitelist);
+            if (priority != lastSyncedPriority || whitelistMode != lastSyncedWhitelistMode
+                    || !whitelist.equals(lastSyncedWhitelist)) {
+                AE2Packets.sendPartitionedCellSync(serverPlayer, containerId, priority, whitelistMode, whitelist);
                 lastSyncedPriority = priority;
+                lastSyncedWhitelistMode = whitelistMode;
                 lastSyncedWhitelist = whitelist;
             }
         }
@@ -76,36 +83,100 @@ public class PartitionedCellMenu extends AEBaseMenu {
         }
 
         host.clearWhitelist();
+        saveToItem();
         broadcastChanges();
     }
 
     public void updateWhitelistFromClient(List<ResourceLocation> whitelist) {
         if (!isClientSide()) {
             host.updateFromClient(whitelist);
+            saveToItem();
             broadcastChanges();
         }
     }
 
     public int getPriority() {
-        return host.getPriority();
+        return priority;
     }
 
     public void setPriority(int priority) {
-        host.setPriority(priority);
-        if (!isClientSide()) {
-            broadcastChanges();
+        if (isClientSide()) {
+            this.priority = priority;
+            host.setPriority(priority);
+            return;
         }
+
+        if (this.priority == priority) {
+            return;
+        }
+
+        this.priority = priority;
+        host.acceptPriority(priority);
+        saveToItem();
+        broadcastChanges();
     }
 
     public void updatePriorityFromClient(int priority) {
         if (!isClientSide()) {
-            host.acceptPriority(priority);
-            broadcastChanges();
+            setPriority(priority);
         }
     }
 
-    public void applySync(int priority, List<ResourceLocation> whitelist) {
+    public boolean isWhitelist() {
+        return whitelistMode;
+    }
+
+    public void setWhitelist(boolean whitelistMode) {
+        if (isClientSide()) {
+            this.whitelistMode = whitelistMode;
+            host.setWhitelist(whitelistMode);
+            return;
+        }
+
+        if (this.whitelistMode == whitelistMode) {
+            return;
+        }
+
+        this.whitelistMode = whitelistMode;
+        host.acceptWhitelist(whitelistMode);
+        saveToItem();
+        broadcastChanges();
+    }
+
+    public void updateWhitelistModeFromClient(boolean whitelistMode) {
+        if (!isClientSide()) {
+            setWhitelist(whitelistMode);
+        }
+    }
+
+    private void saveToItem() {
+        if (isClientSide()) {
+            return;
+        }
+
+        var stack = host.getItemStack();
+        var item = host.getItem();
+        item.setPriority(stack, priority);
+        item.setWhitelistMode(stack, whitelistMode);
+        var whitelistEntries = host.getWhitelistEntries();
+        if (whitelistEntries.isEmpty()) {
+            item.clearWhitelist(stack);
+        } else {
+            item.setWhitelist(stack, whitelistEntries);
+        }
+
+        lastSyncedWhitelist = List.of();
+    }
+
+    public OfflineReason getOfflineReason() {
+        return null;
+    }
+
+    public void applySync(int priority, boolean whitelistMode, List<ResourceLocation> whitelist) {
+        this.priority = priority;
+        this.whitelistMode = whitelistMode;
         host.acceptPriority(priority);
+        host.acceptWhitelist(whitelistMode);
         host.applyWhitelist(whitelist);
     }
 }

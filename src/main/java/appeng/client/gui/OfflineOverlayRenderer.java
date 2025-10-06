@@ -2,6 +2,8 @@ package appeng.client.gui;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.network.chat.Component;
 
 import appeng.grid.SimpleGridNode.OfflineReason;
@@ -43,6 +45,15 @@ public final class OfflineOverlayRenderer {
     public static void renderForReason(GuiGraphics graphics, Font font, OfflineReason reason, int x, int y, int width,
             int height) {
         renderWithMessage(graphics, font, getMessageForReason(reason), x, y, width, height);
+    }
+
+    public static void drawIfOffline(GuiGraphics graphics, Font font, @Nullable OfflineReason reason, int x, int y,
+            int width, int height) {
+        if (reason == null) {
+            return;
+        }
+
+        renderForReason(graphics, font, reason, x, y, width, height);
     }
 
     public static Component getMessageForReason(OfflineReason reason) {

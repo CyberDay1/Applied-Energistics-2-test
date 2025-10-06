@@ -11,7 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 
 import appeng.core.AppEng;
 
-public record PartitionedCellSyncS2CPayload(int containerId, int priority, List<ResourceLocation> whitelist)
+public record PartitionedCellSyncS2CPayload(int containerId, int priority, boolean whitelistMode,
+        List<ResourceLocation> whitelist)
         implements CustomPacketPayload {
     public PartitionedCellSyncS2CPayload {
         whitelist = List.copyOf(whitelist);
@@ -25,17 +26,19 @@ public record PartitionedCellSyncS2CPayload(int containerId, int priority, List<
     private static PartitionedCellSyncS2CPayload read(FriendlyByteBuf buf) {
         int containerId = buf.readVarInt();
         int priority = buf.readVarInt();
+        boolean whitelistMode = buf.readBoolean();
         int size = buf.readVarInt();
         List<ResourceLocation> whitelist = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             whitelist.add(buf.readResourceLocation());
         }
-        return new PartitionedCellSyncS2CPayload(containerId, priority, whitelist);
+        return new PartitionedCellSyncS2CPayload(containerId, priority, whitelistMode, whitelist);
     }
 
     private static void write(FriendlyByteBuf buf, PartitionedCellSyncS2CPayload payload) {
         buf.writeVarInt(payload.containerId());
         buf.writeVarInt(payload.priority());
+        buf.writeBoolean(payload.whitelistMode());
         buf.writeVarInt(payload.whitelist().size());
         for (var id : payload.whitelist()) {
             buf.writeResourceLocation(id);
