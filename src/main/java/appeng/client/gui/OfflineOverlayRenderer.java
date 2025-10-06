@@ -4,6 +4,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
+import appeng.grid.SimpleGridNode.OfflineReason;
+
 /**
  * Renders the common offline overlay that is used across multiple AE2 screens. Centralizing the
  * rendering keeps the tint, text color and alignment consistent between terminals, monitors and
@@ -36,5 +38,18 @@ public final class OfflineOverlayRenderer {
         int textX = x + (width - textWidth) / 2;
         int textY = y + (height - font.lineHeight) / 2;
         graphics.drawString(font, message, textX, textY, TEXT_COLOR, false);
+    }
+
+    public static void renderForReason(GuiGraphics graphics, Font font, OfflineReason reason, int x, int y, int width,
+            int height) {
+        renderWithMessage(graphics, font, getMessageForReason(reason), x, y, width, height);
+    }
+
+    public static Component getMessageForReason(OfflineReason reason) {
+        return switch (reason) {
+            case REDSTONE -> Component.translatable("gui.appliedenergistics2.offline.redstone");
+            case CHANNELS -> Component.translatable("gui.appliedenergistics2.offline.channels");
+            case NONE -> Component.translatable("gui.appliedenergistics2.offline.power");
+        };
     }
 }

@@ -22,7 +22,6 @@ import appeng.api.storage.ItemStackView;
 import appeng.client.gui.OfflineOverlayRenderer;
 import appeng.core.network.serverbound.TerminalExtractPacket;
 import appeng.menu.terminal.TerminalMenu;
-import appeng.grid.SimpleGridNode.OfflineReason;
 
 public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     private static final int SLOT_SIZE = 18;
@@ -80,6 +79,7 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
         super.init();
         this.searchBox = new EditBox(this.font, this.leftPos + 8, this.topPos + 6, 120, 12,
                 Component.translatable("gui.appliedenergistics2.terminal.search"));
+        this.searchBox.setHint(Component.translatable("gui.appliedenergistics2.terminal.search_hint"));
         this.searchBox.setResponder(value -> this.scrollIndex = 0);
         this.searchBox.setMaxLength(64);
         this.addRenderableWidget(this.searchBox);
@@ -298,7 +298,7 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
         int y = getListTop();
         int width = getItemsPerRow() * getSlotSize();
         int height = getVisibleRows() * getSlotSize();
-        OfflineOverlayRenderer.renderWithMessage(graphics, this.font, getOfflineMessage(), x, y, width, height);
+        OfflineOverlayRenderer.renderForReason(graphics, this.font, this.menu.getOfflineReason(), x, y, width, height);
     }
 
     private void updateRedstoneButton() {
@@ -324,15 +324,6 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
         }
         this.redstoneButton.setMessage(label);
         this.redstoneButton.setTooltip(Tooltip.create(tooltip));
-    }
-
-    private Component getOfflineMessage() {
-        OfflineReason reason = this.menu.getOfflineReason();
-        return switch (reason) {
-            case REDSTONE -> Component.translatable("gui.appliedenergistics2.offline.redstone");
-            case CHANNELS -> Component.translatable("gui.appliedenergistics2.offline.channels");
-            default -> Component.translatable("gui.appliedenergistics2.offline.power");
-        };
     }
 
     private String formatAmount(int count) {
