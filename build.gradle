@@ -21,3 +21,10 @@ repositories {
 dependencies {
     implementation "net.neoforged:neoforge:${NEOFORGE}"
 }
+
+tasks.register("runData", JavaExec) {
+    group = "datagen"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "appeng.data.AE2DataGen"
+    jvmArgs "-Dneoforge.enabledGameTestNamespaces=appliedenergistics2"
+}
