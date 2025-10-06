@@ -11,11 +11,14 @@ import appeng.core.network.payload.AE2ActionC2SPayload;
 import appeng.core.network.payload.AE2HelloS2CPayload;
 import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
+import appeng.core.network.payload.CraftingJobSyncS2CPayload;
 import appeng.core.network.payload.EncodePatternC2SPayload;
+import appeng.core.network.payload.PartitionedCellSyncS2CPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
+import appeng.core.network.payload.StorageBusStateS2CPayload;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class AE2Network {
@@ -36,6 +39,12 @@ public final class AE2Network {
                 AE2NetworkHandlers::handlePlannedCraftingJobClient);
         play.playToClient(S2CJobUpdatePayload.TYPE, S2CJobUpdatePayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleJobUpdateClient);
+        play.playToClient(CraftingJobSyncS2CPayload.TYPE, CraftingJobSyncS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleCraftingJobSyncClient);
+        play.playToClient(PartitionedCellSyncS2CPayload.TYPE, PartitionedCellSyncS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handlePartitionedCellSyncClient);
+        play.playToClient(StorageBusStateS2CPayload.TYPE, StorageBusStateS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleStorageBusStateClient);
 
         play.playToServer(AE2ActionC2SPayload.TYPE, AE2ActionC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleActionServer);

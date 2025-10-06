@@ -10,23 +10,28 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
 
 import appeng.api.storage.ItemStackView;
+import appeng.client.gui.me.common.ClientCraftingJobTracker;
 import appeng.core.AELog;
 import appeng.core.network.AE2Packets;
 import appeng.core.network.payload.AE2ActionC2SPayload;
 import appeng.core.network.payload.AE2HelloS2CPayload;
 import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
+import appeng.core.network.payload.CraftingJobSyncS2CPayload;
 import appeng.core.network.payload.EncodePatternC2SPayload;
+import appeng.core.network.payload.PartitionedCellSyncS2CPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
-import appeng.client.gui.me.common.ClientCraftingJobTracker;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
+import appeng.core.network.payload.StorageBusStateS2CPayload;
 import appeng.crafting.CraftingJob;
 import appeng.crafting.CraftingJobManager;
 import appeng.items.patterns.EncodedPatternItem;
+import appeng.menu.PartitionedCellMenu;
 import appeng.menu.SlotSemantics;
 import appeng.menu.implementations.PatternEncodingTerminalMenu;
+import appeng.menu.implementations.StorageBusMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
 
 public final class AE2NetworkHandlers {
@@ -61,7 +66,11 @@ public final class AE2NetworkHandlers {
 
     // Login C2S -> server
     public static void handleLoginAckServer(final AE2LoginAckC2SPayload payload, final IPayloadContext ctx) {
-        // Optionally record that the client accepted sync
+        ctx.enqueueWork(() -> {
+            if (ctx.player() instanceof ServerPlayer player) {
+                CraftingJobManager.getInstance().syncJobs(player);
+            }
+        });
         ctx.setPacketHandled(true);
     }
 
@@ -201,6 +210,55 @@ public final class AE2NetworkHandlers {
                             .append(" ").append(message);
                 }
                 player.displayClientMessage(message, false);
+            }
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleCraftingJobSyncClient(final CraftingJobSyncS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            for (var job : payload.jobs()) {
+                ClientCraftingJobTracker.update(job);
+            }
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handlePartitionedCellSyncClient(final PartitionedCellSyncS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null || player.containerMenu == null) {
+                return;
+            }
+
+            if (player.containerMenu.containerId != payload.containerId()) {
+                return;
+            }
+
+            if (player.containerMenu instanceof PartitionedCellMenu menu) {
+                menu.applySync(payload.priority(), payload.whitelist());
+            }
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleStorageBusStateClient(final StorageBusStateS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null || player.containerMenu == null) {
+                return;
+            }
+
+            if (player.containerMenu.containerId != payload.containerId()) {
+                return;
+            }
+
+            if (player.containerMenu instanceof StorageBusMenu menu) {
+                menu.applyState(payload.accessMode(), payload.storageFilter(), payload.filterOnExtract(),
+                        payload.connectedTo());
             }
         });
         ctx.setPacketHandled(true);

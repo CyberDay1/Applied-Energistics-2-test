@@ -1,48 +1,41 @@
 package appeng.integration.compat;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraft.network.chat.Component;
 
-import appeng.api.compat.CuriosCompat;
-import appeng.api.compat.JeiCompat;
-import appeng.api.compat.ReiCompat;
-import appeng.api.ids.AEConstants;
+import appeng.core.AELog;
+import appeng.interop.AE2Interop;
+import appeng.interop.AE2Interop.InteropRegistrationResult;
 
-@Mod.EventBusSubscriber(modid = AEConstants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class InteropBootstrap {
     private InteropBootstrap() {
     }
 
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            if (JeiCompat.isLoaded()) {
-                JeiCompat.reportBridgeInitialized();
-            }
-            if (ReiCompat.isLoaded()) {
-                ReiCompat.reportBridgeInitialized();
-            }
-            if (CuriosCompat.isLoaded()) {
-                CuriosCompat.reportBridgeInitialized();
-            }
-        });
+    public static void registerInterop() {
+        logResult("Curios", AE2Interop.registerCuriosCompat());
+        logResult("JEI", AE2Interop.registerJeiCompat());
+        logResult("REI", AE2Interop.registerReiCompat());
+        logResult("EMI", AE2Interop.registerEmiCompat());
     }
 
-    @Mod.EventBusSubscriber(modid = AEConstants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static final class Common {
-        private Common() {
-        }
-
-        @SubscribeEvent
-        public static void onCommonSetup(FMLCommonSetupEvent event) {
-            event.enqueueWork(() -> {
-                if (CuriosCompat.isLoaded()) {
-                    CuriosCompat.reportBridgeInitialized();
-                }
-            });
+    private static void logResult(String integrationName, InteropRegistrationResult result) {
+        if (result.success()) {
+            AELog.info(Component
+                    .translatable("log.appliedenergistics2.interop.success", integrationName)
+                    .getString());
+        } else if (result.skipped()) {
+            AELog.info(Component
+                    .translatable("log.appliedenergistics2.interop.skipped", integrationName)
+                    .getString());
+        } else {
+            var message = Component
+                    .translatable("log.appliedenergistics2.interop.failed", integrationName,
+                            result.error() != null ? result.error().getMessage() : "unknown")
+                    .getString();
+            if (result.error() != null) {
+                AELog.warn(result.error(), message);
+            } else {
+                AELog.warn(message);
+            }
         }
     }
 }

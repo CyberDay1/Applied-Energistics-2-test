@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 
@@ -27,6 +28,8 @@ import appeng.blockentity.crafting.CraftingCPUBlockEntity;
 import appeng.api.integration.machines.IProcessingMachine;
 import appeng.api.storage.ItemStackView;
 import appeng.blockentity.crafting.MolecularAssemblerBlockEntity;
+import appeng.core.network.AE2Packets;
+import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.integration.processing.ProcessingMachineExecutor;
 import appeng.integration.processing.ProcessingMachineRegistry;
 
@@ -485,6 +488,21 @@ public final class CraftingJobManager {
         markJobFailed(job, reason);
         if (cpu != null) {
             cpu.releaseReservation(job.getId());
+        }
+    }
+
+    public void syncJobs(ServerPlayer player) {
+        if (player == null) {
+            return;
+        }
+
+        List<S2CJobUpdatePayload> updates = new ArrayList<>();
+        for (var job : jobs.values()) {
+            updates.add(AE2Packets.createCraftingJobUpdate(job));
+        }
+
+        if (!updates.isEmpty()) {
+            AE2Packets.sendCraftingJobSync(player, updates);
         }
     }
 

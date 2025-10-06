@@ -3,9 +3,11 @@ package appeng.menu;
 import java.util.List;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
+import appeng.core.network.AE2Packets;
 import appeng.items.contents.PartitionedCellMenuHost;
 import appeng.menu.implementations.MenuTypeBuilder;
 import appeng.menu.SlotSemantics;
@@ -28,6 +30,8 @@ public class PartitionedCellMenu extends AEBaseMenu {
 
     private final PartitionedCellMenuHost host;
     private final ConfigMenuInventory whitelistInventory;
+    private int lastSyncedPriority = Integer.MIN_VALUE;
+    private List<ResourceLocation> lastSyncedWhitelist = List.of();
 
     public PartitionedCellMenu(int id, Inventory playerInventory, PartitionedCellMenuHost host) {
         super(TYPE, id, playerInventory, host);
@@ -38,6 +42,21 @@ public class PartitionedCellMenu extends AEBaseMenu {
         createPlayerInventorySlots(playerInventory);
 
         registerClientAction(ACTION_CLEAR_WHITELIST, this::clearWhitelist);
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+
+        if (!isClientSide() && getPlayer() instanceof ServerPlayer serverPlayer) {
+            var whitelist = List.copyOf(host.getWhitelistEntries());
+            int priority = host.getPriority();
+            if (priority != lastSyncedPriority || !whitelist.equals(lastSyncedWhitelist)) {
+                AE2Packets.sendPartitionedCellSync(serverPlayer, containerId, priority, whitelist);
+                lastSyncedPriority = priority;
+                lastSyncedWhitelist = whitelist;
+            }
+        }
     }
 
     private void addWhitelistSlots() {
@@ -83,5 +102,10 @@ public class PartitionedCellMenu extends AEBaseMenu {
             host.acceptPriority(priority);
             broadcastChanges();
         }
+    }
+
+    public void applySync(int priority, List<ResourceLocation> whitelist) {
+        host.acceptPriority(priority);
+        host.applyWhitelist(whitelist);
     }
 }
