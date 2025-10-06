@@ -10,12 +10,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 
+import appeng.api.config.RedstoneMode;
 import appeng.api.storage.ItemStackView;
 import appeng.core.network.ClientboundPacket;
 import appeng.core.network.CustomAppEngPayload;
 import appeng.menu.terminal.TerminalMenu;
+import appeng.grid.SimpleGridNode.OfflineReason;
 
-public record TerminalItemUpdatePacket(int containerId, boolean online, List<ItemStackView> stacks)
+public record TerminalItemUpdatePacket(int containerId, boolean online, OfflineReason offlineReason,
+        RedstoneMode redstoneMode, List<ItemStackView> stacks)
         implements ClientboundPacket {
 
     public static final Type<TerminalItemUpdatePacket> TYPE =
@@ -27,6 +30,8 @@ public record TerminalItemUpdatePacket(int containerId, boolean online, List<Ite
     public static TerminalItemUpdatePacket decode(RegistryFriendlyByteBuf buf) {
         int containerId = buf.readVarInt();
         boolean online = buf.readBoolean();
+        int offlineReasonOrdinal = buf.readVarInt();
+        int redstoneModeOrdinal = buf.readVarInt();
         int size = buf.readVarInt();
         List<ItemStackView> stacks = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -37,12 +42,16 @@ public record TerminalItemUpdatePacket(int containerId, boolean online, List<Ite
                 stacks.add(new ItemStackView(item, count));
             }
         }
-        return new TerminalItemUpdatePacket(containerId, online, stacks);
+        var offlineReason = OfflineReason.values()[Math.max(0, Math.min(OfflineReason.values().length - 1, offlineReasonOrdinal))];
+        var redstoneMode = RedstoneMode.values()[Math.max(0, Math.min(RedstoneMode.values().length - 1, redstoneModeOrdinal))];
+        return new TerminalItemUpdatePacket(containerId, online, offlineReason, redstoneMode, stacks);
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(containerId);
         buf.writeBoolean(online);
+        buf.writeVarInt(offlineReason.ordinal());
+        buf.writeVarInt(redstoneMode.ordinal());
         buf.writeVarInt(stacks.size());
         for (ItemStackView view : stacks) {
             buf.writeResourceLocation(BuiltInRegistries.ITEM.getKey(view.item()));
@@ -58,7 +67,7 @@ public record TerminalItemUpdatePacket(int containerId, boolean online, List<Ite
     @Override
     public void handleOnClient(Player player) {
         if (player.containerMenu instanceof TerminalMenu menu && menu.containerId == containerId) {
-            menu.handleClientUpdate(stacks, online);
+            menu.handleClientUpdate(stacks, online, offlineReason, redstoneMode);
         }
     }
 }

@@ -7,6 +7,7 @@ import appeng.menu.me.crafting.CraftingMonitorMenu;
 import appeng.menu.terminal.CraftingTerminalMenu;
 import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
+import appeng.menu.simple.SimpleDriveMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.registries.RegistryObject;
 
@@ -28,6 +29,9 @@ public final class AE2Menus {
 
     public static final RegistryObject<MenuType<CraftingMonitorMenu>> CRAFTING_MONITOR_MENU =
         AE2Registries.MENUS.register("crafting_monitor", () -> CraftingMonitorMenu.TYPE);
+
+    public static final RegistryObject<MenuType<SimpleDriveMenu>> SIMPLE_DRIVE_MENU =
+        AE2Registries.MENUS.register("simple_drive", () -> SimpleDriveMenu.TYPE);
 
     private AE2Menus() {}
 }
