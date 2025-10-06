@@ -66,6 +66,41 @@ public class AE2LootTableProvider extends LootTableProvider {
                             LootPool.lootPool().setRolls(ConstantValue.exactly(1))
                                     .add(LootItem.lootTableItem(AE2Blocks.CABLE.get()))));
 
+            out.accept(AE2Blocks.DRIVE.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.DRIVE.get()))));
+
+            out.accept(AE2Blocks.TERMINAL.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.TERMINAL.get()))));
+
+            out.accept(AE2Blocks.CRAFTING_TERMINAL.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.CRAFTING_TERMINAL.get()))));
+
+            out.accept(AE2Blocks.PATTERN_TERMINAL.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.PATTERN_TERMINAL.get()))));
+
+            out.accept(AE2Blocks.PATTERN_ENCODING_TERMINAL.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.PATTERN_ENCODING_TERMINAL.get()))));
+
+            out.accept(AE2Blocks.CRAFTING_MONITOR.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.CRAFTING_MONITOR.get()))));
+
+            out.accept(AE2Blocks.SKY_STONE_CHEST.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.SKY_STONE_CHEST.get()))));
+
             out.accept(new ResourceLocation(AE2Registries.MODID, "blocks/meteorite_hint"),
                     LootTable.lootTable().withPool(
                             LootPool.lootPool().setRolls(ConstantValue.exactly(1))

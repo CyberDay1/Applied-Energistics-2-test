@@ -19,6 +19,11 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("block.appliedenergistics2.controller", "Controller");
         add("block.appliedenergistics2.energy_acceptor", "Energy Acceptor");
         add("block.appliedenergistics2.crafting_monitor", "Crafting Monitor");
+        add("block.ae2.drive", "ME Drive");
+        add("block.ae2.terminal", "ME Terminal");
+        add("block.ae2.crafting_terminal", "ME Crafting Terminal");
+        add("block.ae2.pattern_terminal", "ME Pattern Terminal");
+        add("block.ae2.pattern_encoding_terminal", "Pattern Encoding Terminal");
         add("block.appliedenergistics2.storage_bus", "ME Storage Bus");
         add("block.appliedenergistics2.import_bus", "ME Import Bus");
         add("block.appliedenergistics2.export_bus", "ME Export Bus");
@@ -67,8 +72,14 @@ public class AE2LanguageProvider extends LanguageProvider {
                 "Distributed execution evaluation started for %s.");
         add("message.appliedenergistics2.processing_job.executor_at_capacity",
                 "Executor %s (%s) is at capacity (%s/%s jobs).");
+        add("message.appliedenergistics2.processing_job.executor_offline_fallback",
+                "Executor %2$s (type %3$s) offline while handling job %1$s; falling back.");
         add("message.appliedenergistics2.processing_job.job_scheduled_on_executor",
                 "Job %s scheduled on executor %s (type %s, load %s/%s).");
+        add("message.appliedenergistics2.processing_job.high_priority_scheduled",
+                "High priority job %s scheduled on %s (type %s).");
+        add("message.appliedenergistics2.processing_job.executor_failed_reroute",
+                "Executor %2$s (type %3$s) failed to complete job %1$s; rerouting.");
         add("message.appliedenergistics2.processing_job.external_furnace_started",
                 "External Furnace Execution Started: %s");
         add("message.appliedenergistics2.processing_job.external_furnace_complete",
@@ -87,10 +98,12 @@ public class AE2LanguageProvider extends LanguageProvider {
                 "External Brewing Execution Complete: %s");
         add("message.appliedenergistics2.processing_job.external_brewing_failed",
                 "External Brewing Execution Failed: %s");
+        add("message.appliedenergistics2.crafting_job.spawning_sub_job", "Creating sub-job %2$s for %1$s.");
         add("message.appliedenergistics2.crafting_job.sub_job_spawning", "Spawning sub-job: %s");
         add("message.appliedenergistics2.crafting_job.sub_job_running", "Sub-job running: %s");
         add("message.appliedenergistics2.crafting_job.sub_job_completed", "Sub-job completed: %s");
         add("message.appliedenergistics2.crafting_job.sub_job_failed", "Sub-job failed: %s");
+        add("message.appliedenergistics2.crafting_job.sub_job_reserved", "Reserved sub-job %2$s for %1$s.");
         add("message.appliedenergistics2.crafting_job.sub_job_cycle",
                 "Unable to create sub-job for %s due to dependency cycle.");
         add("message.appliedenergistics2.crafting_job.dependency_failed",
@@ -119,5 +132,7 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("tooltip.ae2.cell.used", "Used: %s / %s");
         add("tooltip.ae2.cell.types", "Types: %s / %s");
         add("tooltip.ae2.cell.priority", "Priority: %s");
+        add("gui.appliedenergistics2.terminal.search", "Search Items");
+        add("gui.ae2.ClearWhitelist", "Clear Whitelist");
     }
 }

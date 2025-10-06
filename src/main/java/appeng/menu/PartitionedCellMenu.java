@@ -12,6 +12,11 @@ import appeng.menu.SlotSemantics;
 import appeng.menu.slot.FakeSlot;
 import appeng.util.ConfigMenuInventory;
 
+/**
+ * Menu for configuring partitioned storage cells. Acts as a lightweight façade over the legacy
+ * whitelist editor so the NeoForge port can hook into the same sync logic while polish work
+ * continues.
+ */
 public class PartitionedCellMenu extends AEBaseMenu {
     private static final String ACTION_CLEAR_WHITELIST = "clearWhitelist";
 
