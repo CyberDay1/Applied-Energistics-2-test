@@ -1,6 +1,8 @@
 package appeng.api.integration.machines;
 
+import java.util.OptionalInt;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +20,21 @@ import appeng.storage.impl.StorageService;
 public abstract class AbstractProcessingMachine implements IProcessingMachine {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractProcessingMachine.class);
 
-    private boolean busy;
+    private final AtomicInteger activeJobs = new AtomicInteger();
 
     @Override
     public final boolean isBusy() {
-        return busy;
+        return activeJobs.get() > 0;
+    }
+
+    @Override
+    public int getActiveJobCount() {
+        return activeJobs.get();
     }
 
     @Override
     public boolean canProcess(CraftingJob job) {
-        return !busy && IProcessingMachine.super.canProcess(job);
+        return IProcessingMachine.super.canProcess(job);
     }
 
     /**
@@ -71,12 +78,17 @@ public abstract class AbstractProcessingMachine implements IProcessingMachine {
 
     @Override
     public void beginProcessing(CraftingJob job) {
-        busy = true;
+        int newCount = activeJobs.incrementAndGet();
+        OptionalInt capacity = getCapacity();
+        if (capacity.isPresent() && newCount > capacity.getAsInt()) {
+            LOG.debug("Processing machine {} exceeded declared capacity {} while starting job {}", this,
+                    capacity.getAsInt(), job != null ? job.getId() : null);
+        }
     }
 
     @Override
     public void finishProcessing(CraftingJob job) {
-        busy = false;
+        activeJobs.updateAndGet(current -> current > 0 ? current - 1 : 0);
     }
 
     /**

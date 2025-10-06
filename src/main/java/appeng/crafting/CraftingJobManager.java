@@ -1,11 +1,16 @@
 package appeng.crafting;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -36,6 +41,8 @@ public final class CraftingJobManager {
     private final Set<MolecularAssemblerBlockEntity> assemblers = ConcurrentHashMap.newKeySet();
     private final ConcurrentMap<UUID, MolecularAssemblerBlockEntity> jobAssemblers = new ConcurrentHashMap<>();
     private final ConcurrentMap<UUID, IProcessingMachine> jobMachines = new ConcurrentHashMap<>();
+    private final ProcessingExecutorSchedulingPolicy executorSchedulingPolicy =
+            new RoundRobinProcessingExecutorSchedulingPolicy();
 
     private CraftingJobManager() {
     }
@@ -98,8 +105,8 @@ public final class CraftingJobManager {
 
     private boolean tryExecuteOnExternalMachine(CraftingJob job) {
         var registry = ProcessingMachineRegistry.getInstance();
-        var machine = registry.findAvailableMachine(job);
-        if (machine.isEmpty()) {
+        var machines = registry.findMachinesForJob(job);
+        if (machines.isEmpty()) {
             LOG.debug(Component
                     .translatable("message.appliedenergistics2.processing_job.external_fallback",
                             job.describeOutputs())
@@ -110,11 +117,44 @@ public final class CraftingJobManager {
         LOG.debug(Component.translatable("message.appliedenergistics2.processing_job.external_attempt",
                 job.describeOutputs()).getString());
 
-        LOG.debug("Routing processing job {} to external machine {}", job.getId(), machine.get());
+        LOG.debug(Component
+                .translatable("message.appliedenergistics2.processing_job.distributed_start", job.describeOutputs())
+                .getString());
 
-        var handled = ProcessingMachineExecutor.tryExecute(job, machine.get());
+        var snapshot = buildExecutorPools(machines);
+
+        for (var saturated : snapshot.saturatedExecutors()) {
+            LOG.debug(Component
+                    .translatable("message.appliedenergistics2.processing_job.executor_at_capacity",
+                            saturated.executorType(), saturated.machine(), saturated.activeJobs(),
+                            formatCapacity(saturated.capacity()))
+                    .getString());
+        }
+
+        var selection = executorSchedulingPolicy.select(job, snapshot.availableExecutors());
+        if (selection.isEmpty()) {
+            LOG.debug(Component
+                    .translatable("message.appliedenergistics2.processing_job.external_fallback",
+                            job.describeOutputs())
+                    .getString());
+            return false;
+        }
+
+        var selectionResult = selection.get();
+        var machine = selectionResult.executor();
+        int plannedActive = machine.getActiveJobCount() + 1;
+        var capacity = formatCapacity(machine.getCapacity());
+
+        LOG.debug(Component
+                .translatable("message.appliedenergistics2.processing_job.job_scheduled_on_executor",
+                        job.describeOutputs(), machine, selectionResult.executorType(), plannedActive, capacity)
+                .getString());
+
+        LOG.debug("Routing processing job {} to external machine {}", job.getId(), machine);
+
+        var handled = ProcessingMachineExecutor.tryExecute(job, machine);
         if (handled) {
-            jobMachines.put(job.getId(), machine.get());
+            jobMachines.put(job.getId(), machine);
         }
         if (!handled) {
             LOG.debug(Component
@@ -123,6 +163,32 @@ public final class CraftingJobManager {
                     .getString());
         }
         return handled;
+    }
+
+    private ExecutorPoolSnapshot buildExecutorPools(List<IProcessingMachine> machines) {
+        Map<String, List<IProcessingMachine>> pools = new LinkedHashMap<>();
+        List<ExecutorAvailability> saturated = new ArrayList<>();
+        for (var machine : machines) {
+            if (machine == null) {
+                continue;
+            }
+
+            var type = machine.getExecutorTypeId();
+            int activeJobs = machine.getActiveJobCount();
+            var capacity = machine.getCapacity();
+
+            if (!machine.hasCapacity()) {
+                saturated.add(new ExecutorAvailability(type, machine, activeJobs, capacity));
+                continue;
+            }
+
+            pools.computeIfAbsent(type, key -> new ArrayList<>()).add(machine);
+        }
+        return new ExecutorPoolSnapshot(pools, saturated);
+    }
+
+    private static String formatCapacity(OptionalInt capacity) {
+        return capacity.isPresent() ? Integer.toString(capacity.getAsInt()) : "unbounded";
     }
 
     public void releaseAssembler(UUID jobId) {
@@ -279,6 +345,39 @@ public final class CraftingJobManager {
             return text;
         }
         return Character.toUpperCase(text.charAt(0)) + text.substring(1);
+    }
+
+    private record ExecutorAvailability(String executorType, IProcessingMachine machine, int activeJobs,
+            OptionalInt capacity) {
+    }
+
+    private record ExecutorPoolSnapshot(Map<String, List<IProcessingMachine>> availableExecutors,
+            List<ExecutorAvailability> saturatedExecutors) {
+    }
+
+    private interface ProcessingExecutorSchedulingPolicy {
+        Optional<Selection> select(CraftingJob job, Map<String, List<IProcessingMachine>> executorPools);
+
+        record Selection(String executorType, IProcessingMachine executor) {
+        }
+    }
+
+    private static final class RoundRobinProcessingExecutorSchedulingPolicy
+            implements ProcessingExecutorSchedulingPolicy {
+        private final ConcurrentMap<String, AtomicInteger> rotation = new ConcurrentHashMap<>();
+
+        @Override
+        public Optional<Selection> select(CraftingJob job, Map<String, List<IProcessingMachine>> executorPools) {
+            for (var entry : executorPools.entrySet()) {
+                var executors = entry.getValue();
+                if (!executors.isEmpty()) {
+                    var index = rotation.computeIfAbsent(entry.getKey(), key -> new AtomicInteger());
+                    int next = Math.floorMod(index.getAndIncrement(), executors.size());
+                    return Optional.of(new Selection(entry.getKey(), executors.get(next)));
+                }
+            }
+            return Optional.empty();
+        }
     }
 
     public record CraftingJobReservation(BlockPos cpuPos, int capacity) {
