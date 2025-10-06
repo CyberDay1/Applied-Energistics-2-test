@@ -31,7 +31,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import java.util.UUID;
+
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 import appeng.api.config.FuzzyMode;
@@ -58,6 +61,7 @@ import appeng.core.settings.TickRates;
 import appeng.helpers.IConfigInvHost;
 import appeng.items.parts.PartModels;
 import appeng.me.helpers.MachineSource;
+import appeng.integration.processing.FurnaceProcessingMachine;
 import appeng.integration.processing.ProcessingMachineRegistry;
 import appeng.menu.ISubMenu;
 import appeng.menu.MenuOpener;
@@ -331,7 +335,16 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
 
         var targetPos = host.getBlockPos().relative(getSide());
         BlockEntity neighbor = serverLevel.getBlockEntity(targetPos);
-        IProcessingMachine machine = neighbor instanceof IProcessingMachine processingMachine ? processingMachine : null;
+        IProcessingMachine machine = null;
+        if (neighbor instanceof IProcessingMachine processingMachine) {
+            machine = processingMachine;
+        } else if (neighbor instanceof AbstractFurnaceBlockEntity) {
+            var node = getMainNode().getNode();
+            UUID gridId = node != null ? node.getGridId() : null;
+            if (gridId != null) {
+                machine = new FurnaceProcessingMachine(serverLevel, targetPos, gridId);
+            }
+        }
 
         if (externalMachine == machine) {
             return;

@@ -63,6 +63,12 @@ public class AE2LanguageProvider extends LanguageProvider {
                 "Attempting to route processing job %s to external machinery.");
         add("message.appliedenergistics2.processing_job.external_fallback",
                 "External routing unavailable for processing job %s. Using assembler.");
+        add("message.appliedenergistics2.processing_job.external_furnace_started",
+                "External Furnace Execution Started: %s");
+        add("message.appliedenergistics2.processing_job.external_furnace_complete",
+                "External Furnace Execution Complete: %s");
+        add("message.appliedenergistics2.processing_job.external_furnace_failed",
+                "External Furnace Execution Failed: %s");
         add("gui.appliedenergistics2.pattern_encoding.mode.crafting", "Crafting Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode.processing", "Processing Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode_toggle_hint", "Click to switch pattern type.");

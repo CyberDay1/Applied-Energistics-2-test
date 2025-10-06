@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import appeng.blockentity.crafting.CraftingCPUBlockEntity;
@@ -99,21 +100,25 @@ public final class CraftingJobManager {
         var registry = ProcessingMachineRegistry.getInstance();
         var machine = registry.findAvailableMachine(job);
         if (machine.isEmpty()) {
-            LOG.debug("No external machine registered for processing job {}; falling back to assembler.",
-                    job.describeOutputs());
+            LOG.debug(Component
+                    .translatable("message.appliedenergistics2.processing_job.external_fallback",
+                            job.describeOutputs())
+                    .getString());
             return false;
         }
 
-        LOG.debug("Attempting to route processing job {} to external machine {}", job.describeOutputs(),
-                machine.get());
+        LOG.debug(Component.translatable("message.appliedenergistics2.processing_job.external_attempt",
+                job.describeOutputs()).getString());
 
         var handled = ProcessingMachineExecutor.tryExecute(job, machine.get());
         if (handled) {
             jobMachines.put(job.getId(), machine.get());
         }
         if (!handled) {
-            LOG.debug("Stub executor declined processing job {}; continuing with assembler pipeline.",
-                    job.describeOutputs());
+            LOG.debug(Component
+                    .translatable("message.appliedenergistics2.processing_job.external_fallback",
+                            job.describeOutputs())
+                    .getString());
         }
         return handled;
     }
