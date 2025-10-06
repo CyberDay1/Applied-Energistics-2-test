@@ -2,6 +2,7 @@ package appeng.menu.implementations;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +22,7 @@ public class PatternEncodingTerminalMenu extends AEBaseMenu {
             .build("pattern_encoding_terminal");
 
     private final PatternEncodingTerminalBlockEntity terminal;
+    private boolean processingMode;
 
     public PatternEncodingTerminalMenu(int id, Inventory playerInventory,
             PatternEncodingTerminalBlockEntity terminal) {
@@ -29,6 +31,7 @@ public class PatternEncodingTerminalMenu extends AEBaseMenu {
 
         addCraftingMatrixSlots(terminal.getCraftingMatrix());
         addPatternSlots(terminal.getPatternInventory());
+        addProcessingModeSync();
 
         createPlayerInventorySlots(playerInventory);
     }
@@ -71,5 +74,46 @@ public class PatternEncodingTerminalMenu extends AEBaseMenu {
         if (player != null) {
             player.displayClientMessage(result.message(), result.success());
         }
+    }
+
+    public boolean isProcessingMode() {
+        return processingMode;
+    }
+
+    public void toggleProcessingMode() {
+        setProcessingMode(!isProcessingMode());
+    }
+
+    public void setProcessingMode(boolean processingMode) {
+        if (isClientSide()) {
+            AE2Packets.setPatternEncodingMode(containerId, processingMode);
+        } else {
+            setProcessingModeServer(processingMode);
+        }
+    }
+
+    public void setProcessingModeServer(boolean processingMode) {
+        if (this.processingMode == processingMode) {
+            return;
+        }
+
+        this.processingMode = processingMode;
+        terminal.setProcessingMode(processingMode);
+        broadcastChanges();
+    }
+
+    private void addProcessingModeSync() {
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                processingMode = terminal.isProcessingMode();
+                return processingMode ? 1 : 0;
+            }
+
+            @Override
+            public void set(int value) {
+                processingMode = value != 0;
+            }
+        });
     }
 }

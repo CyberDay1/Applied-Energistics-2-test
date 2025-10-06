@@ -48,12 +48,18 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("tooltip.appliedenergistics2.fuzzy_card", "Ignores damage and NBT when filtering");
         add("tooltip.appliedenergistics2.encoded_pattern.output", "Output: %s");
         add("tooltip.appliedenergistics2.encoded_pattern.inputs", "Inputs: %s");
+        add("tooltip.appliedenergistics2.encoded_pattern.mode.crafting", "Crafting Pattern");
+        add("tooltip.appliedenergistics2.encoded_pattern.mode.processing", "Processing Pattern");
         add("message.appliedenergistics2.pattern_encoding.success", "Pattern encoded: %s");
         add("message.appliedenergistics2.pattern_encoding.internal", "Unable to encode pattern (internal error).");
         add("message.appliedenergistics2.pattern_encoding.output_occupied", "Remove the existing encoded pattern first.");
         add("message.appliedenergistics2.pattern_encoding.need_blank_pattern", "Insert a blank pattern to encode.");
         add("message.appliedenergistics2.pattern_encoding.no_ingredients", "Place a recipe in the crafting grid.");
         add("message.appliedenergistics2.pattern_encoding.invalid_recipe", "No valid crafting recipe found.");
+        add("message.appliedenergistics2.pattern_encoding.no_processing_outputs", "Specify at least one output item.");
+        add("gui.appliedenergistics2.pattern_encoding.mode.crafting", "Crafting Pattern");
+        add("gui.appliedenergistics2.pattern_encoding.mode.processing", "Processing Pattern");
+        add("gui.appliedenergistics2.pattern_encoding.mode_toggle_hint", "Click to switch pattern type.");
         add("item.appliedenergistics2.inscriber_silicon_press", "Inscriber Silicon Press");
         add("item.appliedenergistics2.inscriber_logic_press", "Inscriber Logic Press");
         add("item.appliedenergistics2.inscriber_engineering_press", "Inscriber Engineering Press");

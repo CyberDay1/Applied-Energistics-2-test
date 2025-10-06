@@ -32,11 +32,14 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
     private static final int PATTERN_SLOT_COUNT = 2;
     private static final int BLANK_PATTERN_SLOT = 0;
     private static final int ENCODED_PATTERN_SLOT = 1;
+    private static final int PROCESSING_OUTPUT_SLOT_COUNT = 3;
 
     private final NonNullList<ItemStack> craftingItems =
             NonNullList.withSize(CRAFTING_GRID_SIZE, ItemStack.EMPTY);
     private final NonNullList<ItemStack> patternItems =
             NonNullList.withSize(PATTERN_SLOT_COUNT, ItemStack.EMPTY);
+
+    private boolean processingMode;
 
     private final Container craftingMatrix = new Container() {
         @Override
@@ -245,6 +248,11 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
     }
 
     public ItemStack getCraftingResult() {
+        if (isProcessingMode()) {
+            var outputs = collectProcessingOutputs();
+            return outputs.isEmpty() ? ItemStack.EMPTY : outputs.get(0).copy();
+        }
+
         var level = getLevel();
         if (level == null) {
             return ItemStack.EMPTY;
@@ -277,45 +285,72 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
                     Component.translatable("message.appliedenergistics2.pattern_encoding.need_blank_pattern"));
         }
 
-        var input = createCraftingInput();
-        if (input.isEmpty()) {
-            return EncodeResult
-                    .error(Component.translatable("message.appliedenergistics2.pattern_encoding.no_ingredients"));
-        }
-
-        var recipe = findRecipe(level, input.get()).orElse(null);
-        if (recipe == null) {
-            return EncodeResult
-                    .error(Component.translatable("message.appliedenergistics2.pattern_encoding.invalid_recipe"));
-        }
-
-        var result = recipe.value().assemble(input.get(), level.registryAccess()).copy();
-        if (result.isEmpty()) {
-            return EncodeResult
-                    .error(Component.translatable("message.appliedenergistics2.pattern_encoding.invalid_recipe"));
-        }
-
         var encodedStack = new ItemStack(AE2Items.ENCODED_PATTERN.get());
         if (!(encodedStack.getItem() instanceof EncodedPatternItem encodedPatternItem)) {
             return EncodeResult.error(
                     Component.translatable("message.appliedenergistics2.pattern_encoding.internal"));
         }
+        ItemStack primaryOutput;
+        if (isProcessingMode()) {
+            var inputs = summarizeProcessingInputs();
+            if (inputs.isEmpty()) {
+                return EncodeResult.error(
+                        Component.translatable("message.appliedenergistics2.pattern_encoding.no_ingredients"));
+            }
 
-        var inputs = summarizeInputs();
-        encodedPatternItem.setRecipe(encodedStack, recipe.id(), inputs, List.of(result));
+            var outputs = collectProcessingOutputs();
+            if (outputs.isEmpty()) {
+                return EncodeResult.error(Component
+                        .translatable("message.appliedenergistics2.pattern_encoding.no_processing_outputs"));
+            }
+
+            encodedPatternItem.setRecipe(encodedStack, null, inputs, outputs, true);
+            primaryOutput = outputs.get(0);
+        } else {
+            var input = createCraftingInput();
+            if (input.isEmpty()) {
+                return EncodeResult.error(
+                        Component.translatable("message.appliedenergistics2.pattern_encoding.no_ingredients"));
+            }
+
+            var recipe = findRecipe(level, input.get()).orElse(null);
+            if (recipe == null) {
+                return EncodeResult.error(
+                        Component.translatable("message.appliedenergistics2.pattern_encoding.invalid_recipe"));
+            }
+
+            var result = recipe.value().assemble(input.get(), level.registryAccess()).copy();
+            if (result.isEmpty()) {
+                return EncodeResult.error(
+                        Component.translatable("message.appliedenergistics2.pattern_encoding.invalid_recipe"));
+            }
+
+            var inputs = summarizeInputs();
+            encodedPatternItem.setRecipe(encodedStack, recipe.id(), inputs, List.of(result));
+            primaryOutput = result;
+        }
 
         var remaining = blank.copy();
         remaining.shrink(1);
         setBlankPatternStack(remaining.isEmpty() ? ItemStack.EMPTY : remaining);
         setEncodedPatternStack(encodedStack);
 
-        return EncodeResult.success(
-                Component.translatable("message.appliedenergistics2.pattern_encoding.success", result.getHoverName()));
+        return EncodeResult.success(Component.translatable("message.appliedenergistics2.pattern_encoding.success",
+                primaryOutput.getHoverName()));
     }
 
     private List<ItemStack> summarizeInputs() {
+        return summarizeInputs(0);
+    }
+
+    private List<ItemStack> summarizeProcessingInputs() {
+        return summarizeInputs(PROCESSING_OUTPUT_SLOT_COUNT);
+    }
+
+    private List<ItemStack> summarizeInputs(int startIndex) {
         var summarized = new ArrayList<ItemStack>();
-        for (var stack : craftingItems) {
+        for (int i = startIndex; i < craftingItems.size(); i++) {
+            var stack = craftingItems.get(i);
             if (stack.isEmpty()) {
                 continue;
             }
@@ -337,6 +372,17 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
             }
         }
         return summarized;
+    }
+
+    private List<ItemStack> collectProcessingOutputs() {
+        var outputs = new ArrayList<ItemStack>();
+        for (int i = 0; i < Math.min(PROCESSING_OUTPUT_SLOT_COUNT, craftingItems.size()); i++) {
+            var stack = craftingItems.get(i);
+            if (!stack.isEmpty()) {
+                outputs.add(stack.copy());
+            }
+        }
+        return outputs;
     }
 
     public record EncodeResult(boolean success, Component message) {
@@ -386,6 +432,9 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
         if (tag.contains("Pattern")) {
             ContainerHelper.loadAllItems(tag.getCompound("Pattern"), patternItems);
         }
+        if (tag.contains("ProcessingMode")) {
+            processingMode = tag.getBoolean("ProcessingMode");
+        }
     }
 
     @Override
@@ -398,6 +447,25 @@ public class PatternEncodingTerminalBlockEntity extends AEBaseBlockEntity {
         var patternTag = new CompoundTag();
         ContainerHelper.saveAllItems(patternTag, patternItems);
         tag.put("Pattern", patternTag);
+        tag.putBoolean("ProcessingMode", processingMode);
+    }
+
+    public boolean isProcessingMode() {
+        return processingMode;
+    }
+
+    public void setProcessingMode(boolean processingMode) {
+        if (this.processingMode == processingMode) {
+            return;
+        }
+
+        this.processingMode = processingMode;
+        setChanged();
+
+        var level = getLevel();
+        if (level != null && !level.isClientSide()) {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+        }
     }
 
     @Override
