@@ -1,16 +1,17 @@
 package appeng.integration.processing;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.world.item.ItemStack;
 
+import appeng.api.integration.machines.AbstractProcessingMachine;
 import appeng.api.integration.machines.IProcessingMachine;
 import appeng.crafting.CraftingJob;
-import appeng.integration.processing.FurnaceProcessingMachine;
-import appeng.storage.impl.StorageService;
 
 /**
  * Coordinates transfers between the ME network and an external processing machine.
@@ -19,109 +20,96 @@ public final class ProcessingTransferHandler implements IProcessingMachine.Proce
     private static final Logger LOG = LoggerFactory.getLogger(ProcessingTransferHandler.class);
 
     private final CraftingJob job;
-    private final IProcessingMachine machine;
+    private final AbstractProcessingMachine machine;
 
-    private ItemStack pendingInput = ItemStack.EMPTY;
+    private final List<ItemStack> trackedInputs = new ArrayList<>();
     private int insertedOutputs;
     private int droppedOutputs;
 
-    public ProcessingTransferHandler(CraftingJob job, IProcessingMachine machine) {
+    public ProcessingTransferHandler(CraftingJob job, AbstractProcessingMachine machine) {
         this.job = job;
         this.machine = machine;
     }
 
     @Override
     public void pushToMachine(ItemStack stack) {
-        if (machine instanceof FurnaceProcessingMachine furnace) {
-            UUID gridId = furnace.getGridId();
-            if (gridId == null) {
-                throw new IllegalStateException("Furnace machine has no grid binding");
-            }
-
-            int requested = stack.getCount();
-            int extracted = StorageService.extractFromNetwork(gridId, stack.getItem(), requested, false);
-            if (extracted <= 0) {
-                throw new IllegalStateException("Unable to extract " + stack + " from network for job " + job.getId());
-            }
-            if (extracted < requested) {
-                StorageService.insertIntoNetwork(gridId, stack.getItem(), extracted, false);
-                throw new IllegalStateException("Insufficient items available for furnace job " + job.getId());
-            }
-
-            ItemStack delivered = stack.copy();
-            delivered.setCount(extracted);
-
-            ItemStack remainder = furnace.insertInput(delivered);
-            if (!remainder.isEmpty()) {
-                ItemStack released = furnace.releaseInput();
-                if (!released.isEmpty()) {
-                    StorageService.insertIntoNetwork(gridId, released.getItem(), released.getCount(), false);
-                }
-                StorageService.insertIntoNetwork(gridId, remainder.getItem(), remainder.getCount(), false);
-                throw new IllegalStateException("Furnace could not accept inputs for job " + job.getId());
-            }
-
-            pendingInput = delivered;
-            LOG.debug("Delivered {} to {} for job {}", delivered, furnace, job.getId());
+        if (stack.isEmpty()) {
             return;
         }
 
-        LOG.debug("Stub transfer: pushing {} to external machine {} for job {}", stack, machine, job.getId());
+        ItemStack delivered = machine.withdrawFromNetwork(stack, job);
+        ItemStack remainder = machine.deliverInputToMachine(delivered);
+        if (!remainder.isEmpty()) {
+            machine.returnToNetwork(delivered);
+            machine.returnToNetwork(remainder);
+            throw new IllegalStateException("Machine could not accept inputs for job " + job.getId());
+        }
+
+        trackedInputs.add(delivered.copy());
+        LOG.debug("Delivered {} to {} for job {}", delivered, machine, job.getId());
     }
 
     @Override
     public ItemStack pullFromMachine(ItemStack requested) {
-        if (machine instanceof FurnaceProcessingMachine furnace) {
-            UUID gridId = furnace.getGridId();
-            if (gridId == null) {
-                throw new IllegalStateException("Furnace machine has no grid binding");
-            }
-
-            ItemStack produced = furnace.extractOutput(requested);
-            if (produced.isEmpty()) {
-                return ItemStack.EMPTY;
-            }
-
-            int accepted = StorageService.insertIntoNetwork(gridId, produced.getItem(), produced.getCount(), false);
-            insertedOutputs += accepted;
-
-            int remaining = produced.getCount() - accepted;
-            if (remaining > 0) {
-                ItemStack remainder = produced.copy();
-                remainder.setCount(remaining);
-                furnace.dropItem(remainder);
-                droppedOutputs += remaining;
-            }
-
-            pendingInput = ItemStack.EMPTY;
-            LOG.debug("Retrieved {} from {} for job {}", produced, furnace, job.getId());
-            return produced;
+        ItemStack produced = machine.retrieveOutputFromMachine(requested);
+        if (produced.isEmpty()) {
+            return ItemStack.EMPTY;
         }
 
-        LOG.debug("Stub transfer: requesting {} from external machine {} for job {}", requested, machine, job.getId());
-        return ItemStack.EMPTY;
+        int accepted = machine.insertOutputsIntoNetwork(produced);
+        insertedOutputs += accepted;
+
+        int remaining = produced.getCount() - accepted;
+        if (remaining > 0) {
+            ItemStack overflow = produced.copy();
+            overflow.setCount(remaining);
+            machine.handleOverflow(overflow);
+            droppedOutputs += overflow.getCount();
+        }
+
+        LOG.debug("Retrieved {} from {} for job {}", produced, machine, job.getId());
+        return produced;
     }
 
     public void rollback() {
-        if (machine instanceof FurnaceProcessingMachine furnace) {
-            UUID gridId = furnace.getGridId();
-            ItemStack returned = furnace.releaseInput();
-            if (returned.isEmpty() && !pendingInput.isEmpty()) {
-                returned = pendingInput.copy();
+        ItemStack returned = machine.releaseInputsFromMachine();
+        if (!returned.isEmpty()) {
+            machine.returnToNetwork(returned);
+            subtractTrackedInput(returned);
+        }
+
+        for (ItemStack tracked : trackedInputs) {
+            machine.returnToNetwork(tracked);
+        }
+        trackedInputs.clear();
+
+        ItemStack stranded = machine.retrieveOutputFromMachine(ItemStack.EMPTY);
+        if (!stranded.isEmpty()) {
+            machine.handleOverflow(stranded);
+        }
+    }
+
+    private void subtractTrackedInput(ItemStack returned) {
+        int remaining = returned.getCount();
+        Iterator<ItemStack> iterator = trackedInputs.iterator();
+        while (iterator.hasNext() && remaining > 0) {
+            ItemStack tracked = iterator.next();
+            if (!ItemStack.isSameItemSameComponents(tracked, returned)) {
+                continue;
             }
-            if (!returned.isEmpty()) {
-                StorageService.insertIntoNetwork(gridId, returned.getItem(), returned.getCount(), false);
+
+            if (tracked.getCount() <= remaining) {
+                remaining -= tracked.getCount();
+                iterator.remove();
+            } else {
+                tracked.setCount(tracked.getCount() - remaining);
+                remaining = 0;
             }
-            ItemStack stranded = furnace.extractOutput(ItemStack.EMPTY);
-            if (!stranded.isEmpty()) {
-                furnace.dropItem(stranded);
-            }
-            pendingInput = ItemStack.EMPTY;
         }
     }
 
     public void clearTrackedInputs() {
-        pendingInput = ItemStack.EMPTY;
+        trackedInputs.clear();
     }
 
     public int getInsertedOutputs() {

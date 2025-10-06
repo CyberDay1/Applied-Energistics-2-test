@@ -110,6 +110,8 @@ public final class CraftingJobManager {
         LOG.debug(Component.translatable("message.appliedenergistics2.processing_job.external_attempt",
                 job.describeOutputs()).getString());
 
+        LOG.debug("Routing processing job {} to external machine {}", job.getId(), machine.get());
+
         var handled = ProcessingMachineExecutor.tryExecute(job, machine.get());
         if (handled) {
             jobMachines.put(job.getId(), machine.get());
