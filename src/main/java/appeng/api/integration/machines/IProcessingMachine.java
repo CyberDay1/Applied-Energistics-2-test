@@ -1,5 +1,7 @@
 package appeng.api.integration.machines;
 
+import java.util.OptionalInt;
+
 import net.minecraft.world.item.ItemStack;
 
 import appeng.crafting.CraftingJob;
@@ -22,7 +24,7 @@ public interface IProcessingMachine {
      * Checks whether this machine can execute the given processing job right now.
      */
     default boolean canProcess(CraftingJob job) {
-        return !isBusy() && job.isProcessing();
+        return job != null && job.isProcessing() && hasCapacity();
     }
 
     /**
@@ -45,6 +47,42 @@ public interface IProcessingMachine {
      * Called after job completion or cancellation to release any resources held by the machine.
      */
     default void finishProcessing(CraftingJob job) {
+    }
+
+    /**
+     * {@return the optional capacity limit for concurrent jobs handled by this machine.}
+     *
+     * <p>
+     * When empty, the executor is assumed to support unlimited concurrent jobs. Implementations may override this to
+     * expose a specific maximum.
+     */
+    default OptionalInt getCapacity() {
+        return OptionalInt.of(1);
+    }
+
+    /**
+     * {@return the current number of crafting jobs actively executing on this machine.}
+     */
+    default int getActiveJobCount() {
+        return isBusy() ? 1 : 0;
+    }
+
+    /**
+     * {@return {@code true} if the machine can accept additional jobs without exceeding its declared capacity.}
+     */
+    default boolean hasCapacity() {
+        var capacity = getCapacity();
+        if (capacity.isPresent()) {
+            return getActiveJobCount() < capacity.getAsInt();
+        }
+        return true;
+    }
+
+    /**
+     * {@return an identifier describing the executor type for scheduling purposes.}
+     */
+    default String getExecutorTypeId() {
+        return getClass().getName();
     }
 
     /**

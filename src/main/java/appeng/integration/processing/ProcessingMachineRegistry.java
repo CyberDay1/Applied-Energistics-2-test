@@ -1,5 +1,7 @@
 package appeng.integration.processing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,17 +36,22 @@ public final class ProcessingMachineRegistry {
         }
     }
 
-    public Optional<IProcessingMachine> findAvailableMachine(CraftingJob job) {
+    public List<IProcessingMachine> findMachinesForJob(CraftingJob job) {
         if (job == null) {
-            return Optional.empty();
+            return List.of();
         }
 
+        List<IProcessingMachine> candidates = new ArrayList<>();
         for (var machine : machines) {
             if (machine != null && machine.canProcess(job)) {
-                return Optional.of(machine);
+                candidates.add(machine);
             }
         }
 
-        return Optional.empty();
+        return candidates;
+    }
+
+    public Optional<IProcessingMachine> findAvailableMachine(CraftingJob job) {
+        return findMachinesForJob(job).stream().findFirst();
     }
 }

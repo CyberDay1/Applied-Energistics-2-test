@@ -63,6 +63,12 @@ public class AE2LanguageProvider extends LanguageProvider {
                 "Attempting to route processing job %s to external machinery.");
         add("message.appliedenergistics2.processing_job.external_fallback",
                 "External routing unavailable for processing job %s. Using assembler.");
+        add("message.appliedenergistics2.processing_job.distributed_start",
+                "Distributed execution evaluation started for %s.");
+        add("message.appliedenergistics2.processing_job.executor_at_capacity",
+                "Executor %s (%s) is at capacity (%s/%s jobs).");
+        add("message.appliedenergistics2.processing_job.job_scheduled_on_executor",
+                "Job %s scheduled on executor %s (type %s, load %s/%s).");
         add("message.appliedenergistics2.processing_job.external_furnace_started",
                 "External Furnace Execution Started: %s");
         add("message.appliedenergistics2.processing_job.external_furnace_complete",
