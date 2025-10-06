@@ -14,8 +14,10 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraft.network.chat.Component;
 
 import appeng.api.integration.machines.MultiSlotProcessingMachine;
+import appeng.api.integration.machines.ProcessingMachineHealth;
 import appeng.crafting.CraftingJob;
 
 /**
@@ -56,6 +58,16 @@ public class BrewingStandProcessingMachine extends MultiSlotProcessingMachine {
 
     public ServerLevel getLevel() {
         return level;
+    }
+
+    @Override
+    public ProcessingMachineHealth getHealth() {
+        BrewingStandBlockEntity stand = getBrewingStand();
+        if (stand == null || stand.isRemoved()) {
+            return ProcessingMachineHealth.offline(
+                    Component.literal("Brewing stand at " + standPos + " is unavailable"));
+        }
+        return ProcessingMachineHealth.healthy();
     }
 
     @Override

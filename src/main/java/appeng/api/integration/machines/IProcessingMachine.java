@@ -86,6 +86,20 @@ public interface IProcessingMachine {
     }
 
     /**
+     * {@return the reported health for this executor.}
+     */
+    default ProcessingMachineHealth getHealth() {
+        return ProcessingMachineHealth.healthy();
+    }
+
+    /**
+     * {@return {@code true} if the executor reports itself as healthy.}
+     */
+    default boolean isHealthy() {
+        return getHealth().isHealthy();
+    }
+
+    /**
      * Helper used during input/output transfer when interacting with the machine.
      */
     interface ProcessingMachineTransfer {
