@@ -1,5 +1,6 @@
 package appeng.util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.HashMap;
 
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
@@ -20,6 +22,7 @@ import appeng.grid.GridIndex;
 import appeng.grid.GridSet;
 import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
+import appeng.grid.SimpleGridNode.OfflineReason;
 import appeng.storage.impl.StorageService;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -94,6 +97,8 @@ public final class GridHelper {
         long tickCost = 0;
         long energyBudget = 0;
         List<ControllerBlockEntity> controllers = new ArrayList<>();
+        List<SimpleGridNode> controllerNodes = new ArrayList<>();
+        List<SimpleGridNode> channelConsumers = new ArrayList<>();
 
         for (IGridNode node : set.nodes()) {
             BlockEntity host = HOSTS.get(node);
@@ -124,9 +129,13 @@ public final class GridHelper {
             }
 
             if (node instanceof SimpleGridNode simpleNode) {
+                simpleNode.resetChannelUsage();
                 NodeType nodeType = simpleNode.getNodeType();
                 if (nodeType == NodeType.MACHINE || nodeType == NodeType.TERMINAL) {
                     tickCost += 1;
+                    channelConsumers.add(simpleNode);
+                } else if (nodeType == NodeType.CONTROLLER) {
+                    controllerNodes.add(simpleNode);
                 }
             }
         }
@@ -152,5 +161,107 @@ public final class GridHelper {
                     energyBudget,
                     tickCost);
         }
+
+        enforceChannelLimits(controllerNodes, channelConsumers);
+    }
+
+    private static void enforceChannelLimits(List<SimpleGridNode> controllers,
+            List<SimpleGridNode> consumers) {
+        if (consumers.isEmpty()) {
+            return;
+        }
+
+        if (controllers.isEmpty()) {
+            for (SimpleGridNode consumer : consumers) {
+                consumer.setHasChannel(false);
+                consumer.setOfflineReason(
+                        consumer.isRedstonePowered() ? OfflineReason.CHANNELS : OfflineReason.REDSTONE);
+            }
+            return;
+        }
+
+        for (SimpleGridNode consumer : consumers) {
+            if (!consumer.isRedstonePowered()) {
+                consumer.setHasChannel(false);
+                consumer.setOfflineReason(OfflineReason.REDSTONE);
+                continue;
+            }
+
+            boolean allocated = false;
+            for (SimpleGridNode controller : controllers) {
+                var path = findPathWithCapacity(consumer, controller);
+                if (path != null && allocateAlongPath(path)) {
+                    consumer.setHasChannel(true);
+                    consumer.setOfflineReason(OfflineReason.NONE);
+                    allocated = true;
+                    break;
+                }
+            }
+
+            if (!allocated) {
+                consumer.setHasChannel(false);
+                consumer.setOfflineReason(OfflineReason.CHANNELS);
+            }
+        }
+    }
+
+    private static boolean allocateAlongPath(List<SimpleGridNode> path) {
+        List<SimpleGridNode> allocated = new ArrayList<>();
+        for (SimpleGridNode node : path) {
+            if (node.getNodeType() != NodeType.CABLE) {
+                continue;
+            }
+            if (!node.tryAllocateChannel()) {
+                for (SimpleGridNode allocatedNode : allocated) {
+                    allocatedNode.releaseChannel();
+                }
+                return false;
+            }
+            allocated.add(node);
+        }
+        return true;
+    }
+
+    private static List<SimpleGridNode> findPathWithCapacity(SimpleGridNode start, SimpleGridNode target) {
+        Map<SimpleGridNode, SimpleGridNode> previous = new HashMap<>();
+        var queue = new ArrayDeque<SimpleGridNode>();
+        queue.add(start);
+        previous.put(start, null);
+
+        while (!queue.isEmpty()) {
+            var current = queue.poll();
+            if (current == target) {
+                break;
+            }
+
+            for (IGridNode neighborNode : current.neighbors()) {
+                if (!(neighborNode instanceof SimpleGridNode neighbor)) {
+                    continue;
+                }
+                if (previous.containsKey(neighbor)) {
+                    continue;
+                }
+                if (neighbor.requiresChannel() && neighbor != target) {
+                    continue;
+                }
+                if (neighbor.getNodeType() == NodeType.CABLE && neighbor.getRemainingChannelCapacity() <= 0) {
+                    continue;
+                }
+                previous.put(neighbor, current);
+                queue.add(neighbor);
+            }
+        }
+
+        if (!previous.containsKey(target)) {
+            return null;
+        }
+
+        List<SimpleGridNode> path = new ArrayList<>();
+        SimpleGridNode current = target;
+        while (current != null && current != start) {
+            path.add(0, current);
+            current = previous.get(current);
+        }
+        return path;
     }
 }

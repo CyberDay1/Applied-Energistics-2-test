@@ -19,11 +19,14 @@ import appeng.core.network.clientbound.TerminalItemUpdatePacket;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.implementations.MenuTypeBuilder;
 import appeng.storage.impl.StorageService;
+import appeng.api.config.RedstoneMode;
+import appeng.grid.SimpleGridNode.OfflineReason;
 
 public class TerminalMenu extends AEBaseMenu {
     public static final MenuType<TerminalMenu> TYPE = MenuTypeBuilder
             .create(TerminalMenu::new, TerminalBlockEntity.class)
             .build("terminal");
+    public static final int BUTTON_TOGGLE_REDSTONE = 1;
 
     private final TerminalBlockEntity terminal;
     private final Player player;
@@ -31,6 +34,10 @@ public class TerminalMenu extends AEBaseMenu {
     private boolean lastSentOnline;
     private List<ItemStackView> clientItems = new ArrayList<>();
     private boolean clientOnline;
+    private OfflineReason lastSentOfflineReason = OfflineReason.NONE;
+    private OfflineReason clientOfflineReason = OfflineReason.NONE;
+    private RedstoneMode lastSentRedstoneMode = RedstoneMode.IGNORE;
+    private RedstoneMode clientRedstoneMode = RedstoneMode.IGNORE;
 
     protected TerminalMenu(MenuType<? extends TerminalMenu> type, int id, Inventory inv,
             TerminalBlockEntity terminal) {
@@ -55,11 +62,17 @@ public class TerminalMenu extends AEBaseMenu {
         if (player instanceof ServerPlayer serverPlayer) {
             var items = terminal.getStoredItems();
             boolean online = terminal.isGridOnline();
-            if (!items.equals(lastSentItems) || lastSentOnline != online) {
+            var offlineReason = terminal.getOfflineReason();
+            var redstoneMode = terminal.getRedstoneMode();
+            if (!items.equals(lastSentItems) || lastSentOnline != online
+                    || lastSentOfflineReason != offlineReason
+                    || lastSentRedstoneMode != redstoneMode) {
                 lastSentItems = List.copyOf(items);
                 lastSentOnline = online;
+                lastSentOfflineReason = offlineReason;
+                lastSentRedstoneMode = redstoneMode;
                 PacketDistributor.sendToPlayer(serverPlayer,
-                        new TerminalItemUpdatePacket(containerId, online, items));
+                        new TerminalItemUpdatePacket(containerId, online, offlineReason, redstoneMode, items));
             }
         }
     }
@@ -78,9 +91,46 @@ public class TerminalMenu extends AEBaseMenu {
         return terminal.isGridOnline();
     }
 
-    public void handleClientUpdate(List<ItemStackView> items, boolean online) {
+    public OfflineReason getOfflineReason() {
+        if (player.level().isClientSide()) {
+            return clientOfflineReason;
+        }
+        return terminal.getOfflineReason();
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        if (player.level().isClientSide()) {
+            return clientRedstoneMode;
+        }
+        return terminal.getRedstoneMode();
+    }
+
+    public void handleClientUpdate(List<ItemStackView> items, boolean online, OfflineReason offlineReason,
+            RedstoneMode redstoneMode) {
         this.clientItems = new ArrayList<>(items);
         this.clientOnline = online;
+        this.clientOfflineReason = offlineReason;
+        this.clientRedstoneMode = redstoneMode;
+    }
+
+    @Override
+    public boolean clickMenuButton(Player player, int buttonId) {
+        if (buttonId == BUTTON_TOGGLE_REDSTONE) {
+            if (player instanceof ServerPlayer) {
+                var current = terminal.getRedstoneMode();
+                terminal.setRedstoneMode(nextRedstoneMode(current));
+            }
+            return true;
+        }
+        return super.clickMenuButton(player, buttonId);
+    }
+
+    private static RedstoneMode nextRedstoneMode(RedstoneMode current) {
+        return switch (current) {
+            case IGNORE -> RedstoneMode.HIGH_SIGNAL;
+            case HIGH_SIGNAL -> RedstoneMode.LOW_SIGNAL;
+            default -> RedstoneMode.IGNORE;
+        };
     }
 
     public void handleExtract(Item item, int amount) {

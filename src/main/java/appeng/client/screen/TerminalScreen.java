@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Locale;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -15,11 +17,12 @@ import net.minecraft.core.registries.BuiltInRegistries;
 
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import appeng.api.config.RedstoneMode;
 import appeng.api.storage.ItemStackView;
 import appeng.client.gui.OfflineOverlayRenderer;
-import appeng.core.localization.InGameTooltip;
 import appeng.core.network.serverbound.TerminalExtractPacket;
 import appeng.menu.terminal.TerminalMenu;
+import appeng.grid.SimpleGridNode.OfflineReason;
 
 public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     private static final int SLOT_SIZE = 18;
@@ -29,6 +32,7 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
     private static final int LIST_TOP_OFFSET = 24;
 
     private EditBox searchBox;
+    private Button redstoneButton;
     private int scrollIndex;
     private boolean scrolling;
     private List<ItemStackView> currentItems = List.of();
@@ -80,12 +84,25 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
         this.searchBox.setMaxLength(64);
         this.addRenderableWidget(this.searchBox);
         this.setInitialFocus(this.searchBox);
+
+        int buttonSize = 20;
+        int buttonX = this.leftPos + this.imageWidth - buttonSize - 8;
+        int buttonY = this.topPos + 5;
+        this.redstoneButton = Button.builder(Component.translatable("gui.appliedenergistics2.redstone.button"), btn -> {
+            if (this.minecraft != null && this.minecraft.gameMode != null) {
+                this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId,
+                        TerminalMenu.BUTTON_TOGGLE_REDSTONE);
+            }
+        }).bounds(buttonX, buttonY, buttonSize, buttonSize).build();
+        this.addRenderableWidget(this.redstoneButton);
+        updateRedstoneButton();
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
         this.searchBox.tick();
+        updateRedstoneButton();
     }
 
     @Override
@@ -281,8 +298,41 @@ public class TerminalScreen extends AbstractContainerScreen<TerminalMenu> {
         int y = getListTop();
         int width = getItemsPerRow() * getSlotSize();
         int height = getVisibleRows() * getSlotSize();
-        OfflineOverlayRenderer.renderWithMessage(graphics, this.font, InGameTooltip.DeviceOffline.text(), x, y, width,
-                height);
+        OfflineOverlayRenderer.renderWithMessage(graphics, this.font, getOfflineMessage(), x, y, width, height);
+    }
+
+    private void updateRedstoneButton() {
+        if (this.redstoneButton == null) {
+            return;
+        }
+        var mode = this.menu.getRedstoneMode();
+        Component tooltip;
+        Component label;
+        switch (mode) {
+            case HIGH_SIGNAL -> {
+                tooltip = Component.translatable("gui.appliedenergistics2.redstone.mode.active_with_signal");
+                label = Component.translatable("gui.appliedenergistics2.redstone.mode.short.active_with_signal");
+            }
+            case LOW_SIGNAL -> {
+                tooltip = Component.translatable("gui.appliedenergistics2.redstone.mode.active_without_signal");
+                label = Component.translatable("gui.appliedenergistics2.redstone.mode.short.active_without_signal");
+            }
+            default -> {
+                tooltip = Component.translatable("gui.appliedenergistics2.redstone.mode.always_active");
+                label = Component.translatable("gui.appliedenergistics2.redstone.mode.short.always_active");
+            }
+        }
+        this.redstoneButton.setMessage(label);
+        this.redstoneButton.setTooltip(Tooltip.create(tooltip));
+    }
+
+    private Component getOfflineMessage() {
+        OfflineReason reason = this.menu.getOfflineReason();
+        return switch (reason) {
+            case REDSTONE -> Component.translatable("gui.appliedenergistics2.offline.redstone");
+            case CHANNELS -> Component.translatable("gui.appliedenergistics2.offline.channels");
+            default -> Component.translatable("gui.appliedenergistics2.offline.power");
+        };
     }
 
     private String formatAmount(int count) {

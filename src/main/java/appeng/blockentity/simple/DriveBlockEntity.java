@@ -15,12 +15,14 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
+import appeng.api.config.RedstoneMode;
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
 import appeng.items.storage.BasicCellItem;
 import appeng.items.storage.fluid.BasicFluidCellItem;
 import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
+import appeng.grid.SimpleGridNode.OfflineReason;
 import appeng.registry.AE2BlockEntities;
 import appeng.storage.impl.StorageService;
 import appeng.util.GridHelper;
@@ -119,6 +121,7 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
     private final InvWrapper itemHandler = new InvWrapper(container);
     private final SimpleGridNode gridNode = new SimpleGridNode(NodeType.MACHINE);
     private UUID mountedGridId;
+    private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
 
     public DriveBlockEntity(BlockPos pos, BlockState state) {
         super(AE2BlockEntities.DRIVE_SIMPLE.get(), pos, state);
@@ -128,6 +131,7 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
     public void onLoad() {
         super.onLoad();
         GridHelper.discover(this);
+        updateRedstoneState();
         ensureMounted();
     }
 
@@ -159,16 +163,28 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
         return gridNode;
     }
 
+    public SimpleGridNode getSimpleNode() {
+        return gridNode;
+    }
+
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
         ContainerHelper.loadAllItems(tag, cells);
+        if (tag.contains("RedstoneMode")) {
+            try {
+                redstoneMode = RedstoneMode.valueOf(tag.getString("RedstoneMode"));
+            } catch (IllegalArgumentException ignored) {
+                redstoneMode = RedstoneMode.IGNORE;
+            }
+        }
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         ContainerHelper.saveAllItems(tag, cells);
+        tag.putString("RedstoneMode", redstoneMode.name());
     }
 
     public int getCellSlotCount() {
@@ -181,6 +197,47 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
 
     public void notifyGridChanged() {
         ensureMounted();
+    }
+
+    public void onNeighborChanged() {
+        updateRedstoneState();
+    }
+
+    public OfflineReason getOfflineReason() {
+        return gridNode.getOfflineReason();
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        return redstoneMode;
+    }
+
+    public void setRedstoneMode(RedstoneMode redstoneMode) {
+        if (this.redstoneMode != redstoneMode) {
+            this.redstoneMode = redstoneMode;
+            setChanged();
+            updateRedstoneState();
+        }
+    }
+
+    public void updateRedstoneState() {
+        Level level = getLevel();
+        if (level == null) {
+            return;
+        }
+
+        boolean powered = level.hasNeighborSignal(getBlockPos());
+        boolean enabled = switch (redstoneMode) {
+            case HIGH_SIGNAL -> powered;
+            case LOW_SIGNAL -> !powered;
+            default -> true;
+        };
+
+        if (gridNode.isRedstonePowered() != enabled) {
+            gridNode.setRedstonePowered(enabled);
+            if (!level.isClientSide()) {
+                GridHelper.updateSetMetadata(gridNode.getGridId());
+            }
+        }
     }
 
     private void ensureMounted() {

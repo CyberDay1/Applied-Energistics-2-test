@@ -8,22 +8,26 @@ import java.util.Map;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import appeng.api.config.RedstoneMode;
 import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
 import appeng.api.storage.ItemStackView;
 import appeng.grid.GridIndex;
 import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
+import appeng.grid.SimpleGridNode.OfflineReason;
 import appeng.registry.AE2BlockEntities;
 import appeng.storage.impl.StorageService;
 import appeng.util.GridHelper;
 
 public class TerminalBlockEntity extends BlockEntity implements IGridHost {
     private final SimpleGridNode gridNode = new SimpleGridNode(NodeType.TERMINAL);
+    private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
 
     public TerminalBlockEntity(BlockPos pos, BlockState state) {
         super(AE2BlockEntities.TERMINAL.get(), pos, state);
@@ -33,6 +37,7 @@ public class TerminalBlockEntity extends BlockEntity implements IGridHost {
     public void onLoad() {
         super.onLoad();
         GridHelper.discover(this);
+        updateRedstoneState();
     }
 
     @Override
@@ -47,6 +52,47 @@ public class TerminalBlockEntity extends BlockEntity implements IGridHost {
     @Override
     public IGridNode getGridNode() {
         return gridNode;
+    }
+
+    public void onNeighborChanged() {
+        updateRedstoneState();
+    }
+
+    public void updateRedstoneState() {
+        var level = getLevel();
+        if (level == null) {
+            return;
+        }
+
+        boolean powered = level.hasNeighborSignal(getBlockPos());
+        boolean enabled = switch (redstoneMode) {
+            case HIGH_SIGNAL -> powered;
+            case LOW_SIGNAL -> !powered;
+            default -> true;
+        };
+
+        if (gridNode.isRedstonePowered() != enabled) {
+            gridNode.setRedstonePowered(enabled);
+            if (!level.isClientSide()) {
+                GridHelper.updateSetMetadata(gridNode.getGridId());
+            }
+        }
+    }
+
+    public OfflineReason getOfflineReason() {
+        return gridNode.getOfflineReason();
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        return redstoneMode;
+    }
+
+    public void setRedstoneMode(RedstoneMode redstoneMode) {
+        if (this.redstoneMode != redstoneMode) {
+            this.redstoneMode = redstoneMode;
+            setChanged();
+            updateRedstoneState();
+        }
     }
 
     public List<ItemStackView> getStoredItems() {
@@ -70,6 +116,24 @@ public class TerminalBlockEntity extends BlockEntity implements IGridHost {
             return false;
         }
         var set = GridIndex.get().get(gridId);
-        return set != null && set.isOnline();
+        return set != null && set.isOnline() && gridNode.hasChannel() && gridNode.isRedstonePowered();
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        if (tag.contains("RedstoneMode")) {
+            try {
+                redstoneMode = RedstoneMode.valueOf(tag.getString("RedstoneMode"));
+            } catch (IllegalArgumentException ignored) {
+                redstoneMode = RedstoneMode.IGNORE;
+            }
+        }
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putString("RedstoneMode", redstoneMode.name());
     }
 }
