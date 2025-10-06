@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 
 import appeng.blockentity.crafting.CraftingCPUBlockEntity;
 import appeng.api.integration.machines.IProcessingMachine;
@@ -40,6 +41,8 @@ public final class CraftingJobManager {
     private final Map<UUID, CraftingJob> jobs = new ConcurrentHashMap<>();
     private final Map<UUID, CraftingJob> completedJobs = new ConcurrentHashMap<>();
     private final Map<UUID, CraftingJobReservation> reservations = new ConcurrentHashMap<>();
+    private final CraftingJobDependencyGraph dependencyGraph = new CraftingJobDependencyGraph();
+    private final ConcurrentMap<Item, List<ItemStack>> patternCatalog = new ConcurrentHashMap<>();
     private final Set<MolecularAssemblerBlockEntity> assemblers = ConcurrentHashMap.newKeySet();
     private final ConcurrentMap<UUID, MolecularAssemblerBlockEntity> jobAssemblers = new ConcurrentHashMap<>();
     private final ConcurrentMap<UUID, IProcessingMachine> jobMachines = new ConcurrentHashMap<>();
@@ -303,8 +306,49 @@ public final class CraftingJobManager {
     public CraftingJob planJob(ItemStack patternStack) {
         CraftingJob job = CraftingJob.fromPattern(patternStack.copy());
         jobs.put(job.getId(), job);
+        dependencyGraph.addJob(job);
+        registerPatternOutputs(job);
+        ensureSubJobsForInputs(job);
         LOG.debug("Planned {} job {} (state={})", describeJobType(job), job.describeOutputs(), job.getState());
         return job;
+    }
+
+    public CraftingJob spawnSubJob(CraftingJob parentJob, ItemStack patternStack) {
+        if (parentJob == null) {
+            throw new IllegalArgumentException("parentJob");
+        }
+        if (patternStack == null) {
+            throw new IllegalArgumentException("patternStack");
+        }
+
+        CraftingJob subJob = CraftingJob.fromPattern(patternStack.copy());
+        subJob.setParentJobId(parentJob.getId());
+
+        jobs.put(subJob.getId(), subJob);
+        dependencyGraph.addJob(subJob);
+        try {
+            dependencyGraph.addDependency(parentJob.getId(), subJob.getId());
+        } catch (CraftingJobDependencyGraphException e) {
+            jobs.remove(subJob.getId());
+            dependencyGraph.removeJob(subJob.getId());
+            LOG.warn("Skipping sub-job {} -> {} due to dependency cycle: {}", parentJob.getId(), subJob.getId(),
+                    e.getMessage());
+            markJobFailed(parentJob, Component
+                    .translatable("message.appliedenergistics2.crafting_job.sub_job_cycle",
+                            parentJob.describeOutputs()));
+            return null;
+        }
+
+        parentJob.registerSubJob(subJob.getId());
+        LOG.info(Component
+                .translatable("message.appliedenergistics2.crafting_job.spawning_sub_job", parentJob.describeOutputs(),
+                        subJob.describeOutputs())
+                .getString());
+
+        registerPatternOutputs(subJob);
+        ensureSubJobsForInputs(subJob);
+
+        return subJob;
     }
 
     public List<CraftingJob> activeJobs() {
@@ -330,11 +374,24 @@ public final class CraftingJobManager {
             return false;
         }
 
+        if (job.hasFailedSubJobs()) {
+            markJobFailed(job, Component
+                    .translatable("message.appliedenergistics2.crafting_job.dependency_failed", job.describeOutputs()));
+            return false;
+        }
+
+        if (!dependenciesSatisfied(job)) {
+            LOG.debug("Delaying {} job {} reservation until sub-jobs complete", describeJobType(job),
+                    job.describeOutputs());
+            return false;
+        }
+
         boolean reserved = controller.reserveJob(job, requiredCapacity);
         if (reserved) {
             job.setState(CraftingJob.State.RESERVED);
             job.setTicksCompleted(0);
             reservations.put(job.getId(), new CraftingJobReservation(controller.getBlockPos(), requiredCapacity));
+            updateParentSubJobStatus(job, CraftingJob.SubJobStatus.RESERVED);
             LOG.info("Reserved {} job {} ({} units) on CPU at {}", describeJobType(job), job.describeOutputs(),
                     requiredCapacity,
                     controller.getBlockPos());
@@ -351,6 +408,7 @@ public final class CraftingJobManager {
     public void jobExecutionStarted(CraftingJob job, CraftingCPUBlockEntity cpu) {
         jobs.putIfAbsent(job.getId(), job);
         job.setState(CraftingJob.State.RUNNING);
+        updateParentSubJobStatus(job, CraftingJob.SubJobStatus.RUNNING);
         LOG.debug("{} job {} started on CPU at {}", capitalize(describeJobType(job)), job.getId(),
                 cpu.getBlockPos());
     }
@@ -360,6 +418,8 @@ public final class CraftingJobManager {
         jobs.remove(job.getId());
         completedJobs.put(job.getId(), job);
         reservations.remove(job.getId());
+        dependencyGraph.removeJob(job.getId());
+        updateParentSubJobStatus(job, CraftingJob.SubJobStatus.COMPLETE);
         synchronized (processingQueue) {
             processingQueue.remove(job);
         }
@@ -385,6 +445,140 @@ public final class CraftingJobManager {
         return completedJobs.get(jobId);
     }
 
+    private void updateParentSubJobStatus(CraftingJob job, CraftingJob.SubJobStatus status) {
+        UUID parentId = job.getParentJobId();
+        if (parentId == null) {
+            return;
+        }
+
+        CraftingJob parent = jobs.get(parentId);
+        if (parent == null) {
+            parent = completedJobs.get(parentId);
+        }
+
+        if (parent == null) {
+            return;
+        }
+
+        parent.updateSubJobStatus(job.getId(), status);
+
+        Component message;
+        if (status == CraftingJob.SubJobStatus.RUNNING) {
+            message = Component.translatable("message.appliedenergistics2.crafting_job.sub_job_running",
+                    parent.describeOutputs(), job.describeOutputs());
+        } else if (status == CraftingJob.SubJobStatus.COMPLETE) {
+            message = Component.translatable("message.appliedenergistics2.crafting_job.sub_job_completed",
+                    parent.describeOutputs(), job.describeOutputs());
+        } else if (status == CraftingJob.SubJobStatus.RESERVED) {
+            message = Component.translatable("message.appliedenergistics2.crafting_job.sub_job_reserved",
+                    parent.describeOutputs(), job.describeOutputs());
+        } else {
+            message = null;
+        }
+
+        if (message != null) {
+            LOG.debug(message.getString());
+        }
+    }
+
+    public void jobExecutionFailed(CraftingJob job, CraftingCPUBlockEntity cpu, Component reason) {
+        markJobFailed(job, reason);
+        if (cpu != null) {
+            cpu.releaseReservation(job.getId());
+        }
+    }
+
+    private void registerPatternOutputs(CraftingJob job) {
+        for (ItemStackView output : job.getOutputs()) {
+            patternCatalog.compute(output.item(), (item, existing) -> {
+                List<ItemStack> patterns = existing != null ? new ArrayList<>(existing) : new ArrayList<>();
+                ItemStack patternCopy = job.getPatternStack().copy();
+                boolean present = patterns.stream()
+                        .anyMatch(stack -> ItemStack.isSameItemSameComponents(stack, patternCopy));
+                if (!present) {
+                    patterns.add(patternCopy);
+                }
+                return patterns;
+            });
+        }
+    }
+
+    private void ensureSubJobsForInputs(CraftingJob job) {
+        if (job.getState() == CraftingJob.State.FAILED) {
+            return;
+        }
+
+        for (ItemStackView input : job.getInputs()) {
+            if (hasSubJobForItem(job, input.item())) {
+                continue;
+            }
+
+            List<ItemStack> patterns = patternCatalog.get(input.item());
+            if (patterns == null || patterns.isEmpty()) {
+                continue;
+            }
+
+            for (ItemStack candidate : patterns) {
+                CraftingJob subJob = spawnSubJob(job, candidate);
+                if (subJob != null) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean hasSubJobForItem(CraftingJob job, Item item) {
+        for (UUID childId : job.getSubJobStatuses().keySet()) {
+            CraftingJob child = getJob(childId);
+            if (child == null) {
+                continue;
+            }
+
+            for (ItemStackView output : child.getOutputs()) {
+                if (output.item() == item) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dependenciesSatisfied(CraftingJob job) {
+        return !job.hasIncompleteSubJobs() && !job.hasFailedSubJobs();
+    }
+
+    private void markJobFailed(CraftingJob job, Component reason) {
+        if (job == null || job.getState() == CraftingJob.State.FAILED) {
+            return;
+        }
+
+        jobs.remove(job.getId());
+        completedJobs.put(job.getId(), job);
+        reservations.remove(job.getId());
+        dependencyGraph.removeJob(job.getId());
+        releaseAssembler(job.getId());
+        releaseMachine(job.getId());
+        synchronized (processingQueue) {
+            processingQueue.remove(job);
+        }
+
+        job.setState(CraftingJob.State.FAILED);
+
+        LOG.warn("{}", reason.getString());
+
+        UUID parentId = job.getParentJobId();
+        if (parentId != null) {
+            CraftingJob parent = getJob(parentId);
+            if (parent != null) {
+                parent.updateSubJobStatus(job.getId(), CraftingJob.SubJobStatus.FAILED);
+                var parentReason = Component.translatable(
+                        "message.appliedenergistics2.crafting_job.sub_job_failed", parent.describeOutputs(),
+                        job.describeOutputs());
+                markJobFailed(parent, parentReason);
+            }
+        }
+    }
+
     public CraftingJobReservation getReservation(UUID jobId) {
         return reservations.get(jobId);
     }
@@ -397,6 +591,17 @@ public final class CraftingJobManager {
             if (reservation.cpuPos().equals(pos)) {
                 CraftingJob job = jobs.get(entry.getKey());
                 if (job != null && job.getState() == CraftingJob.State.RESERVED) {
+                    if (job.hasFailedSubJobs()) {
+                        markJobFailed(job, Component
+                                .translatable("message.appliedenergistics2.crafting_job.dependency_failed",
+                                        job.describeOutputs()));
+                        continue;
+                    }
+
+                    if (!dependenciesSatisfied(job)) {
+                        continue;
+                    }
+
                     jobExecutionStarted(job, cpu);
                     return job;
                 }

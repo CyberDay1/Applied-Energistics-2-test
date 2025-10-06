@@ -19,6 +19,7 @@ import appeng.core.network.payload.AE2LoginSyncS2CPayload;
 import appeng.core.network.payload.EncodePatternC2SPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
+import appeng.client.gui.me.common.ClientCraftingJobTracker;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.crafting.CraftingJob;
@@ -163,6 +164,11 @@ public final class AE2NetworkHandlers {
                 return;
             }
 
+            var trackerMessage = ClientCraftingJobTracker.update(payload);
+            if (trackerMessage != null) {
+                player.displayClientMessage(trackerMessage, false);
+            }
+
             String translationKey = null;
             Object[] args = new Object[0];
             if (payload.state() == CraftingJob.State.RUNNING) {
@@ -179,6 +185,13 @@ public final class AE2NetworkHandlers {
                 translationKey = payload.processing() ? "message.ae2.processing_job_complete"
                         : "message.ae2.crafting_job_complete";
                 args = new Object[] { payload.jobId(), payload.insertedOutputs(), payload.droppedOutputs() };
+            } else if (payload.state() == CraftingJob.State.FAILED) {
+                translationKey = "message.ae2.crafting_job_failed";
+                args = new Object[] { payload.jobId() };
+            }
+
+            if (payload.parentJobId() != null) {
+                translationKey = null;
             }
 
             if (translationKey != null) {

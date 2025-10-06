@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -292,6 +293,28 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
             runningJobProgress = 0;
             runningAssembler = null;
             setChanged();
+            return;
+        }
+
+        if (job.hasFailedSubJobs()) {
+            var message = Component
+                    .translatable("message.appliedenergistics2.crafting_job.dependency_failed", job.describeOutputs());
+            manager.jobExecutionFailed(job, this, message);
+            AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
+            releaseReservation(job.getId());
+            runningJobId = null;
+            runningJobProgress = 0;
+            runningAssembler = null;
+            setChanged();
+            return;
+        }
+
+        if (job.hasIncompleteSubJobs()) {
+            if (runningAssembler != null) {
+                manager.releaseAssembler(runningJobId);
+                manager.releaseMachine(runningJobId);
+                runningAssembler = null;
+            }
             return;
         }
 

@@ -47,6 +47,7 @@ public final class AE2Packets {
     public static void sendCraftingJobUpdate(ServerLevel level, BlockPos pos, CraftingJob job) {
         PacketDistributor.sendToPlayersNear(level, null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 32,
                 new S2CJobUpdatePayload(job.getId(), job.getState(), job.isProcessing(), job.getTicksCompleted(),
-                        job.getTicksRequired(), job.getInsertedOutputs(), job.getDroppedOutputs()));
+                        job.getTicksRequired(), job.getInsertedOutputs(), job.getDroppedOutputs(), job.getParentJobId(),
+                        job.getSubJobStatuses(), job.getOutputs()));
     }
 }

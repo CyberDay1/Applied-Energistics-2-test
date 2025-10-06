@@ -77,6 +77,7 @@ public enum GuiText implements LocalizationEnum {
     CraftingPattern("Crafting Patterns"),
     CraftingPlan("Crafting Plan - %s"),
     CraftingStatus("Crafting Status"),
+    CraftingDependencies("Dependencies"),
     CraftingTerminal("Crafting Terminal"),
     Crafts("Crafts"),
     CreativeTab("Applied Energistics 2"),
