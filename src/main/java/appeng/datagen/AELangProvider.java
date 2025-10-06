@@ -5,8 +5,8 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 
 import appeng.AE2Registries;
 
-public class AE2LanguageProvider extends LanguageProvider {
-    public AE2LanguageProvider(PackOutput output) {
+public class AELangProvider extends LanguageProvider {
+    public AELangProvider(PackOutput output) {
         super(output, AE2Registries.MODID, "en_us");
     }
 
@@ -30,6 +30,16 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("block.appliedenergistics2.cable", "Cable");
         add("block.appliedenergistics2.meteorite", "Meteorite");
         add("block.appliedenergistics2.meteorite_hint", "Meteorite Hint");
+        add("block.appliedenergistics2.molecular_assembler", "Molecular Assembler");
+        add("block.appliedenergistics2.pattern_provider", "Pattern Provider");
+        add("block.appliedenergistics2.crafting_co_processor", "Crafting Co-Processor");
+        add("block.appliedenergistics2.crafting_unit", "Crafting Storage Unit");
+        add("block.appliedenergistics2.crafting_accelerator", "Crafting Acceleration Unit");
+        add("block.ae2.molecular_assembler", "Molecular Assembler");
+        add("block.ae2.pattern_provider", "Pattern Provider");
+        add("block.ae2.crafting_co_processor", "Crafting Co-Processor");
+        add("block.ae2.crafting_unit", "Crafting Storage Unit");
+        add("block.ae2.crafting_accelerator", "Crafting Acceleration Unit");
 
         add("item.appliedenergistics2.silicon", "Silicon");
         add("item.appliedenergistics2.certus_quartz_crystal", "Certus Quartz Crystal");
@@ -98,6 +108,12 @@ public class AE2LanguageProvider extends LanguageProvider {
                 "External Brewing Execution Complete: %s");
         add("message.appliedenergistics2.processing_job.external_brewing_failed",
                 "External Brewing Execution Failed: %s");
+        add("message.appliedenergistics2.processing_job.executor_queue_depth",
+                "Executor %s queue depth updated: %s tasks waiting.");
+        add("message.appliedenergistics2.processing_job.executor_resumed",
+                "Executor %s resumed processing job %s after maintenance.");
+        add("message.appliedenergistics2.processing_job.offline_buffer_hint",
+                "Network offline. Buffered job count: %s.");
         add("message.appliedenergistics2.crafting_job.spawning_sub_job", "Creating sub-job %2$s for %1$s.");
         add("message.appliedenergistics2.crafting_job.sub_job_spawning", "Spawning sub-job: %s");
         add("message.appliedenergistics2.crafting_job.sub_job_running", "Sub-job running: %s");
@@ -134,6 +150,17 @@ public class AE2LanguageProvider extends LanguageProvider {
         add("tooltip.ae2.cell.priority", "Priority: %s");
         add("gui.appliedenergistics2.terminal.search", "Search Items");
         add("gui.appliedenergistics2.terminal.search_hint", "Type to filter stored items");
+        add("gui.appliedenergistics2.terminal.offline_search_hint", "Network offline – search limited to cached view");
         add("gui.ae2.ClearWhitelist", "Clear Whitelist");
+        add("gui.appliedenergistics2.offline.power", "Network offline – missing power");
+        add("gui.appliedenergistics2.offline.channels", "Network offline – channel capacity exceeded");
+        add("gui.appliedenergistics2.offline.redstone", "Network offline – redstone disabled");
+        add("gui.appliedenergistics2.redstone.button", "Redstone Mode");
+        add("gui.appliedenergistics2.redstone.mode.active_with_signal", "Active with signal");
+        add("gui.appliedenergistics2.redstone.mode.active_without_signal", "Active without signal");
+        add("gui.appliedenergistics2.redstone.mode.always_active", "Always active");
+        add("gui.appliedenergistics2.redstone.mode.short.active_with_signal", "With Signal");
+        add("gui.appliedenergistics2.redstone.mode.short.active_without_signal", "Without Signal");
+        add("gui.appliedenergistics2.redstone.mode.short.always_active", "Always");
     }
 }

@@ -4,6 +4,10 @@ import org.gradle.api.initialization.resolve.RepositoriesMode
 import org.gradle.api.initialization.resolve.RulesMode
 
 pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://maven.neoforged.net/releases' }
+    }
     plugins {
         id 'com.diffplug.spotless' version '6.25.0'
         // https://projects.neoforged.net/neoforged/ModDevGradle
@@ -20,8 +24,22 @@ plugins {
 }
 
 def scConfig = new JsonSlurper().parse(file("stonecutter.json"))
-def scLegacyVersions = scConfig.versions.findAll { it.name == scConfig.default }
-def scLegacyRoadmap = scConfig.versions.findAll { it.name != scConfig.default }
+def scVersions = []
+if (scConfig.versions instanceof Map) {
+    scConfig.versions.each { key, value ->
+        scVersions << [
+                name      : key,
+                properties: [
+                        MC      : value.mc ?: value.MC ?: "",
+                        NEOFORGE: value.neo ?: value.NEOFORGE ?: ""
+                ]
+        ]
+    }
+} else {
+    scVersions = scConfig.versions
+}
+def scLegacyVersions = scVersions.findAll { it.name == scConfig.default }
+def scLegacyRoadmap = scVersions.findAll { it.name != scConfig.default }
 
 def scLegacy = [
         vcs     : scConfig.default,
@@ -47,7 +65,7 @@ scLegacyFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(scLegacy))
 
 stonecutter.create(rootProject, scLegacyFile)
 
-def scDefault = scConfig.versions.find { it.name == scConfig.default } ?: scConfig.versions.first()
+def scDefault = scVersions.find { it.name == scConfig.default } ?: scVersions.first()
 
 gradle.rootProject {
     def mcVersion = providers.gradleProperty("MC").getOrElse(findProperty("minecraft_version") ?: "")
@@ -74,7 +92,7 @@ gradle.rootProject {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    repositoriesMode = RepositoriesMode.PREFER_PROJECT
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
         maven {
@@ -133,15 +151,11 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'ae2';
-
-plugins {
-    id "dev.kikugie.stonecutter" version "0.7.10"
-}
-
 stonecutter {
     shared {
         set("MC", "1.21.4")
         set("NEOFORGE", "21.4.154")
     }
 }
+
+rootProject.name = 'ae2'

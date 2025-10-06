@@ -11,15 +11,18 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import java.util.concurrent.CompletableFuture;
 
 import appeng.core.AppEng;
-import appeng.data.providers.AEBiomeModifierProvider;
-import appeng.data.providers.AEBlockStateProvider;
-import appeng.data.providers.AEFeatureProvider;
-import appeng.data.providers.AEItemModelProvider;
-import appeng.data.providers.AELangProvider;
-import appeng.data.providers.AELootModifierProvider;
-import appeng.data.providers.AELootTableProvider;
-import appeng.data.providers.AERecipeProvider;
-import appeng.data.providers.AETagProviders;
+import appeng.datagen.AE2BlockStateProvider;
+import appeng.datagen.AE2BlockTagsProvider;
+import appeng.datagen.AE2ItemModelProvider;
+import appeng.datagen.AE2ItemTagsProvider;
+import appeng.datagen.AE2LootTableProvider;
+import appeng.datagen.AE2RecipeProvider;
+import appeng.datagen.AE2WorldgenProvider;
+import appeng.datagen.AELangProvider;
+import appeng.datagen.AE2BiomeModifierProvider;
+import appeng.datagen.ChargerRecipeProvider;
+import appeng.datagen.InscriberRecipeProvider;
+import appeng.datagen.ProcessingMachineRegistryProvider;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class AE2DataGen {
@@ -37,27 +40,25 @@ public final class AE2DataGen {
         final boolean includeServer = event.includeServer();
 
         if (includeServer) {
-            final AETagProviders.BlockTags blocks = new AETagProviders.BlockTags(packOutput, lookup);
-            generator.addProvider(true, blocks);
-            generator.addProvider(true, new AETagProviders.ItemTags(packOutput, lookup, blocks));
+            var blockTags = new AE2BlockTagsProvider(packOutput, lookup, existing);
+            generator.addProvider(true, blockTags);
+            generator.addProvider(true, new AE2ItemTagsProvider(packOutput, lookup, existing));
 
-            generator.addProvider(true, new AELootTableProvider(packOutput, lookup));
-            generator.addProvider(true, new AELootModifierProvider(packOutput, lookup));
+            generator.addProvider(true, new AE2LootTableProvider(packOutput));
+            generator.addProvider(true, new AE2WorldgenProvider(packOutput, lookup));
+            generator.addProvider(true, new AE2BiomeModifierProvider(packOutput, lookup));
 
-            generator.addProvider(true, new AEFeatureProvider(packOutput, lookup));
-
-            generator.addProvider(true, new AERecipeProvider(packOutput));
+            generator.addProvider(true, new AE2RecipeProvider(packOutput));
+            generator.addProvider(true, new ChargerRecipeProvider(packOutput));
+            generator.addProvider(true, new InscriberRecipeProvider(packOutput));
+            generator.addProvider(true, new ProcessingMachineRegistryProvider(packOutput));
         }
 
         if (includeClient) {
-            generator.addProvider(true, new AEBlockStateProvider(packOutput, existing));
-            generator.addProvider(true, new AEItemModelProvider(packOutput, existing));
+            generator.addProvider(true, new AE2BlockStateProvider(packOutput, existing));
+            generator.addProvider(true, new AE2ItemModelProvider(packOutput, existing));
 
-            generator.addProvider(true, new AELangProvider(packOutput, "en_us"));
-        }
-
-        if (includeServer) {
-            generator.addProvider(true, new AEBiomeModifierProvider(packOutput, lookup));
+            generator.addProvider(true, new AELangProvider(packOutput));
         }
     }
 }

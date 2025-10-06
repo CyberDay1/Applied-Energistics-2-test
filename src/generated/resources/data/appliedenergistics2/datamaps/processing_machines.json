@@ -1,0 +1,19 @@
+{
+  "machines": [
+    {
+      "id": "minecraft:furnace",
+      "executor": "furnace",
+      "display": "Vanilla Furnace"
+    },
+    {
+      "id": "minecraft:blast_furnace",
+      "executor": "blast_furnace",
+      "display": "Blast Furnace"
+    },
+    {
+      "id": "minecraft:brewing_stand",
+      "executor": "brewing",
+      "display": "Brewing Stand"
+    }
+  ]
+}
