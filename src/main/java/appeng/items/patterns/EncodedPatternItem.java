@@ -22,6 +22,7 @@ public class EncodedPatternItem extends Item {
     private static final String RECIPE_ID_TAG = "RecipeId";
     private static final String INPUTS_TAG = "Inputs";
     private static final String OUTPUTS_TAG = "Outputs";
+    private static final String PROCESSING_TAG = "Processing";
     private static final String ITEM_TAG = "item";
     private static final String COUNT_TAG = "count";
 
@@ -30,6 +31,11 @@ public class EncodedPatternItem extends Item {
     }
 
     public void setRecipe(ItemStack stack, ResourceLocation recipeId, List<ItemStack> inputs, List<ItemStack> outputs) {
+        setRecipe(stack, recipeId, inputs, outputs, false);
+    }
+
+    public void setRecipe(ItemStack stack, ResourceLocation recipeId, List<ItemStack> inputs, List<ItemStack> outputs,
+            boolean processing) {
         if (!stack.is(this)) {
             return;
         }
@@ -37,7 +43,11 @@ public class EncodedPatternItem extends Item {
         CompoundTag tag = stack.getOrCreateTag();
         if (recipeId != null) {
             tag.putString(RECIPE_ID_TAG, recipeId.toString());
+        } else {
+            tag.remove(RECIPE_ID_TAG);
         }
+
+        tag.putBoolean(PROCESSING_TAG, processing);
 
         tag.put(INPUTS_TAG, writeStacks(inputs));
         tag.put(OUTPUTS_TAG, writeStacks(outputs));
@@ -61,6 +71,19 @@ public class EncodedPatternItem extends Item {
 
     public List<ItemStack> getOutputs(ItemStack stack) {
         return Collections.unmodifiableList(readStacks(stack, OUTPUTS_TAG));
+    }
+
+    public boolean isProcessing(ItemStack stack) {
+        if (!stack.is(this)) {
+            return false;
+        }
+
+        CompoundTag tag = stack.getTag();
+        if (tag == null) {
+            return false;
+        }
+
+        return tag.getBoolean(PROCESSING_TAG);
     }
 
     private static ListTag writeStacks(List<ItemStack> stacks) {
@@ -126,6 +149,11 @@ public class EncodedPatternItem extends Item {
             List<Component> lines,
             TooltipFlag flags) {
         super.appendHoverText(stack, context, lines, flags);
+
+        var modeKey = isProcessing(stack)
+                ? "tooltip.appliedenergistics2.encoded_pattern.mode.processing"
+                : "tooltip.appliedenergistics2.encoded_pattern.mode.crafting";
+        lines.add(Component.translatable(modeKey).withStyle(ChatFormatting.GRAY));
 
         var outputs = getOutputs(stack);
         if (!outputs.isEmpty()) {

@@ -112,6 +112,10 @@
     "encodePattern": {
       "left": 147,
       "bottom": 145
+    },
+    "modeToggle": {
+      "left": 147,
+      "bottom": 102
     }
   }
 }

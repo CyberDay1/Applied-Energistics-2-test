@@ -20,6 +20,7 @@ import appeng.core.network.payload.EncodePatternC2SPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
+import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.crafting.CraftingJob;
 import appeng.crafting.CraftingJobManager;
 import appeng.items.patterns.EncodedPatternItem;
@@ -114,6 +115,24 @@ public final class AE2NetworkHandlers {
             }
 
             menu.encodeServer();
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSetPatternEncodingModeServer(final SetPatternEncodingModeC2SPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player() instanceof ServerPlayer player)) {
+                return;
+            }
+            if (!(player.containerMenu instanceof PatternEncodingTerminalMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+
+            menu.setProcessingModeServer(payload.processing());
         });
         ctx.setPacketHandled(true);
     }
