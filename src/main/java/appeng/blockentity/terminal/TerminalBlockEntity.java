@@ -97,6 +97,9 @@ public class TerminalBlockEntity extends BlockEntity implements IGridHost {
 
     public List<ItemStackView> getStoredItems() {
         var gridId = gridNode.getGridId();
+        if (!isGridOnline()) {
+            return List.of();
+        }
         var views = StorageService.getNetworkContents(gridId);
         Map<Item, Integer> combined = new HashMap<>();
         for (var view : views) {

@@ -20,6 +20,7 @@ import appeng.api.grid.IGridHost;
 import appeng.api.grid.IGridNode;
 import appeng.items.storage.BasicCellItem;
 import appeng.items.storage.fluid.BasicFluidCellItem;
+import appeng.grid.GridIndex;
 import appeng.grid.NodeType;
 import appeng.grid.SimpleGridNode;
 import appeng.grid.SimpleGridNode.OfflineReason;
@@ -148,6 +149,10 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
     private void onCellsChanged() {
         setChanged();
         ensureMounted();
+        Level level = getLevel();
+        if (level != null && !level.isClientSide()) {
+            GridHelper.updateSetMetadata(gridNode.getGridId());
+        }
     }
 
     public NonNullList<ItemStack> getCells() {
@@ -156,6 +161,10 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
 
     public InvWrapper getItemHandler() {
         return itemHandler;
+    }
+
+    public Container getCellContainer() {
+        return container;
     }
 
     @Override
@@ -207,6 +216,16 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
         return gridNode.getOfflineReason();
     }
 
+    public boolean isGridOnline() {
+        UUID gridId = gridNode.getGridId();
+        if (gridId == null) {
+            return false;
+        }
+
+        var set = GridIndex.get().get(gridId);
+        return set != null && set.isOnline() && gridNode.hasChannel() && gridNode.isRedstonePowered();
+    }
+
     public RedstoneMode getRedstoneMode() {
         return redstoneMode;
     }
@@ -247,10 +266,15 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
         }
 
         UUID grid = gridNode.getGridId();
-        if (grid == null) {
+        boolean shouldMount = grid != null && gridNode.hasChannel() && gridNode.isRedstonePowered();
+        if (shouldMount) {
+            var set = GridIndex.get().get(grid);
+            shouldMount = set != null && set.isOnline();
+        }
+
+        if (!shouldMount) {
             if (mountedGridId != null) {
                 StorageService.unmountDrive(mountedGridId, this);
-                GridHelper.updateSetMetadata(mountedGridId);
                 mountedGridId = null;
             }
             return;
@@ -265,7 +289,5 @@ public class DriveBlockEntity extends BlockEntity implements IGridHost {
         } else {
             StorageService.refreshDrive(grid, this);
         }
-
-        GridHelper.updateSetMetadata(grid);
     }
 }

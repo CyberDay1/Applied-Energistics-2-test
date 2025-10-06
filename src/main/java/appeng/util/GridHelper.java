@@ -97,6 +97,7 @@ public final class GridHelper {
         long tickCost = 0;
         long energyBudget = 0;
         List<ControllerBlockEntity> controllers = new ArrayList<>();
+        List<DriveBlockEntity> drives = new ArrayList<>();
         List<SimpleGridNode> controllerNodes = new ArrayList<>();
         List<SimpleGridNode> channelConsumers = new ArrayList<>();
 
@@ -113,15 +114,15 @@ public final class GridHelper {
                 }
             }
 
-            if (host instanceof DriveBlockEntity drive) {
-                drive.notifyGridChanged();
-            }
-
             if (host instanceof ControllerBlockEntity controller) {
                 hasController = true;
                 controllers.add(controller);
                 tickCost += 1;
                 energyBudget += controller.available();
+            }
+
+            if (host instanceof DriveBlockEntity drive) {
+                drives.add(drive);
             }
 
             if (host instanceof EnergyAcceptorBlockEntity acceptor) {
@@ -143,12 +144,7 @@ public final class GridHelper {
         set.setHasController(hasController);
         set.setTickCost(tickCost);
         set.setEnergyBudget(energyBudget);
-        var totals = StorageService.getTotals(gridId);
-        set.setItemCellCapacity(totals.totalCapacity());
-        set.setItemCellUsage(totals.used());
         boolean changed = set.recomputeOnline();
-
-        AELog.debug("GridSet %s storage capacity=%s used=%s", gridId, totals.totalCapacity(), totals.used());
 
         for (ControllerBlockEntity controller : controllers) {
             controller.setGridOnline(set.isOnline());
@@ -163,6 +159,16 @@ public final class GridHelper {
         }
 
         enforceChannelLimits(controllerNodes, channelConsumers);
+
+        for (DriveBlockEntity drive : drives) {
+            drive.notifyGridChanged();
+        }
+
+        var totals = StorageService.getTotals(gridId);
+        set.setItemCellCapacity(totals.totalCapacity());
+        set.setItemCellUsage(totals.used());
+
+        AELog.debug("GridSet %s storage capacity=%s used=%s", gridId, totals.totalCapacity(), totals.used());
     }
 
     private static void enforceChannelLimits(List<SimpleGridNode> controllers,

@@ -12,9 +12,11 @@ import appeng.client.screen.CraftingMonitorScreen;
 import appeng.client.screen.CraftingTerminalScreen;
 import appeng.client.screen.InscriberScreen;
 import appeng.client.screen.PatternTerminalScreen;
+import appeng.client.screen.SimpleDriveScreen;
 import appeng.client.screen.TerminalScreen;
 import appeng.registry.AE2Menus;
 import appeng.menu.terminal.TerminalMenu;
+import appeng.menu.simple.SimpleDriveMenu;
 
 @EventBusSubscriber(modid = AE2Registries.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class AE2ClientSetup {
@@ -29,6 +31,7 @@ public final class AE2ClientSetup {
             MenuScreens.register(AE2Menus.PATTERN_TERMINAL_MENU.get(), PatternTerminalScreen::new);
             MenuScreens.register(AE2Menus.CRAFTING_MONITOR_MENU.get(), CraftingMonitorScreen::new);
             MenuScreens.register(TerminalMenu.TYPE, TerminalScreen::new);
+            MenuScreens.register(SimpleDriveMenu.TYPE, SimpleDriveScreen::new);
         });
     }
 }
