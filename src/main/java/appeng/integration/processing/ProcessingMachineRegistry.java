@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import appeng.api.integration.machines.IProcessingMachine;
 import appeng.crafting.CraftingJob;
+import appeng.crafting.CraftingJobManager;
 
 /**
  * Tracks processing machines discovered by IO buses.
@@ -27,12 +28,14 @@ public final class ProcessingMachineRegistry {
     public void register(IProcessingMachine machine) {
         if (machine != null) {
             machines.add(machine);
+            CraftingJobManager.getInstance().notifyProcessingCapacityChanged();
         }
     }
 
     public void unregister(IProcessingMachine machine) {
         if (machine != null) {
             machines.remove(machine);
+            CraftingJobManager.getInstance().notifyProcessingCapacityChanged();
         }
     }
 

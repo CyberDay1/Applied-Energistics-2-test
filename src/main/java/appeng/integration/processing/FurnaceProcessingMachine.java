@@ -16,6 +16,9 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 
+import net.minecraft.network.chat.Component;
+
+import appeng.api.integration.machines.ProcessingMachineHealth;
 import appeng.api.integration.machines.SingleSlotProcessingMachine;
 import appeng.crafting.CraftingJob;
 
@@ -50,6 +53,16 @@ public class FurnaceProcessingMachine extends SingleSlotProcessingMachine {
 
     public ServerLevel getLevel() {
         return level;
+    }
+
+    @Override
+    public ProcessingMachineHealth getHealth() {
+        AbstractFurnaceBlockEntity furnace = getFurnace();
+        if (furnace == null || furnace.isRemoved()) {
+            return ProcessingMachineHealth.offline(Component.literal(
+                    "Furnace at " + furnacePos + " is unavailable"));
+        }
+        return ProcessingMachineHealth.healthy();
     }
 
     @Override
