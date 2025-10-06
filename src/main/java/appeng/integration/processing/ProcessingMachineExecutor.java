@@ -21,6 +21,12 @@ public final class ProcessingMachineExecutor {
             return false;
         }
 
+        if (!machine.isHealthy()) {
+            LOG.debug("External machine {} reported unhealthy before executing job {}; rerouting.", machine,
+                    job.getId());
+            return false;
+        }
+
         if (machine instanceof AbstractProcessingMachine abstractMachine) {
             boolean handled = abstractMachine.execute(job);
             if (!handled) {

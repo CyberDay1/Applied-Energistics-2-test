@@ -1,11 +1,13 @@
 package appeng.crafting;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +43,9 @@ public final class CraftingJobManager {
     private final Set<MolecularAssemblerBlockEntity> assemblers = ConcurrentHashMap.newKeySet();
     private final ConcurrentMap<UUID, MolecularAssemblerBlockEntity> jobAssemblers = new ConcurrentHashMap<>();
     private final ConcurrentMap<UUID, IProcessingMachine> jobMachines = new ConcurrentHashMap<>();
+    private final PriorityQueue<CraftingJob> processingQueue = new PriorityQueue<>(
+            Comparator.comparingInt((CraftingJob job) -> job.getPriority().weight()).reversed()
+                    .thenComparing(CraftingJob::getId));
     private final ProcessingExecutorSchedulingPolicy executorSchedulingPolicy =
             new RoundRobinProcessingExecutorSchedulingPolicy();
 
@@ -79,8 +84,11 @@ public final class CraftingJobManager {
             return null;
         }
 
-        if (job.isProcessing() && tryExecuteOnExternalMachine(job)) {
-            return null;
+        if (job.isProcessing()) {
+            var result = dispatchProcessingJob(job);
+            if (result != ProcessingDispatchResult.FALLBACK) {
+                return null;
+            }
         }
 
         synchronized (this) {
@@ -103,66 +111,128 @@ public final class CraftingJobManager {
         return null;
     }
 
-    private boolean tryExecuteOnExternalMachine(CraftingJob job) {
+    private ProcessingDispatchResult dispatchProcessingJob(CraftingJob job) {
+        synchronized (processingQueue) {
+            processingQueue.remove(job);
+            processingQueue.add(job);
+            LOG.debug("Queued processing job {} (priority={}) for external executor evaluation", job.getId(),
+                    job.getPriority());
+            var result = drainProcessingQueue(job);
+            if (result == ProcessingDispatchResult.HANDLED) {
+                drainProcessingQueue(null);
+            }
+            return result;
+        }
+    }
+
+    private ProcessingDispatchResult drainProcessingQueue(@Nullable CraftingJob target) {
+        while (!processingQueue.isEmpty()) {
+            CraftingJob head = processingQueue.peek();
+            var result = attemptScheduleCandidate(head);
+            if (head == target) {
+                return result;
+            }
+            if (result == ProcessingDispatchResult.QUEUED) {
+                return target == null ? ProcessingDispatchResult.HANDLED : ProcessingDispatchResult.QUEUED;
+            }
+        }
+
+        return target == null ? ProcessingDispatchResult.HANDLED : ProcessingDispatchResult.FALLBACK;
+    }
+
+    private ProcessingDispatchResult attemptScheduleCandidate(CraftingJob job) {
         var registry = ProcessingMachineRegistry.getInstance();
-        var machines = registry.findMachinesForJob(job);
+        var machines = new ArrayList<IProcessingMachine>();
+        for (var machine : registry.findMachinesForJob(job)) {
+            if (machine == null) {
+                continue;
+            }
+            if (!machine.isHealthy()) {
+                LOG.info(Component
+                        .translatable("message.appliedenergistics2.processing_job.executor_offline_fallback",
+                                job.describeOutputs(), machine, machine.getExecutorTypeId())
+                        .getString());
+                continue;
+            }
+            machines.add(machine);
+        }
+
         if (machines.isEmpty()) {
+            processingQueue.poll();
             LOG.debug(Component
                     .translatable("message.appliedenergistics2.processing_job.external_fallback",
                             job.describeOutputs())
                     .getString());
-            return false;
+            return ProcessingDispatchResult.FALLBACK;
         }
 
-        LOG.debug(Component.translatable("message.appliedenergistics2.processing_job.external_attempt",
-                job.describeOutputs()).getString());
+        var attempted = new ArrayList<IProcessingMachine>();
+        while (!machines.isEmpty()) {
+            var snapshot = buildExecutorPools(machines);
+            for (var saturated : snapshot.saturatedExecutors()) {
+                LOG.debug(Component
+                        .translatable("message.appliedenergistics2.processing_job.executor_at_capacity",
+                                saturated.executorType(), saturated.machine(), saturated.activeJobs(),
+                                formatCapacity(saturated.capacity()))
+                        .getString());
+            }
 
+            var selection = executorSchedulingPolicy.select(job, snapshot.availableExecutors());
+            if (selection.isEmpty()) {
+                LOG.debug("Processing job {} (priority={}) waiting for executor capacity", job.getId(),
+                        job.getPriority());
+                return ProcessingDispatchResult.QUEUED;
+            }
+
+            var selectionResult = selection.get();
+            var machine = selectionResult.executor();
+            attempted.add(machine);
+
+            int plannedActive = machine.getActiveJobCount() + 1;
+            var capacity = formatCapacity(machine.getCapacity());
+
+            LOG.debug(Component
+                    .translatable("message.appliedenergistics2.processing_job.job_scheduled_on_executor",
+                            job.describeOutputs(), machine, selectionResult.executorType(), plannedActive, capacity)
+                    .getString());
+
+            LOG.debug("Routing processing job {} (priority={}) to external machine {}", job.getId(),
+                    job.getPriority(), machine);
+
+            boolean handled = ProcessingMachineExecutor.tryExecute(job, machine);
+            if (handled) {
+                jobMachines.put(job.getId(), machine);
+                processingQueue.poll();
+                if (job.getPriority() == CraftingJob.Priority.HIGH) {
+                    LOG.info(Component
+                            .translatable("message.appliedenergistics2.processing_job.high_priority_scheduled",
+                                    job.describeOutputs(), machine, selectionResult.executorType())
+                            .getString());
+                }
+                return ProcessingDispatchResult.HANDLED;
+            }
+
+            var health = machine.getHealth();
+            if (health.isHealthy()) {
+                LOG.info(Component
+                        .translatable("message.appliedenergistics2.processing_job.executor_failed_reroute",
+                                job.describeOutputs(), machine, selectionResult.executorType())
+                        .getString());
+            } else {
+                LOG.info(Component
+                        .translatable("message.appliedenergistics2.processing_job.executor_offline_fallback",
+                                job.describeOutputs(), machine, selectionResult.executorType())
+                        .getString());
+            }
+
+            machines.removeIf(attempted::contains);
+        }
+
+        processingQueue.poll();
         LOG.debug(Component
-                .translatable("message.appliedenergistics2.processing_job.distributed_start", job.describeOutputs())
+                .translatable("message.appliedenergistics2.processing_job.external_fallback", job.describeOutputs())
                 .getString());
-
-        var snapshot = buildExecutorPools(machines);
-
-        for (var saturated : snapshot.saturatedExecutors()) {
-            LOG.debug(Component
-                    .translatable("message.appliedenergistics2.processing_job.executor_at_capacity",
-                            saturated.executorType(), saturated.machine(), saturated.activeJobs(),
-                            formatCapacity(saturated.capacity()))
-                    .getString());
-        }
-
-        var selection = executorSchedulingPolicy.select(job, snapshot.availableExecutors());
-        if (selection.isEmpty()) {
-            LOG.debug(Component
-                    .translatable("message.appliedenergistics2.processing_job.external_fallback",
-                            job.describeOutputs())
-                    .getString());
-            return false;
-        }
-
-        var selectionResult = selection.get();
-        var machine = selectionResult.executor();
-        int plannedActive = machine.getActiveJobCount() + 1;
-        var capacity = formatCapacity(machine.getCapacity());
-
-        LOG.debug(Component
-                .translatable("message.appliedenergistics2.processing_job.job_scheduled_on_executor",
-                        job.describeOutputs(), machine, selectionResult.executorType(), plannedActive, capacity)
-                .getString());
-
-        LOG.debug("Routing processing job {} to external machine {}", job.getId(), machine);
-
-        var handled = ProcessingMachineExecutor.tryExecute(job, machine);
-        if (handled) {
-            jobMachines.put(job.getId(), machine);
-        }
-        if (!handled) {
-            LOG.debug(Component
-                    .translatable("message.appliedenergistics2.processing_job.external_fallback",
-                            job.describeOutputs())
-                    .getString());
-        }
-        return handled;
+        return ProcessingDispatchResult.FALLBACK;
     }
 
     private ExecutorPoolSnapshot buildExecutorPools(List<IProcessingMachine> machines) {
@@ -219,6 +289,8 @@ public final class CraftingJobManager {
                 LOG.debug("Error while releasing processing machine for job {}", jobId, e);
             }
         }
+
+        dispatchQueuedJobs();
     }
 
     public boolean isAssemblerAssignedToJob(UUID jobId, MolecularAssemblerBlockEntity assembler) {
@@ -288,6 +360,9 @@ public final class CraftingJobManager {
         jobs.remove(job.getId());
         completedJobs.put(job.getId(), job);
         reservations.remove(job.getId());
+        synchronized (processingQueue) {
+            processingQueue.remove(job);
+        }
         releaseAssembler(job.getId());
         releaseMachine(job.getId());
         int inserted = job.getInsertedOutputs();
@@ -378,6 +453,22 @@ public final class CraftingJobManager {
             }
             return Optional.empty();
         }
+    }
+
+    private enum ProcessingDispatchResult {
+        HANDLED,
+        QUEUED,
+        FALLBACK
+    }
+
+    private void dispatchQueuedJobs() {
+        synchronized (processingQueue) {
+            drainProcessingQueue(null);
+        }
+    }
+
+    public void notifyProcessingCapacityChanged() {
+        dispatchQueuedJobs();
     }
 
     public record CraftingJobReservation(BlockPos cpuPos, int capacity) {

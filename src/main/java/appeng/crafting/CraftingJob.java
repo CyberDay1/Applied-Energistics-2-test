@@ -31,6 +31,25 @@ public final class CraftingJob {
         RUNNING,
         COMPLETE
     }
+
+    public enum Priority {
+        NORMAL(0),
+        HIGH(1);
+
+        private final int weight;
+
+        Priority(int weight) {
+            this.weight = weight;
+        }
+
+        public int weight() {
+            return weight;
+        }
+
+        public static Priority defaultPriority() {
+            return NORMAL;
+        }
+    }
     private static final String INPUTS_TAG = "Inputs";
     private static final String OUTPUTS_TAG = "Outputs";
     private static final String ITEM_TAG = "item";
@@ -50,6 +69,7 @@ public final class CraftingJob {
     private int ticksRequired;
     private int insertedOutputs;
     private int droppedOutputs;
+    private Priority priority;
 
     private CraftingJob(UUID id, List<ItemStackView> inputs, List<ItemStackView> outputs, boolean simulated,
             boolean processing, ItemStack patternStack) {
@@ -64,6 +84,7 @@ public final class CraftingJob {
         this.ticksRequired = DEFAULT_TICKS_REQUIRED;
         this.insertedOutputs = 0;
         this.droppedOutputs = 0;
+        this.priority = Priority.defaultPriority();
     }
 
     public static CraftingJob fromPattern(ItemStack patternStack) {
@@ -123,6 +144,18 @@ public final class CraftingJob {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        if (priority == null) {
+            this.priority = Priority.defaultPriority();
+        } else {
+            this.priority = priority;
+        }
     }
 
     public int getTicksCompleted() {
