@@ -15,8 +15,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 
 import appeng.blockentity.crafting.CraftingCPUBlockEntity;
+import appeng.api.integration.machines.IProcessingMachine;
 import appeng.api.storage.ItemStackView;
 import appeng.blockentity.crafting.MolecularAssemblerBlockEntity;
+import appeng.integration.processing.ProcessingMachineExecutor;
+import appeng.integration.processing.ProcessingMachineRegistry;
 
 /**
  * Tracks planned crafting jobs server-side.
@@ -31,6 +34,7 @@ public final class CraftingJobManager {
     private final Map<UUID, CraftingJobReservation> reservations = new ConcurrentHashMap<>();
     private final Set<MolecularAssemblerBlockEntity> assemblers = ConcurrentHashMap.newKeySet();
     private final ConcurrentMap<UUID, MolecularAssemblerBlockEntity> jobAssemblers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID, IProcessingMachine> jobMachines = new ConcurrentHashMap<>();
 
     private CraftingJobManager() {
     }
@@ -67,6 +71,10 @@ public final class CraftingJobManager {
             return null;
         }
 
+        if (job.isProcessing() && tryExecuteOnExternalMachine(job)) {
+            return null;
+        }
+
         synchronized (this) {
             var existing = jobAssemblers.get(job.getId());
             if (existing != null) {
@@ -87,6 +95,29 @@ public final class CraftingJobManager {
         return null;
     }
 
+    private boolean tryExecuteOnExternalMachine(CraftingJob job) {
+        var registry = ProcessingMachineRegistry.getInstance();
+        var machine = registry.findAvailableMachine(job);
+        if (machine.isEmpty()) {
+            LOG.debug("No external machine registered for processing job {}; falling back to assembler.",
+                    job.describeOutputs());
+            return false;
+        }
+
+        LOG.debug("Attempting to route processing job {} to external machine {}", job.describeOutputs(),
+                machine.get());
+
+        var handled = ProcessingMachineExecutor.tryExecute(job, machine.get());
+        if (handled) {
+            jobMachines.put(job.getId(), machine.get());
+        }
+        if (!handled) {
+            LOG.debug("Stub executor declined processing job {}; continuing with assembler pipeline.",
+                    job.describeOutputs());
+        }
+        return handled;
+    }
+
     public void releaseAssembler(UUID jobId) {
         if (jobId == null) {
             return;
@@ -94,6 +125,26 @@ public final class CraftingJobManager {
         var assembler = jobAssemblers.remove(jobId);
         if (assembler != null) {
             assembler.cancelJob(jobId);
+        }
+    }
+
+    public void releaseMachine(UUID jobId) {
+        if (jobId == null) {
+            return;
+        }
+
+        var machine = jobMachines.remove(jobId);
+        if (machine == null) {
+            return;
+        }
+
+        var job = getJob(jobId);
+        if (job != null) {
+            try {
+                machine.finishProcessing(job);
+            } catch (Exception e) {
+                LOG.debug("Error while releasing processing machine for job {}", jobId, e);
+            }
         }
     }
 
@@ -165,6 +216,7 @@ public final class CraftingJobManager {
         completedJobs.put(job.getId(), job);
         reservations.remove(job.getId());
         releaseAssembler(job.getId());
+        releaseMachine(job.getId());
         int inserted = job.getInsertedOutputs();
         int dropped = job.getDroppedOutputs();
         if (dropped > 0) {

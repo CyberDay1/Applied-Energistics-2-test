@@ -255,6 +255,7 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
             reservedCapacity = 0;
             if (runningJobId != null) {
                 CraftingJobManager.getInstance().releaseAssembler(runningJobId);
+                CraftingJobManager.getInstance().releaseMachine(runningJobId);
             }
             runningJobId = null;
             runningJobProgress = 0;
@@ -285,6 +286,7 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
         if (job == null) {
             LOG.debug("Running job {} disappeared from manager; releasing reservation.", runningJobId);
             manager.releaseAssembler(runningJobId);
+            manager.releaseMachine(runningJobId);
             releaseReservation(runningJobId);
             runningJobId = null;
             runningJobProgress = 0;
@@ -321,6 +323,7 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
             AE2Packets.sendCraftingJobUpdate(serverLevel, getBlockPos(), job);
             releaseReservation(job.getId());
             manager.releaseAssembler(job.getId());
+            manager.releaseMachine(job.getId());
             runningJobId = null;
             runningJobProgress = 0;
             runningAssembler = null;
@@ -336,6 +339,7 @@ public class CraftingCPUBlockEntity extends AENetworkedBlockEntity
         }
         if (runningJobId != null) {
             CraftingJobManager.getInstance().releaseAssembler(runningJobId);
+            CraftingJobManager.getInstance().releaseMachine(runningJobId);
             runningJobId = null;
         }
         runningAssembler = null;

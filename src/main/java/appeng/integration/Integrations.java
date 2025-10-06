@@ -21,10 +21,12 @@ package appeng.integration;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 
 import appeng.integration.modules.theoneprobe.TOP;
+import appeng.integration.processing.ProcessingIntegration;
 
 public class Integrations {
 
     public static void enqueueIMC(InterModEnqueueEvent event) {
+        ProcessingIntegration.init();
         TOP.enqueueIMC(event);
     }
 }
