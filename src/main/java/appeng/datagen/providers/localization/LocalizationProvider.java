@@ -159,6 +159,12 @@ public class LocalizationProvider implements IAE2DataProvider {
         add("theoneprobe.ae2.showing", "Showing");
         add("theoneprobe.ae2.stored_energy", "%1$d / %2$d");
         add("theoneprobe.ae2.unlocked", "Unlocked");
+
+        add("gui.ae2.upgrades.speed", "Speed upgrades reduce the cooldown between transfers.");
+        add("gui.ae2.upgrades.capacity", "Capacity upgrades increase the number of items moved per operation.");
+        add("gui.ae2.upgrades.redstone", "Redstone cards allow the bus to respect redstone signal settings.");
+        add("gui.ae2.upgrades.fuzzy", "Fuzzy cards enable partial and variant item matching.");
+        add("gui.ae2.upgrades.inverter", "Inverter cards swap whitelist and blacklist filtering.");
     }
 
     private CompletableFuture<?> save(CachedOutput cache, Map<String, String> localizations) {
