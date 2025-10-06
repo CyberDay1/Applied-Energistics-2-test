@@ -83,8 +83,8 @@ public final class ProcessingTransferHandler implements IProcessingMachine.Proce
         }
         trackedInputs.clear();
 
-        ItemStack stranded = machine.retrieveOutputFromMachine(ItemStack.EMPTY);
-        if (!stranded.isEmpty()) {
+        ItemStack stranded;
+        while (!(stranded = machine.retrieveOutputFromMachine(ItemStack.EMPTY)).isEmpty()) {
             machine.handleOverflow(stranded);
         }
     }

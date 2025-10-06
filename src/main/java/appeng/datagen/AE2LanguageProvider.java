@@ -75,6 +75,12 @@ public class AE2LanguageProvider extends LanguageProvider {
                 "External Blast Furnace Execution Complete: %s");
         add("message.appliedenergistics2.processing_job.external_blast_furnace_failed",
                 "External Blast Furnace Execution Failed: %s");
+        add("message.appliedenergistics2.processing_job.external_brewing_started",
+                "External Brewing Execution Started: %s");
+        add("message.appliedenergistics2.processing_job.external_brewing_complete",
+                "External Brewing Execution Complete: %s");
+        add("message.appliedenergistics2.processing_job.external_brewing_failed",
+                "External Brewing Execution Failed: %s");
         add("gui.appliedenergistics2.pattern_encoding.mode.crafting", "Crafting Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode.processing", "Processing Pattern");
         add("gui.appliedenergistics2.pattern_encoding.mode_toggle_hint", "Click to switch pattern type.");
