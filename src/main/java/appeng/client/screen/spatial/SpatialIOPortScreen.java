@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -13,6 +14,9 @@ import appeng.core.network.AE2Packets;
 import appeng.menu.spatial.SpatialIOPortMenu;
 
 public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMenu> {
+    private Button captureButton;
+    private Button restoreButton;
+
     public SpatialIOPortScreen(SpatialIOPortMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         this.imageWidth = 176;
@@ -25,13 +29,21 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
         int left = this.leftPos;
         int top = this.topPos;
 
-        addRenderableWidget(Button.builder(Component.translatable("gui.ae2.spatial.capture"), button -> {
+        captureButton = addRenderableWidget(Button.builder(Component.translatable("gui.ae2.spatial.capture"), button -> {
             AE2Packets.sendSpatialCapture(menu.containerId, menu.getBlockPos());
         }).bounds(left + 10, top + 20, 80, 20).build());
 
-        addRenderableWidget(Button.builder(Component.translatable("gui.ae2.spatial.restore"), button -> {
+        restoreButton = addRenderableWidget(Button.builder(Component.translatable("gui.ae2.spatial.restore"), button -> {
             AE2Packets.sendSpatialRestore(menu.containerId, menu.getBlockPos());
         }).bounds(left + 10, top + 50, 80, 20).build());
+
+        updateButtonStates();
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        updateButtonStates();
     }
 
     @Override
@@ -76,7 +88,7 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
     private void renderRegionSize(GuiGraphics graphics) {
         var regionSize = menu.getRegionSize();
         Component text;
-        if (regionSize.equals(net.minecraft.core.BlockPos.ZERO)) {
+        if (regionSize.equals(BlockPos.ZERO)) {
             text = Component.translatable("gui.ae2.spatial.region_size", "-");
         } else {
             text = Component.translatable("gui.ae2.spatial.region_size", formatRegionSize(regionSize));
@@ -85,7 +97,21 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
         graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 80, 0xFFFFFF, false);
     }
 
-    private static String formatRegionSize(net.minecraft.core.BlockPos regionSize) {
+    private static String formatRegionSize(BlockPos regionSize) {
         return regionSize.getX() + "x" + regionSize.getY() + "x" + regionSize.getZ();
+    }
+
+    private void updateButtonStates() {
+        if (captureButton == null || restoreButton == null) {
+            return;
+        }
+
+        var cellStack = this.menu.getSlot(0).getItem();
+        var hasCell = !cellStack.isEmpty();
+        var hasSize = !this.menu.getRegionSize().equals(BlockPos.ZERO);
+
+        boolean active = hasCell && hasSize;
+        captureButton.active = active;
+        restoreButton.active = active;
     }
 }

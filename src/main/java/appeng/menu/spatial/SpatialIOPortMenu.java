@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 
 import appeng.api.implementations.items.ISpatialStorageCell;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
+import appeng.blockentity.spatial.SpatialIOPortBlockEntity.LastAction;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.SlotSemantics;
 import appeng.menu.implementations.MenuTypeBuilder;
@@ -29,6 +30,8 @@ public class SpatialIOPortMenu extends AEBaseMenu {
     public int regionSizeY;
     @GuiSync(2)
     public int regionSizeZ;
+    @GuiSync(3)
+    public int lastActionOrdinal;
 
     public SpatialIOPortMenu(int id, Inventory playerInventory, SpatialIOPortBlockEntity port) {
         super(TYPE, id, playerInventory, Objects.requireNonNull(port, "port"));
@@ -36,6 +39,7 @@ public class SpatialIOPortMenu extends AEBaseMenu {
 
         var cached = port.getRegionSize();
         updateRegionSize(cached);
+        updateLastAction(port.getLastAction());
 
         addSlot(new Slot(port.getInternalInventory().toContainer(), 0, 80, 35) {
             @Override
@@ -85,6 +89,18 @@ public class SpatialIOPortMenu extends AEBaseMenu {
         this.regionSizeX = size.getX();
         this.regionSizeY = size.getY();
         this.regionSizeZ = size.getZ();
+    }
+
+    public LastAction getLastAction() {
+        var actions = LastAction.values();
+        if (lastActionOrdinal < 0 || lastActionOrdinal >= actions.length) {
+            return LastAction.NONE;
+        }
+        return actions[lastActionOrdinal];
+    }
+
+    public void updateLastAction(LastAction action) {
+        this.lastActionOrdinal = action.ordinal();
     }
 
     public ItemStack getSpatialCellStack() {
