@@ -70,6 +70,7 @@ public final class AEBlockIds {
     public static final ResourceLocation CELL_WORKBENCH = id("cell_workbench");
     public static final ResourceLocation IO_PORT = id("io_port");
     public static final ResourceLocation STORAGE_BUS = id("storage_bus");
+    public static final ResourceLocation LEVEL_EMITTER = id("level_emitter_block");
     public static final ResourceLocation IMPORT_BUS = id("import_bus");
     public static final ResourceLocation EXPORT_BUS = id("export_bus");
     public static final ResourceLocation CONDENSER = id("condenser");

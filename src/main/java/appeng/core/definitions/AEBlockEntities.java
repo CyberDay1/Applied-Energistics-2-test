@@ -52,6 +52,7 @@ import appeng.blockentity.misc.CrankBlockEntity;
 import appeng.blockentity.misc.GrowthAcceleratorBlockEntity;
 import appeng.blockentity.misc.InscriberBlockEntity;
 import appeng.blockentity.misc.InterfaceBlockEntity;
+import appeng.blockentity.misc.LevelEmitterBlockEntity;
 import appeng.blockentity.misc.LightDetectorBlockEntity;
 import appeng.blockentity.misc.MysteriousCubeBlockEntity;
 import appeng.blockentity.misc.PaintSplotchesBlockEntity;
@@ -120,6 +121,8 @@ public final class AEBlockEntities {
             IOPortBlockEntity::new, AEBlocks.IO_PORT);
     public static final DeferredBlockEntityType<StorageBusBlockEntity> STORAGE_BUS = create("storage_bus",
             StorageBusBlockEntity.class, StorageBusBlockEntity::new, AEBlocks.STORAGE_BUS);
+    public static final DeferredBlockEntityType<LevelEmitterBlockEntity> LEVEL_EMITTER = create("level_emitter",
+            LevelEmitterBlockEntity.class, LevelEmitterBlockEntity::new, AEBlocks.LEVEL_EMITTER);
     public static final DeferredBlockEntityType<ImportBusBlockEntity> IMPORT_BUS = create("import_bus",
             ImportBusBlockEntity.class, ImportBusBlockEntity::new, AEBlocks.IMPORT_BUS);
     public static final DeferredBlockEntityType<ExportBusBlockEntity> EXPORT_BUS = create("export_bus",

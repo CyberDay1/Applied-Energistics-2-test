@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=true": {
+      "model": "ae2:block/level_emitter_block_on"
+    },
+    "powered=false": {
+      "model": "ae2:block/level_emitter_block_off"
+    }
+  }
+}

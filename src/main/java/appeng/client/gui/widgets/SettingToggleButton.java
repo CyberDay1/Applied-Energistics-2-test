@@ -42,6 +42,7 @@ import appeng.api.config.FullnessMode;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.IncludeExclude;
 import appeng.api.config.InscriberInputCapacity;
+import appeng.api.config.LevelEmitterMode;
 import appeng.api.config.LockCraftingMode;
 import appeng.api.config.OperationMode;
 import appeng.api.config.PowerUnit;
@@ -139,6 +140,12 @@ public class SettingToggleButton<T extends Enum<T>> extends IconButton {
             registerApp(Icon.REDSTONE_ABOVE_EQUAL, Settings.REDSTONE_EMITTER, RedstoneMode.HIGH_SIGNAL,
                     ButtonToolTips.RedstoneMode,
                     ButtonToolTips.EmitLevelAbove);
+            registerApp(Icon.REDSTONE_ABOVE_EQUAL, Settings.LEVEL_EMITTER_MODE, LevelEmitterMode.GREATER_OR_EQUAL,
+                    ButtonToolTips.LevelEmitterMode,
+                    ButtonToolTips.EmitLevelAbove);
+            registerApp(Icon.REDSTONE_BELOW, Settings.LEVEL_EMITTER_MODE, LevelEmitterMode.LESS_OR_EQUAL,
+                    ButtonToolTips.LevelEmitterMode,
+                    ButtonToolTips.EmitLevelsBelow);
 
             registerApp(Icon.ARROW_LEFT, Settings.OPERATION_MODE, OperationMode.FILL,
                     ButtonToolTips.TransferDirection,

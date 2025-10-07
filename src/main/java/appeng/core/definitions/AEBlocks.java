@@ -69,6 +69,7 @@ import appeng.block.misc.InscriberBlock;
 import appeng.block.io.ExportBusBlock;
 import appeng.block.io.ImportBusBlock;
 import appeng.block.misc.InterfaceBlock;
+import appeng.block.misc.LevelEmitterBlock;
 import appeng.block.misc.LightDetectorBlock;
 import appeng.block.misc.MysteriousCubeBlock;
 import appeng.block.misc.QuartzFixtureBlock;
@@ -183,6 +184,8 @@ public final class AEBlocks {
     public static final BlockDefinition<InterfaceBlock> INTERFACE = block("ME Interface", AEBlockIds.INTERFACE, InterfaceBlock::new);
     public static final BlockDefinition<CellWorkbenchBlock> CELL_WORKBENCH = block("Cell Workbench", AEBlockIds.CELL_WORKBENCH, CellWorkbenchBlock::new);
     public static final BlockDefinition<IOPortBlock> IO_PORT = block("ME IO Port", AEBlockIds.IO_PORT, IOPortBlock::new);
+    public static final BlockDefinition<LevelEmitterBlock> LEVEL_EMITTER = block("ME Level Emitter", AEBlockIds.LEVEL_EMITTER,
+            LevelEmitterBlock::new);
     public static final BlockDefinition<StorageBusBlock> STORAGE_BUS = block("ME Storage Bus", AEBlockIds.STORAGE_BUS,
             StorageBusBlock::new);
     public static final BlockDefinition<ImportBusBlock> IMPORT_BUS = block("ME Import Bus", AEBlockIds.IMPORT_BUS,
