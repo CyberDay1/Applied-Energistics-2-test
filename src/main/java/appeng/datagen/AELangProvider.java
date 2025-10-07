@@ -181,6 +181,7 @@ public class AELangProvider extends LanguageProvider {
         add("gui.appliedenergistics2.redstone.mode.short.always_active", "Always");
         add("screen.appliedenergistics2.annihilation_plane", "Annihilation Plane");
         add("gui.ae2.annihilation_plane.title", "Annihilation Plane");
+        add("gui.ae2.FormationPlane", "Formation Plane");
         add("gui.ae2.status.online", "Status: Online");
         add("gui.ae2.status.offline", "Status: Offline");
         add("screen.appliedenergistics2.interface", "Interface");

@@ -55,6 +55,9 @@ public class FormationPlaneScreen extends UpgradeableScreen<FormationPlaneMenu> 
         this.fuzzyMode.set(this.menu.getFuzzyMode());
         this.fuzzyMode.setVisibility(menu.supportsFuzzyMode());
         this.placeMode.set(this.menu.getPlaceMode());
+
+        var statusKey = menu.isPlaneOnline() ? "gui.ae2.status.online" : "gui.ae2.status.offline";
+        setTextContent("status", Component.translatable(statusKey));
     }
 
 }
