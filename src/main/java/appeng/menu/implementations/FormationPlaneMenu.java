@@ -18,6 +18,7 @@
 
 package appeng.menu.implementations;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
@@ -27,6 +28,7 @@ import appeng.api.stacks.AEKey;
 import appeng.api.util.IConfigManager;
 import appeng.client.gui.implementations.FormationPlaneScreen;
 import appeng.core.definitions.AEItems;
+import appeng.core.network.AE2Packets;
 import appeng.menu.guisync.GuiSync;
 
 /**
@@ -40,6 +42,11 @@ public class FormationPlaneMenu extends UpgradeableMenu<FormationPlaneMenuHost> 
 
     @GuiSync(7)
     public YesNo placeMode;
+
+    @GuiSync(8)
+    public boolean planeActive;
+
+    private Boolean lastSentPlaneState;
 
     public FormationPlaneMenu(MenuType<FormationPlaneMenu> type, int id, Inventory ip,
             FormationPlaneMenuHost host) {
@@ -57,6 +64,21 @@ public class FormationPlaneMenu extends UpgradeableMenu<FormationPlaneMenuHost> 
             this.setFuzzyMode(cm.getSetting(Settings.FUZZY_MODE));
         }
         this.setPlaceMode(cm.getSetting(Settings.PLACE_BLOCK));
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+
+        if (!isClientSide() && getPlayer() instanceof ServerPlayer serverPlayer) {
+            var active = getHost().isPlaneActive();
+            planeActive = active;
+
+            if (lastSentPlaneState == null || lastSentPlaneState != active) {
+                AE2Packets.sendPlaneActivity(serverPlayer, containerId, active);
+                lastSentPlaneState = active;
+            }
+        }
     }
 
     @Override
@@ -84,5 +106,13 @@ public class FormationPlaneMenu extends UpgradeableMenu<FormationPlaneMenuHost> 
             }
         }
         return false;
+    }
+
+    public boolean isPlaneOnline() {
+        return planeActive;
+    }
+
+    public void applyPlaneActivity(boolean active) {
+        this.planeActive = active;
     }
 }

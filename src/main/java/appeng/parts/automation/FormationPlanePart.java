@@ -133,6 +133,11 @@ public class FormationPlanePart extends UpgradeablePart
     }
 
     @Override
+    public boolean isPlaneActive() {
+        return getMainNode().isActive();
+    }
+
+    @Override
     public void onSettingChanged(IConfigManager manager, Setting<?> setting) {
         this.getHost().markForSave();
     }

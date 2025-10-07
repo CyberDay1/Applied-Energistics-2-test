@@ -29,6 +29,7 @@ import appeng.core.network.payload.SpatialCaptureC2SPayload;
 import appeng.core.network.payload.SpatialOpCancelC2SPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
+import appeng.core.network.payload.PlaneActivityS2CPayload;
 
 import appeng.crafting.CraftingJob;
 
@@ -107,5 +108,9 @@ public final class AE2Packets {
 
     public static void sendSpatialCancel(int containerId, BlockPos pos) {
         PacketDistributor.sendToServer(new SpatialOpCancelC2SPayload(containerId, pos));
+    }
+
+    public static void sendPlaneActivity(ServerPlayer player, int containerId, boolean active) {
+        PacketDistributor.sendToPlayer(player, new PlaneActivityS2CPayload(containerId, active));
     }
 }
