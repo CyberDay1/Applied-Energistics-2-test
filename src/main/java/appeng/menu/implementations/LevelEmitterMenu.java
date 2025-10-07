@@ -1,13 +1,20 @@
 package appeng.menu.implementations;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 
 import appeng.api.config.LevelEmitterMode;
+import appeng.api.inventories.InternalInventory;
+import appeng.api.stacks.AEKey;
 import appeng.blockentity.misc.LevelEmitterBlockEntity;
 import appeng.menu.AEBaseMenu;
+import appeng.menu.SlotSemantics;
 import appeng.menu.implementations.MenuTypeBuilder;
 import appeng.menu.guisync.GuiSync;
+import appeng.menu.slot.FakeSlot;
 
 public class LevelEmitterMenu extends AEBaseMenu {
 
@@ -35,6 +42,16 @@ public class LevelEmitterMenu extends AEBaseMenu {
         super(menuType, id, inventory, host);
 
         registerClientAction(ACTION_SET_THRESHOLD, Long.class, this::handleSetThreshold);
+
+        InternalInventory configInventory = null;
+        if (host != null) {
+            configInventory = host.getConfigInventory();
+        } else if (getBlockEntity() instanceof LevelEmitterBlockEntity be) {
+            configInventory = be.getConfigInventory();
+        }
+        if (configInventory != null) {
+            this.addSlot(new FakeSlot(configInventory, 0), SlotSemantics.CONFIG);
+        }
         createPlayerInventorySlots(inventory);
     }
 
@@ -71,5 +88,20 @@ public class LevelEmitterMenu extends AEBaseMenu {
         if (value != null && getBlockEntity() instanceof LevelEmitterBlockEntity levelEmitter) {
             levelEmitter.setThreshold(value);
         }
+    }
+
+    @Nullable
+    public AEKey getMonitoredKey() {
+        if (getBlockEntity() instanceof LevelEmitterBlockEntity levelEmitter) {
+            return levelEmitter.getFilterKey();
+        }
+
+        var slots = getSlots(SlotSemantics.CONFIG);
+        if (!slots.isEmpty()) {
+            Slot slot = slots.get(0);
+            return LevelEmitterBlockEntity.getFilterKey(slot.getItem());
+        }
+
+        return null;
     }
 }
