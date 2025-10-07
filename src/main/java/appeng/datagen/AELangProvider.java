@@ -27,6 +27,7 @@ public class AELangProvider extends LanguageProvider {
         add("block.appliedenergistics2.storage_bus", "ME Storage Bus");
         add("block.appliedenergistics2.import_bus", "ME Import Bus");
         add("block.appliedenergistics2.export_bus", "ME Export Bus");
+        add("block.appliedenergistics2.annihilation_plane", "Annihilation Plane");
         add("block.appliedenergistics2.formation_plane", "Formation Plane");
         add("block.appliedenergistics2.cable", "Cable");
         add("block.appliedenergistics2.meteorite", "Meteorite");
@@ -175,6 +176,7 @@ public class AELangProvider extends LanguageProvider {
         add("gui.appliedenergistics2.redstone.mode.short.active_with_signal", "With Signal");
         add("gui.appliedenergistics2.redstone.mode.short.active_without_signal", "Without Signal");
         add("gui.appliedenergistics2.redstone.mode.short.always_active", "Always");
+        add("screen.appliedenergistics2.annihilation_plane", "Annihilation Plane");
         add("screen.appliedenergistics2.formation_plane", "Formation Plane");
         add("gui.ae2.io_bus.transfer_cooldown", "Transfer cooldown: %s ticks");
         add("gui.ae2.io_bus.operations_per_transfer", "Operations per transfer: %s");

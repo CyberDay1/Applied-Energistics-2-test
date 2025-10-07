@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CGC",
+    "CAC",
+    "CGC"
+  ],
+  "key": {
+    "C": { "item": "ae2:cable" },
+    "G": { "item": "ae2:quartz_glass" },
+    "A": { "item": "ae2:annihilation_core" }
+  },
+  "result": {
+    "item": "ae2:annihilation_plane"
+  }
+}

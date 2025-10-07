@@ -5,6 +5,7 @@ import appeng.menu.ChargerMenu;
 import appeng.menu.InscriberMenu;
 import appeng.menu.me.crafting.CraftingMonitorMenu;
 import appeng.menu.terminal.CraftingTerminalMenu;
+import appeng.menu.implementations.AnnihilationPlaneMenu;
 import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
 import appeng.menu.simple.SimpleDriveMenu;
@@ -36,6 +37,9 @@ public final class AE2Menus {
 
     public static final RegistryObject<MenuType<SpatialIOPortMenu>> SPATIAL_IO_PORT_MENU =
         AE2Registries.MENUS.register("spatial_io_port", () -> SpatialIOPortMenu.TYPE);
+
+    public static final RegistryObject<MenuType<AnnihilationPlaneMenu>> ANNIHILATION_PLANE_MENU =
+        AE2Registries.MENUS.register("annihilation_plane", () -> AnnihilationPlaneMenu.TYPE);
 
     private AE2Menus() {}
 }

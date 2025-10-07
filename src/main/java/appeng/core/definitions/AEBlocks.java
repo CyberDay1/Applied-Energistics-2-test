@@ -67,6 +67,7 @@ import appeng.block.misc.CrankBlock;
 import appeng.block.misc.GrowthAcceleratorBlock;
 import appeng.block.misc.InscriberBlock;
 import appeng.block.io.ExportBusBlock;
+import appeng.block.io.AnnihilationPlaneBlock;
 import appeng.block.io.FormationPlaneBlock;
 import appeng.block.io.ImportBusBlock;
 import appeng.block.misc.InterfaceBlock;
@@ -193,6 +194,8 @@ public final class AEBlocks {
             ImportBusBlock::new);
     public static final BlockDefinition<ExportBusBlock> EXPORT_BUS = block("ME Export Bus", AEBlockIds.EXPORT_BUS,
             ExportBusBlock::new);
+    public static final BlockDefinition<AnnihilationPlaneBlock> ANNIHILATION_PLANE = block("Annihilation Plane",
+            AEBlockIds.ANNIHILATION_PLANE, AnnihilationPlaneBlock::new);
     public static final BlockDefinition<FormationPlaneBlock> FORMATION_PLANE = block("Formation Plane",
             AEBlockIds.FORMATION_PLANE, FormationPlaneBlock::new);
     public static final BlockDefinition<CondenserBlock> CONDENSER = block("Matter Condenser", AEBlockIds.CONDENSER, CondenserBlock::new);

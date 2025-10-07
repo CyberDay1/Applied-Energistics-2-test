@@ -78,8 +78,12 @@ public class AE2ItemTagsProvider extends ItemTagsProvider {
         // Mirrors the mainline "monitors" tag so downstream integrations can share recipes/config.
         tag(MONITORS).add(AE2Items.CRAFTING_MONITOR.get());
 
-        tag(AUTOMATION).add(AE2Items.FORMATION_PLANE.get());
-        tag(IO_PLANES).add(AE2Items.FORMATION_PLANE.get());
+        tag(AUTOMATION)
+                .add(AE2Items.ANNIHILATION_PLANE.get())
+                .add(AE2Items.FORMATION_PLANE.get());
+        tag(IO_PLANES)
+                .add(AE2Items.ANNIHILATION_PLANE.get())
+                .add(AE2Items.FORMATION_PLANE.get());
     }
 
     private static TagKey<Item> tag(String path) {

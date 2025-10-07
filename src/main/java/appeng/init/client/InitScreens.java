@@ -38,6 +38,7 @@ import appeng.client.gui.implementations.CondenserScreen;
 import appeng.client.gui.implementations.ExportBusBlockScreen;
 import appeng.client.gui.implementations.DriveScreen;
 import appeng.client.gui.implementations.EnergyLevelEmitterScreen;
+import appeng.client.gui.implementations.AnnihilationPlaneScreen;
 import appeng.client.gui.implementations.FormationPlaneScreen;
 import appeng.client.gui.implementations.ImportBusBlockScreen;
 import appeng.client.gui.implementations.IOBusScreen;
@@ -79,6 +80,7 @@ import appeng.menu.implementations.CellWorkbenchMenu;
 import appeng.menu.implementations.CondenserMenu;
 import appeng.menu.implementations.DriveMenu;
 import appeng.menu.implementations.EnergyLevelEmitterMenu;
+import appeng.menu.implementations.AnnihilationPlaneMenu;
 import appeng.menu.implementations.FormationPlaneMenu;
 import appeng.menu.implementations.ExportBusBlockMenu;
 import appeng.menu.implementations.IOBusMenu;
@@ -161,6 +163,8 @@ public final class InitScreens {
         registrar.register(ExportBusBlockMenu.TYPE, ExportBusBlockScreen::new, "/screens/export_bus_block.json");
         registrar.register(SetStockAmountMenu.TYPE, SetStockAmountScreen::new, "/screens/set_stock_amount.json");
         registrar.register(FormationPlaneMenu.TYPE, FormationPlaneScreen::new, "/screens/formation_plane.json");
+        registrar.register(AnnihilationPlaneMenu.TYPE, AnnihilationPlaneScreen::new,
+                "/screens/annihilation_plane.json");
         registrar.register(PriorityMenu.TYPE, PriorityScreen::new, "/screens/priority.json");
         registrar.register(StorageLevelEmitterMenu.TYPE, StorageLevelEmitterScreen::new, "/screens/level_emitter.json");
         registrar.register(LevelEmitterMenu.TYPE, LevelEmitterScreen::new, "/screens/level_emitter_block.json");

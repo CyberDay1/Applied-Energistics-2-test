@@ -96,6 +96,13 @@ public class AE2LootTableProvider extends LootTableProvider {
                             LootPool.lootPool().setRolls(ConstantValue.exactly(1))
                                     .add(LootItem.lootTableItem(AE2Blocks.CRAFTING_MONITOR.get()))));
 
+            out.accept(AE2Blocks.ANNIHILATION_PLANE.getId(),
+                    LootTable.lootTable().withPool(
+                            LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                                    .add(LootItem.lootTableItem(AE2Blocks.ANNIHILATION_PLANE.get())
+                                            .apply(CopyComponentsFunction.copyComponents(
+                                                    CopyComponentsFunction.Source.BLOCK_ENTITY)))));
+
             out.accept(AE2Blocks.FORMATION_PLANE.getId(),
                     LootTable.lootTable().withPool(
                             LootPool.lootPool().setRolls(ConstantValue.exactly(1))
