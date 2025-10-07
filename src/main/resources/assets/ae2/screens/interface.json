@@ -15,10 +15,13 @@
       "top": 53,
       "grid": "HORIZONTAL"
     },
-    "STORAGE": {
+    "MACHINE_INPUT": {
       "left": 8,
-      "top": 71,
-      "grid": "HORIZONTAL"
+      "top": 91
+    },
+    "MACHINE_OUTPUT": {
+      "left": 98,
+      "top": 91
     }
   },
   "text": {
@@ -40,13 +43,22 @@
         "top": 24
       }
     },
-    "interface_stored_items": {
+    "interface_input": {
       "text": {
-        "translate": "gui.ae2.StoredItems"
+        "translate": "gui.ae2.InterfaceInput"
       },
       "position": {
         "left": 8,
-        "top": 91
+        "top": 79
+      }
+    },
+    "interface_output": {
+      "text": {
+        "translate": "gui.ae2.InterfaceOutput"
+      },
+      "position": {
+        "left": 98,
+        "top": 79
       }
     }
   },

@@ -244,6 +244,10 @@ public class InterfaceLogic implements ICraftingRequester, IUpgradeableObject, I
         return config;
     }
 
+    public IManagedGridNode getMainNode() {
+        return mainNode;
+    }
+
     /**
      * Gets the inventory that is exposed to an ME compatible API user if they have access to the grid this interface is
      * a part of. This is normally accessed by storage buses.

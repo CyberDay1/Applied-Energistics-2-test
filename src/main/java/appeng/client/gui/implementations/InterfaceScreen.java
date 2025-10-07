@@ -21,12 +21,14 @@ package appeng.client.gui.implementations;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.Settings;
+import appeng.client.gui.OfflineOverlayRenderer;
 import appeng.client.gui.Icon;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.IconButton;
@@ -78,6 +80,14 @@ public class InterfaceScreen<C extends InterfaceMenu> extends UpgradeableScreen<
             var item = configSlots.get(i).getItem();
             button.visible = !item.isEmpty();
         }
+    }
+
+    @Override
+    public void drawFG(GuiGraphics guiGraphics, int offsetX, int offsetY, int mouseX, int mouseY) {
+        super.drawFG(guiGraphics, offsetX, offsetY, mouseX, mouseY);
+
+        OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
+                offsetX + 8, offsetY + 53, 18 * 9, 18 * 2);
     }
 
     static class SetAmountButton extends IconButton {
