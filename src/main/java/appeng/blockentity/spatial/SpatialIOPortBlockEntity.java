@@ -3,10 +3,11 @@ package appeng.blockentity.spatial;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -24,10 +25,12 @@ import appeng.core.AELog;
 public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInventoryHost {
     private static final String TAG_INVENTORY = "Inventory";
     private static final String TAG_LAST_POWERED = "LastPowered";
+    private static final String TAG_LAST_ACTION = "LastAction";
 
     private final AppEngInternalInventory inventory = new AppEngInternalInventory(this, 2);
     private boolean lastPowered;
     private BlockPos cachedRegionSize = BlockPos.ZERO;
+    private LastAction lastAction = LastAction.NONE;
 
     public SpatialIOPortBlockEntity(BlockPos pos, BlockState state) {
         super(AE2BlockEntities.SPATIAL_IO_PORT.get(), pos, state);
@@ -40,6 +43,7 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         super.saveAdditional(tag, registries);
         inventory.writeToNBT(tag, TAG_INVENTORY, registries);
         tag.putBoolean(TAG_LAST_POWERED, lastPowered);
+        tag.putString(TAG_LAST_ACTION, lastAction.name());
     }
 
     @Override
@@ -47,6 +51,15 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         super.load(tag, registries);
         inventory.readFromNBT(tag, TAG_INVENTORY, registries);
         lastPowered = tag.getBoolean(TAG_LAST_POWERED);
+        if (tag.contains(TAG_LAST_ACTION, Tag.TAG_STRING)) {
+            try {
+                lastAction = LastAction.valueOf(tag.getString(TAG_LAST_ACTION));
+            } catch (IllegalArgumentException ignored) {
+                lastAction = LastAction.NONE;
+            }
+        } else {
+            lastAction = LastAction.NONE;
+        }
         updateRegionSize();
     }
 
@@ -95,10 +108,7 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         }
 
         cacheRegionSize(cell);
-        logRegionSize(Component.translatable("gui.ae2.spatial.region_size",
-                formatRegionSize(cachedRegionSize)));
-
-        // TODO: Perform capture logic using the computed region size.
+        onCapture();
     }
 
     public void restoreRegion() {
@@ -108,13 +118,34 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         }
 
         cacheRegionSize(cell);
-        logRegionSize(Component.translatable("gui.ae2.spatial.region_size",
-                formatRegionSize(cachedRegionSize)));
+        onRestore();
+    }
 
-        // TODO: Perform restore logic using the computed region size.
+    public void onCapture() {
+        if (!hasCachedRegion()) {
+            return;
+        }
+
+        log(Component.translatable("log.ae2.spatial.capture_start", formatRegionSize(cachedRegionSize)));
+        lastAction = LastAction.CAPTURE;
+        setChanged();
+    }
+
+    public void onRestore() {
+        if (!hasCachedRegion()) {
+            return;
+        }
+
+        log(Component.translatable("log.ae2.spatial.restore_start", formatRegionSize(cachedRegionSize)));
+        lastAction = LastAction.RESTORE;
+        setChanged();
     }
 
     public BlockPos getRegionSize() {
+        return getCachedSize();
+    }
+
+    public BlockPos getCachedSize() {
         return cachedRegionSize;
     }
 
@@ -137,6 +168,9 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     private void cacheRegionSize(ItemStack stack) {
         cachedRegionSize = getRegionSizeFromCell(stack);
+        if (!hasCachedRegion()) {
+            lastAction = LastAction.NONE;
+        }
     }
 
     public boolean hasSpatialCell() {
@@ -151,6 +185,10 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         return cachedRegionSize.equals(BlockPos.ZERO) ? null : cachedRegionSize;
     }
 
+    public LastAction getLastAction() {
+        return lastAction;
+    }
+
     public static BlockPos getRegionSizeFromCell(ItemStack stack) {
         if (stack.isEmpty() || !(stack.getItem() instanceof SpatialCellItem spatialCell)) {
             return BlockPos.ZERO;
@@ -162,14 +200,18 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     private boolean validateCellPresent(ItemStack cell) {
         if (cell.isEmpty() || !(cell.getItem() instanceof SpatialCellItem)) {
-            logRegionSize(Component.translatable("tooltip.ae2.spatial.no_cell"));
+            log(Component.translatable("tooltip.ae2.spatial.no_cell"));
             cachedRegionSize = BlockPos.ZERO;
             return false;
         }
         return true;
     }
 
-    private static void logRegionSize(Component message) {
+    private boolean hasCachedRegion() {
+        return !cachedRegionSize.equals(BlockPos.ZERO);
+    }
+
+    private static void log(Component message) {
         AELog.info(message.getString());
     }
 
@@ -178,5 +220,11 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
             return "0x0x0";
         }
         return size.getX() + "x" + size.getY() + "x" + size.getZ();
+    }
+
+    public enum LastAction {
+        NONE,
+        CAPTURE,
+        RESTORE
     }
 }

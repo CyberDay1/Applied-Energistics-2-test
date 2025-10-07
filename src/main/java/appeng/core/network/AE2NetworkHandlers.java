@@ -36,6 +36,7 @@ import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.implementations.StorageBusMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
 import appeng.menu.spatial.SpatialIOPortMenu;
+import appeng.blockentity.spatial.SpatialIOPortBlockEntity.LastAction;
 
 public final class AE2NetworkHandlers {
     private AE2NetworkHandlers() {
@@ -168,11 +169,14 @@ public final class AE2NetworkHandlers {
 
             var port = menu.getBlockEntity();
             if (port != null && !port.isRemoved()) {
-                port.captureRegion();
-                var regionSize = port.getRegionSize();
+                port.onCapture();
+                var regionSize = port.getCachedSize();
                 menu.updateRegionSize(regionSize);
-                PacketDistributor.sendToPlayer(player,
-                        new SpatialCaptureC2SPayload(menu.containerId, payload.pos(), regionSize));
+                menu.updateLastAction(port.getLastAction());
+                if (port.getLastAction() != LastAction.NONE) {
+                    PacketDistributor.sendToPlayer(player,
+                            new SpatialCaptureC2SPayload(menu.containerId, payload.pos(), regionSize));
+                }
             }
         });
         ctx.setPacketHandled(true);
@@ -196,11 +200,14 @@ public final class AE2NetworkHandlers {
 
             var port = menu.getBlockEntity();
             if (port != null && !port.isRemoved()) {
-                port.restoreRegion();
-                var regionSize = port.getRegionSize();
+                port.onRestore();
+                var regionSize = port.getCachedSize();
                 menu.updateRegionSize(regionSize);
-                PacketDistributor.sendToPlayer(player,
-                        new SpatialRestoreC2SPayload(menu.containerId, payload.pos(), regionSize));
+                menu.updateLastAction(port.getLastAction());
+                if (port.getLastAction() != LastAction.NONE) {
+                    PacketDistributor.sendToPlayer(player,
+                            new SpatialRestoreC2SPayload(menu.containerId, payload.pos(), regionSize));
+                }
             }
         });
         ctx.setPacketHandled(true);
@@ -224,6 +231,7 @@ public final class AE2NetworkHandlers {
             }
 
             menu.updateRegionSize(payload.regionSize());
+            menu.updateLastAction(LastAction.CAPTURE);
         });
         ctx.setPacketHandled(true);
     }
@@ -246,6 +254,7 @@ public final class AE2NetworkHandlers {
             }
 
             menu.updateRegionSize(payload.regionSize());
+            menu.updateLastAction(LastAction.RESTORE);
         });
         ctx.setPacketHandled(true);
     }
