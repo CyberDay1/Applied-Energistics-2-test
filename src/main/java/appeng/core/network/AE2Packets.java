@@ -24,6 +24,7 @@ import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelC2SPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
 
@@ -95,5 +96,9 @@ public final class AE2Packets {
 
     public static void sendSpatialRestore(int containerId, BlockPos pos) {
         PacketDistributor.sendToServer(new SpatialRestoreC2SPayload(containerId, pos));
+    }
+
+    public static void sendSpatialCancel(int containerId, BlockPos pos) {
+        PacketDistributor.sendToServer(new SpatialOpCancelC2SPayload(containerId, pos));
     }
 }

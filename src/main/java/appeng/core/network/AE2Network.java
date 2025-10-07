@@ -20,6 +20,8 @@ import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
@@ -57,6 +59,8 @@ public final class AE2Network {
                 AE2NetworkHandlers::handleSpatialOpInProgressClient);
         play.playToClient(SpatialOpCompleteS2CPayload.TYPE, SpatialOpCompleteS2CPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleSpatialOpCompleteClient);
+        play.playToClient(SpatialOpCancelS2CPayload.TYPE, SpatialOpCancelS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialOpCancelClient);
 
         play.playToServer(AE2ActionC2SPayload.TYPE, AE2ActionC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleActionServer);
@@ -70,6 +74,8 @@ public final class AE2Network {
                 AE2NetworkHandlers::handleSpatialCaptureServer);
         play.playToServer(SpatialRestoreC2SPayload.TYPE, SpatialRestoreC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleSpatialRestoreServer);
+        play.playToServer(SpatialOpCancelC2SPayload.TYPE, SpatialOpCancelC2SPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialOpCancelServer);
 
         // Login (handshake) payloads
         final LoginPayloadRegistrar login = event.login();

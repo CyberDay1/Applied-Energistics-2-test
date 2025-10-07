@@ -25,6 +25,8 @@ import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
@@ -217,6 +219,30 @@ public final class AE2NetworkHandlers {
         ctx.setPacketHandled(true);
     }
 
+    public static void handleSpatialOpCancelServer(final SpatialOpCancelC2SPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player() instanceof ServerPlayer player)) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            var port = menu.getBlockEntity();
+            if (port != null && !port.isRemoved()) {
+                port.cancelOperation();
+            }
+        });
+        ctx.setPacketHandled(true);
+    }
+
     public static void handleSpatialCaptureClient(final SpatialCaptureC2SPayload payload,
             final IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
@@ -303,6 +329,28 @@ public final class AE2NetworkHandlers {
             }
 
             menu.handleOperationComplete();
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialOpCancelClient(final SpatialOpCancelS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            menu.handleOperationCancelled();
         });
         ctx.setPacketHandled(true);
     }

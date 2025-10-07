@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import appeng.block.spatial.SpatialIOPortBlock;
 import appeng.items.storage.spatial.SpatialCellItem;
 import appeng.registry.AE2BlockEntities;
+import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.util.inv.AppEngInternalInventory;
@@ -186,11 +187,21 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
             return;
         }
 
+        cancelOperation();
+    }
+
+    public void cancelOperation() {
+        if (!inProgress) {
+            return;
+        }
+
         inProgress = false;
         ticksRemaining = 0;
+        log(Component.translatable("log.ae2.spatial.cancelled"));
         rollbackOperation();
         setChanged();
         broadcastInProgress(false);
+        broadcastCancellation();
     }
 
     private void onOperationComplete() {
@@ -313,10 +324,8 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         // Placeholder for the actual spatial restore implementation in Phase 5.
     }
 
-    private void rollbackOperation() {
-        if (lastAction == LastAction.RESTORE) {
-            // Placeholder for rolling back failed restores until the real mechanics land in Phase 5.
-        }
+    protected void rollbackOperation() {
+        AELog.info("Spatial IO rollback stub invoked.");
     }
 
     private void broadcastInProgress(boolean inProgress) {
@@ -343,6 +352,20 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
                 menu.handleOperationComplete();
                 PacketDistributor.sendToPlayer(player,
                         new SpatialOpCompleteS2CPayload(menu.containerId, worldPosition));
+            }
+        }
+    }
+
+    private void broadcastCancellation() {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        for (ServerPlayer player : serverLevel.players()) {
+            if (player.containerMenu instanceof SpatialIOPortMenu menu && menu.getBlockEntity() == this) {
+                menu.handleOperationCancelled();
+                PacketDistributor.sendToPlayer(player,
+                        new SpatialOpCancelS2CPayload(menu.containerId, worldPosition));
             }
         }
     }

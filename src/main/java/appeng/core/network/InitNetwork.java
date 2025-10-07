@@ -48,6 +48,8 @@ import appeng.core.network.serverbound.UpdatePartitionedCellPriorityPacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistModePacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistPacket;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
@@ -78,6 +80,7 @@ public class InitNetwork {
         clientbound(registrar, ExportedGridContent.TYPE, ExportedGridContent.STREAM_CODEC);
         clientbound(registrar, SpatialOpInProgressS2CPayload.TYPE, SpatialOpInProgressS2CPayload.STREAM_CODEC);
         clientbound(registrar, SpatialOpCompleteS2CPayload.TYPE, SpatialOpCompleteS2CPayload.STREAM_CODEC);
+        clientbound(registrar, SpatialOpCancelS2CPayload.TYPE, SpatialOpCancelS2CPayload.STREAM_CODEC);
 
         // Serverbound
         serverbound(registrar, ColorApplicatorSelectColorPacket.TYPE, ColorApplicatorSelectColorPacket.STREAM_CODEC);
@@ -105,6 +108,7 @@ public class InitNetwork {
                 UpdatePartitionedCellWhitelistPacket.STREAM_CODEC);
         serverbound(registrar, SpatialCaptureC2SPayload.TYPE, SpatialCaptureC2SPayload.STREAM_CODEC);
         serverbound(registrar, SpatialRestoreC2SPayload.TYPE, SpatialRestoreC2SPayload.STREAM_CODEC);
+        serverbound(registrar, SpatialOpCancelC2SPayload.TYPE, SpatialOpCancelC2SPayload.STREAM_CODEC);
 
         // Bidirectional
         bidirectional(registrar, ConfigValuePacket.TYPE, ConfigValuePacket.STREAM_CODEC);
