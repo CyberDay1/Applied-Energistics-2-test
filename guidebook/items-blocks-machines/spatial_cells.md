@@ -10,9 +10,11 @@ item_ids:
 - ae2:spatial_storage_cell_2
 - ae2:spatial_storage_cell_16
 - ae2:spatial_storage_cell_128
+- ae2:spatial_storage_cell_512
 - ae2:spatial_cell_component_2
 - ae2:spatial_cell_component_16
 - ae2:spatial_cell_component_128
+- ae2:spatial_cell_component_512
 ---
 
 # Spatial Storage Cells
@@ -23,6 +25,8 @@ item_ids:
     <ItemImage id="spatial_storage_cell_16" scale="4" />
 
     <ItemImage id="spatial_storage_cell_128" scale="4" />
+
+    <ItemImage id="spatial_storage_cell_512" scale="4" />
   </Row>
 
 Spatial Storage Cells are used to [store physical volumes of space](../ae2-mechanics/spatial-io.md). 
@@ -41,6 +45,8 @@ Again, **YOU CANNOT RESET, REFORMAT, OR RESIZE A SPATIAL CELL AFTER IT HAS BEEN 
     <Recipe id="network/cells/spatial_storage_cell_16_cubed_storage" />
 
     <Recipe id="network/cells/spatial_storage_cell_128_cubed_storage" />
+
+    <Recipe id="network/cells/spatial_storage_cell_512_cubed_storage" />
   </Row>
 
 # Housings
@@ -68,4 +74,6 @@ stored by factor of 8.
     <RecipeFor id="spatial_cell_component_16" />
 
     <RecipeFor id="spatial_cell_component_128" />
+
+    <RecipeFor id="spatial_cell_component_512" />
   </Row>

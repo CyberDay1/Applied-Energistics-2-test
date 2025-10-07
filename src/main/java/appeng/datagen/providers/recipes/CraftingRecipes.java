@@ -1001,6 +1001,15 @@ public class CraftingRecipes extends AE2RecipeProvider {
                 .define('c', AEItems.ENGINEERING_PROCESSOR)
                 .unlockedBy("has_16_cubed_spatial_cell_component", has(AEItems.SPATIAL_16_CELL_COMPONENT))
                 .save(consumer, AppEng.makeId("network/cells/spatial_components_1"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEItems.SPATIAL_512_CELL_COMPONENT)
+                .pattern("aba")
+                .pattern("bcb")
+                .pattern("aba")
+                .define('a', ConventionTags.GLOWSTONE)
+                .define('b', AEItems.SPATIAL_128_CELL_COMPONENT)
+                .define('c', AEItems.ENGINEERING_PROCESSOR)
+                .unlockedBy("has_128_cubed_spatial_cell_component", has(AEItems.SPATIAL_128_CELL_COMPONENT))
+                .save(consumer, AppEng.makeId("network/cells/spatial_components_2"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEItems.SPATIAL_CELL2)
                 .pattern("aba")
@@ -1048,6 +1057,21 @@ public class CraftingRecipes extends AE2RecipeProvider {
                 .requires(AEItems.SPATIAL_128_CELL_COMPONENT)
                 .unlockedBy("has_128_cubed_spatial_cell_component", has(AEItems.SPATIAL_128_CELL_COMPONENT))
                 .save(consumer, AppEng.makeId("network/cells/spatial_storage_cell_128_cubed_storage"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEItems.SPATIAL_CELL512)
+                .pattern("aba")
+                .pattern("bcb")
+                .pattern("ddd")
+                .define('a', AEBlocks.QUARTZ_GLASS)
+                .define('b', ConventionTags.REDSTONE)
+                .define('c', AEItems.SPATIAL_512_CELL_COMPONENT)
+                .define('d', ConventionTags.IRON_INGOT)
+                .unlockedBy("has_512_cubed_spatial_cell_component", has(AEItems.SPATIAL_512_CELL_COMPONENT))
+                .save(consumer, AppEng.makeId("network/cells/spatial_storage_cell_512_cubed"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, AEItems.SPATIAL_CELL512)
+                .requires(AEItems.ITEM_CELL_HOUSING)
+                .requires(AEItems.SPATIAL_512_CELL_COMPONENT)
+                .unlockedBy("has_512_cubed_spatial_cell_component", has(AEItems.SPATIAL_512_CELL_COMPONENT))
+                .save(consumer, AppEng.makeId("network/cells/spatial_storage_cell_512_cubed_storage"));
     }
 
     private void addItemCells(RecipeOutput consumer) {

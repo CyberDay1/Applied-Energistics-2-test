@@ -112,9 +112,11 @@ public class ItemModelProvider extends net.neoforged.neoforge.client.model.gener
         flatSingleLayer(AEItems.SPATIAL_2_CELL_COMPONENT, "item/spatial_cell_component_2");
         flatSingleLayer(AEItems.SPATIAL_16_CELL_COMPONENT, "item/spatial_cell_component_16");
         flatSingleLayer(AEItems.SPATIAL_128_CELL_COMPONENT, "item/spatial_cell_component_128");
+        flatSingleLayer(AEItems.SPATIAL_512_CELL_COMPONENT, "item/spatial_cell_component_128");
         flatSingleLayer(AEItems.SPATIAL_CELL2, "item/spatial_storage_cell_2");
         flatSingleLayer(AEItems.SPATIAL_CELL16, "item/spatial_storage_cell_16");
         flatSingleLayer(AEItems.SPATIAL_CELL128, "item/spatial_storage_cell_128");
+        flatSingleLayer(AEItems.SPATIAL_CELL512, "item/spatial_storage_cell_128");
         flatSingleLayer(AEItems.SPEED_CARD, "item/card_speed");
         flatSingleLayer(AEItems.SMITHING_TABLE_PATTERN, "item/smithing_table_pattern");
         flatSingleLayer(AEItems.STONECUTTING_PATTERN, "item/stonecutting_pattern");

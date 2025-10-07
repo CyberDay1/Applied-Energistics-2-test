@@ -66,7 +66,10 @@ import appeng.items.misc.WrappedGenericStack;
 import appeng.items.parts.FacadeItem;
 import appeng.items.storage.BasicStorageCell;
 import appeng.items.storage.CreativeCellItem;
-import appeng.items.storage.SpatialStorageCellItem;
+import appeng.items.storage.spatial.SpatialCell128Item;
+import appeng.items.storage.spatial.SpatialCell16Item;
+import appeng.items.storage.spatial.SpatialCell2Item;
+import appeng.items.storage.spatial.SpatialCell512Item;
 import appeng.items.storage.StorageTier;
 import appeng.items.storage.ViewCellItem;
 import appeng.items.storage.fluid.BasicFluidCell16kItem;
@@ -243,6 +246,7 @@ public final class AEItems {
     public static final ItemDefinition<MaterialItem> SPATIAL_2_CELL_COMPONENT = item("2³ Spatial Component", AEItemIds.SPATIAL_2_CELL_COMPONENT, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> SPATIAL_16_CELL_COMPONENT = item("16³ Spatial Component", AEItemIds.SPATIAL_16_CELL_COMPONENT, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> SPATIAL_128_CELL_COMPONENT = item("128³ Spatial Component", AEItemIds.SPATIAL_128_CELL_COMPONENT, MaterialItem::new);
+    public static final ItemDefinition<MaterialItem> SPATIAL_512_CELL_COMPONENT = item("512³ Spatial Component", AEItemIds.SPATIAL_512_CELL_COMPONENT, MaterialItem::new);
     public static final ItemDefinition<StorageComponentItem> CELL_COMPONENT_1K = item("1k ME Storage Component", AEItemIds.CELL_COMPONENT_1K, p -> new StorageComponentItem(p, 1));
     public static final ItemDefinition<StorageComponentItem> CELL_COMPONENT_4K = item("4k ME Storage Component", AEItemIds.CELL_COMPONENT_4K, p -> new StorageComponentItem(p, 4));
     public static final ItemDefinition<StorageComponentItem> CELL_COMPONENT_16K = item("16k ME Storage Component", AEItemIds.CELL_COMPONENT_16K, p -> new StorageComponentItem(p, 16));
@@ -278,9 +282,10 @@ public final class AEItems {
     public static final ItemDefinition<BasicFluidCell64kItem> FLUID_CELL_64K = item("64k ME Fluid Storage Cell", AEItemIds.FLUID_CELL_64K, p -> new BasicFluidCell64kItem(p.stacksTo(1)));
     public static final ItemDefinition<BasicStorageCell> FLUID_CELL_256K = item("256k ME Fluid Storage Cell", AEItemIds.FLUID_CELL_256K, p -> new BasicStorageCell(p.stacksTo(1), 2.5f, 256, 2048, 18, AEKeyType.fluids()));
 
-    public static final ItemDefinition<SpatialStorageCellItem> SPATIAL_CELL2 = item("2³ Spatial Storage Cell", AEItemIds.SPATIAL_CELL_2, p -> new SpatialStorageCellItem(p.stacksTo(1), 2));
-    public static final ItemDefinition<SpatialStorageCellItem> SPATIAL_CELL16 = item("16³ Spatial Storage Cell", AEItemIds.SPATIAL_CELL_16, p -> new SpatialStorageCellItem(p.stacksTo(1), 16));
-    public static final ItemDefinition<SpatialStorageCellItem> SPATIAL_CELL128 = item("128³ Spatial Storage Cell", AEItemIds.SPATIAL_CELL_128, p -> new SpatialStorageCellItem(p.stacksTo(1), 128));
+    public static final ItemDefinition<SpatialCell2Item> SPATIAL_CELL2 = item("2³ Spatial Storage Cell", AEItemIds.SPATIAL_CELL_2, p -> new SpatialCell2Item(p.stacksTo(1)));
+    public static final ItemDefinition<SpatialCell16Item> SPATIAL_CELL16 = item("16³ Spatial Storage Cell", AEItemIds.SPATIAL_CELL_16, p -> new SpatialCell16Item(p.stacksTo(1)));
+    public static final ItemDefinition<SpatialCell128Item> SPATIAL_CELL128 = item("128³ Spatial Storage Cell", AEItemIds.SPATIAL_CELL_128, p -> new SpatialCell128Item(p.stacksTo(1)));
+    public static final ItemDefinition<SpatialCell512Item> SPATIAL_CELL512 = item("512³ Spatial Storage Cell", AEItemIds.SPATIAL_CELL_512, p -> new SpatialCell512Item(p.stacksTo(1)));
 
     public static final ItemDefinition<Item> TABLET = item("Guide", AEItemIds.GUIDE, p -> new GuideItem(p.stacksTo(1)));
 
