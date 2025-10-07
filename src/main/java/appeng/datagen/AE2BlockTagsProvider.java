@@ -18,6 +18,8 @@ import appeng.registry.AE2Blocks;
 public class AE2BlockTagsProvider extends BlockTagsProvider {
     private static final TagKey<Block> METEORITE_REPLACEABLE = TagKey.create(Registries.BLOCK,
             new ResourceLocation(AE2Registries.MODID, "meteorite_replaceable"));
+    private static final TagKey<Block> IO_PLANES = TagKey.create(Registries.BLOCK,
+            new ResourceLocation(AE2Registries.MODID, "io_planes"));
 
     public AE2BlockTagsProvider(PackOutput output,
             CompletableFuture<HolderLookup.Provider> lookup,
@@ -41,10 +43,13 @@ public class AE2BlockTagsProvider extends BlockTagsProvider {
                 .add(AE2Blocks.CRAFTING_TERMINAL.get())
                 .add(AE2Blocks.PATTERN_TERMINAL.get())
                 .add(AE2Blocks.PATTERN_ENCODING_TERMINAL.get())
-                .add(AE2Blocks.CRAFTING_MONITOR.get());
+                .add(AE2Blocks.CRAFTING_MONITOR.get())
+                .add(AE2Blocks.FORMATION_PLANE.get());
 
         tag(METEORITE_REPLACEABLE)
                 .addTag(BlockTags.STONE_ORE_REPLACEABLES)
                 .addTag(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
+
+        tag(IO_PLANES).add(AE2Blocks.FORMATION_PLANE.get());
     }
 }

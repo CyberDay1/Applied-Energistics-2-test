@@ -73,6 +73,7 @@ public final class AEBlockIds {
     public static final ResourceLocation LEVEL_EMITTER = id("level_emitter_block");
     public static final ResourceLocation IMPORT_BUS = id("import_bus");
     public static final ResourceLocation EXPORT_BUS = id("export_bus");
+    public static final ResourceLocation FORMATION_PLANE = id("formation_plane");
     public static final ResourceLocation CONDENSER = id("condenser");
     public static final ResourceLocation ENERGY_ACCEPTOR = id("energy_acceptor");
     public static final ResourceLocation CRYSTAL_RESONANCE_GENERATOR = id("crystal_resonance_generator");

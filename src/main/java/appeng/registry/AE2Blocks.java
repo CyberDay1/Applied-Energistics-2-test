@@ -21,6 +21,7 @@ import appeng.block.simple.DriveBlock;
 import appeng.block.terminal.CraftingTerminalBlock;
 import appeng.block.terminal.PatternTerminalBlock;
 import appeng.block.terminal.TerminalBlock;
+import appeng.block.io.FormationPlaneBlock;
 import appeng.block.spatial.SpatialIOPortBlock;
 
 public final class AE2Blocks {
@@ -84,6 +85,9 @@ public final class AE2Blocks {
 
     public static final RegistryObject<Block> SPATIAL_IO_PORT =
         AE2Registries.BLOCKS.register("spatial_io_port", SpatialIOPortBlock::new);
+
+    public static final RegistryObject<Block> FORMATION_PLANE =
+        AE2Registries.BLOCKS.register("formation_plane", FormationPlaneBlock::new);
 
     private AE2Blocks() {}
 }

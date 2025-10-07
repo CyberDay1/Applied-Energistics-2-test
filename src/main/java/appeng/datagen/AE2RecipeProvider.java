@@ -102,6 +102,17 @@ public class AE2RecipeProvider extends RecipeProvider {
                 .unlockedBy("has_calculation_processor", has(AE2Items.CALCULATION_PROCESSOR.get()))
                 .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/fuzzy_card"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.FORMATION_PLANE.get())
+                .pattern("CGC")
+                .pattern("ILI")
+                .pattern("CGC")
+                .define('C', AE2Items.CABLE.get())
+                .define('G', Items.GLASS)
+                .define('I', Items.IRON_INGOT)
+                .define('L', AE2Items.LOGIC_PROCESSOR.get())
+                .unlockedBy("has_logic_processor", has(AE2Items.LOGIC_PROCESSOR.get()))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/formation_plane"));
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, AE2Items.PARTITIONED_CELL.get())
                 .requires(AE2Items.ENGINEERING_PROCESSOR.get())
                 .requires(AE2Items.BASIC_CELL_1K.get())

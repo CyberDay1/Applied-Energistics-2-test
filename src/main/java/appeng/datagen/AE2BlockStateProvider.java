@@ -22,6 +22,8 @@ public class AE2BlockStateProvider extends BlockStateProvider {
         simpleBlock(AE2Blocks.ENERGY_ACCEPTOR.get());
         simpleBlock(AE2Blocks.CABLE.get());
         simpleBlock(AE2Blocks.CRAFTING_MONITOR.get());
+        directionalBlock(AE2Blocks.FORMATION_PLANE.get(),
+                models().cubeAll("formation_plane", modLoc("block/formation_plane")));
         // TODO(PR-36): Replace simple models with directional variants once the NeoForge port hooks
         // up blockstate properties for terminals and drives.
         simpleBlock(AE2Blocks.DRIVE.get());

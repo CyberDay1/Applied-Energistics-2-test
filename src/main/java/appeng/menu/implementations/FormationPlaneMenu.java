@@ -28,22 +28,21 @@ import appeng.api.util.IConfigManager;
 import appeng.client.gui.implementations.FormationPlaneScreen;
 import appeng.core.definitions.AEItems;
 import appeng.menu.guisync.GuiSync;
-import appeng.parts.automation.FormationPlanePart;
 
 /**
  * @see FormationPlaneScreen
  */
-public class FormationPlaneMenu extends UpgradeableMenu<FormationPlanePart> {
+public class FormationPlaneMenu extends UpgradeableMenu<FormationPlaneMenuHost> {
 
     public static final MenuType<FormationPlaneMenu> TYPE = MenuTypeBuilder
-            .create(FormationPlaneMenu::new, FormationPlanePart.class)
+            .create(FormationPlaneMenu::new, FormationPlaneMenuHost.class)
             .build("formationplane");
 
     @GuiSync(7)
     public YesNo placeMode;
 
     public FormationPlaneMenu(MenuType<FormationPlaneMenu> type, int id, Inventory ip,
-            FormationPlanePart host) {
+            FormationPlaneMenuHost host) {
         super(type, id, ip, host);
     }
 

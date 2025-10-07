@@ -23,6 +23,8 @@ public class AE2ItemTagsProvider extends ItemTagsProvider {
     private static final TagKey<Item> TERMINALS = tag("terminals");
     private static final TagKey<Item> CABLES = tag("cables");
     private static final TagKey<Item> MONITORS = tag("monitors");
+    private static final TagKey<Item> AUTOMATION = tag("automation");
+    private static final TagKey<Item> IO_PLANES = tag("io_planes");
     private static final TagKey<Item> FORGE_SILICON = forgeTag("silicon");
     private static final TagKey<Item> COMMON_SILICON = commonTag("silicon");
     private static final TagKey<Item> FORGE_PROCESSORS = forgeTag("processors");
@@ -75,6 +77,9 @@ public class AE2ItemTagsProvider extends ItemTagsProvider {
 
         // Mirrors the mainline "monitors" tag so downstream integrations can share recipes/config.
         tag(MONITORS).add(AE2Items.CRAFTING_MONITOR.get());
+
+        tag(AUTOMATION).add(AE2Items.FORMATION_PLANE.get());
+        tag(IO_PLANES).add(AE2Items.FORMATION_PLANE.get());
     }
 
     private static TagKey<Item> tag(String path) {
