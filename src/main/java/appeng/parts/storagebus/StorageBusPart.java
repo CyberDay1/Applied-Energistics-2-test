@@ -156,6 +156,7 @@ public class StorageBusPart extends UpgradeablePart
         builder.registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL);
         builder.registerSetting(Settings.STORAGE_FILTER, StorageFilter.EXTRACTABLE_ONLY);
         builder.registerSetting(Settings.FILTER_ON_EXTRACT, YesNo.YES);
+        builder.registerSetting(Settings.PARTITION_MODE, IncludeExclude.WHITELIST);
     }
 
     @Override
@@ -382,8 +383,11 @@ public class StorageBusPart extends UpgradeablePart
 
         // Apply other settings.
         this.handler.setAccessRestriction(this.getConfigManager().getSetting(Settings.ACCESS));
-        this.handler.setWhitelist(isUpgradedWith(AEItems.INVERTER_CARD) ? IncludeExclude.BLACKLIST
-                : IncludeExclude.WHITELIST);
+        IncludeExclude partitionMode = getConfigManager().getSetting(Settings.PARTITION_MODE);
+        if (!isUpgradedWith(AEItems.INVERTER_CARD)) {
+            partitionMode = IncludeExclude.WHITELIST;
+        }
+        this.handler.setWhitelist(partitionMode);
 
         this.handler.setPartitionList(createFilter());
         this.handler.setVoidOverflow(this.isUpgradedWith(AEItems.VOID_CARD));
@@ -426,11 +430,19 @@ public class StorageBusPart extends UpgradeablePart
             filterBuilder.fuzzyMode(this.getConfigManager().getSetting(Settings.FUZZY_MODE));
         }
 
-        var slotsToUse = 18 + getInstalledUpgrades(AEItems.CAPACITY_CARD) * 9;
+        var slotsToUse = getActiveConfigSlots();
         for (var x = 0; x < config.size() && x < slotsToUse; x++) {
             filterBuilder.add(config.getKey(x));
         }
         return filterBuilder.build();
+    }
+
+    public int getActiveConfigSlots() {
+        return Math.min(18 + getInstalledUpgrades(AEItems.CAPACITY_CARD) * 9, config.size());
+    }
+
+    public IncludeExclude getPartitionMode() {
+        return getConfigManager().getSetting(Settings.PARTITION_MODE);
     }
 
     private void findExternalStorages(Map<AEKeyType, MEStorage> storages) {

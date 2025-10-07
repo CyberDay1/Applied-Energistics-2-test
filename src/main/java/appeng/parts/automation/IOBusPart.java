@@ -40,6 +40,7 @@ import net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Setting;
 import appeng.api.config.Settings;
@@ -118,6 +119,7 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
         super.registerSettings(builder);
         builder.registerSetting(Settings.REDSTONE_CONTROLLED, RedstoneMode.IGNORE);
         builder.registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL);
+        builder.registerSetting(Settings.PARTITION_MODE, IncludeExclude.WHITELIST);
     }
 
     @Override
@@ -206,6 +208,22 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
 
     protected int availableSlots() {
         return Math.min(18 + getInstalledUpgrades(AEItems.CAPACITY_CARD) * 9, this.getConfig().size());
+    }
+
+    public int getActiveConfigSlots() {
+        return availableSlots();
+    }
+
+    public int getConfiguredOperationsPerTick() {
+        return getOperationsPerTick();
+    }
+
+    public IncludeExclude getPartitionMode() {
+        return this.getConfigManager().getSetting(Settings.PARTITION_MODE);
+    }
+
+    public boolean isFilterInverted() {
+        return isUpgradedWith(AEItems.INVERTER_CARD) && getPartitionMode() == IncludeExclude.BLACKLIST;
     }
 
     protected int getOperationsPerTick() {

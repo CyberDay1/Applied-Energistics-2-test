@@ -63,6 +63,7 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
             .registerSetting(Settings.STORAGE_FILTER, StorageFilter.EXTRACTABLE_ONLY)
             .registerSetting(Settings.FILTER_ON_EXTRACT, YesNo.YES)
             .registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL)
+            .registerSetting(Settings.PARTITION_MODE, IncludeExclude.WHITELIST)
             .build();
 
     private int priority = 0;
@@ -157,7 +158,11 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
         handler.setAllowExtraction(access.isAllowExtraction());
         handler.setAllowInsertion(access.isAllowInsertion());
 
-        handler.setWhitelist(isUpgradedWith(AEItems.INVERTER_CARD) ? IncludeExclude.BLACKLIST : IncludeExclude.WHITELIST);
+        var partitionMode = configManager.getSetting(Settings.PARTITION_MODE);
+        if (!isUpgradedWith(AEItems.INVERTER_CARD)) {
+            partitionMode = IncludeExclude.WHITELIST;
+        }
+        handler.setWhitelist(partitionMode);
         handler.setPartitionList(createFilter());
 
         var filterOnExtract = getConfigManager().getSetting(Settings.FILTER_ON_EXTRACT) == YesNo.YES;
@@ -219,6 +224,22 @@ public class StorageBusBlockEntity extends AENetworkedBlockEntity
                 inverter,
                 voiding,
                 slots);
+    }
+
+    public int getActiveConfigSlots() {
+        return Math.min(config.size(), 18 + getInstalledUpgrades(AEItems.CAPACITY_CARD) * 9);
+    }
+
+    public IncludeExclude getPartitionMode() {
+        return configManager.getSetting(Settings.PARTITION_MODE);
+    }
+
+    public boolean hasFuzzyCard() {
+        return isUpgradedWith(AEItems.FUZZY_CARD);
+    }
+
+    public boolean hasInverterCard() {
+        return isUpgradedWith(AEItems.INVERTER_CARD);
     }
 
     private IPartitionList createFilter() {

@@ -22,7 +22,6 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.util.IConfigManager;
 import appeng.api.stacks.AEKey;
 import appeng.core.definitions.AEBlocks;
-import appeng.core.definitions.AEItems;
 import appeng.parts.automation.StackTransferContextImpl;
 import appeng.parts.automation.StackWorldBehaviors;
 
@@ -85,7 +84,7 @@ public class ExportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
                 getOperationsPerTick(),
                 getFilterList());
 
-        context.setInverted(isUpgradedWith(AEItems.INVERTER_CARD));
+        context.setInverted(isFilterInverted());
 
         var schedulingMode = getConfigManager().getSetting(Settings.SCHEDULING_MODE);
         var totalSlots = getAvailableConfigSlots();

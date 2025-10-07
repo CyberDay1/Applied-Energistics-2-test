@@ -28,6 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
+import appeng.api.config.IncludeExclude;
 import appeng.api.util.KeyTypeSelection;
 import appeng.api.util.KeyTypeSelectionHost;
 import appeng.client.gui.implementations.IOBusScreen;
@@ -69,6 +70,15 @@ public class IOBusMenu extends UpgradeableMenu<IOBusPart> implements KeyTypeSele
     @Nullable
     public OfflineReason offlineReason;
 
+    @GuiSync(22)
+    public IncludeExclude partitionMode = IncludeExclude.WHITELIST;
+
+    @GuiSync(23)
+    public int activeFilterSlots = 18;
+
+    @GuiSync(24)
+    public int operationsPerTransfer = 1;
+
     public IOBusMenu(MenuType<?> menuType, int id, Inventory ip, IOBusPart host) {
         super(menuType, id, ip, host);
     }
@@ -104,6 +114,10 @@ public class IOBusMenu extends UpgradeableMenu<IOBusPart> implements KeyTypeSele
             if (!Objects.equals(offlineReason, newOfflineReason)) {
                 offlineReason = newOfflineReason;
             }
+
+            partitionMode = getHost().getPartitionMode();
+            activeFilterSlots = getHost().getActiveConfigSlots();
+            operationsPerTransfer = getHost().getConfiguredOperationsPerTick();
         }
     }
 
@@ -115,6 +129,22 @@ public class IOBusMenu extends UpgradeableMenu<IOBusPart> implements KeyTypeSele
     @Override
     public SyncedKeyTypes getClientKeyTypeSelection() {
         return importKeyTypes;
+    }
+
+    public IncludeExclude getPartitionMode() {
+        return partitionMode;
+    }
+
+    public int getActiveFilterSlots() {
+        return activeFilterSlots;
+    }
+
+    public int getOperationsPerTransfer() {
+        return operationsPerTransfer;
+    }
+
+    public boolean canEditFilterMode() {
+        return hasUpgrade(AEItems.INVERTER_CARD);
     }
 
     @Nullable

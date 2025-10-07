@@ -23,12 +23,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.SchedulingMode;
 import appeng.api.config.Settings;
 import appeng.api.config.YesNo;
 import appeng.api.util.KeyTypeSelectionHost;
 import appeng.client.gui.OfflineOverlayRenderer;
+import appeng.client.gui.Icon;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.KeyTypeSelectionButton;
 import appeng.client.gui.widgets.ServerSettingToggleButton;
@@ -37,12 +39,16 @@ import appeng.core.definitions.AEItems;
 import appeng.core.localization.GuiText;
 import appeng.menu.implementations.IOBusMenu;
 
+import net.minecraft.client.renderer.Rect2i;
+import appeng.client.gui.style.PaletteColor;
+
 public class IOBusScreen extends UpgradeableScreen<IOBusMenu> {
 
     private final SettingToggleButton<RedstoneMode> redstoneMode;
     private final SettingToggleButton<FuzzyMode> fuzzyMode;
     private final SettingToggleButton<YesNo> craftMode;
     private final SettingToggleButton<SchedulingMode> schedulingMode;
+    private final SettingToggleButton<IncludeExclude> filterMode;
 
     public IOBusScreen(IOBusMenu menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
@@ -58,6 +64,9 @@ public class IOBusScreen extends UpgradeableScreen<IOBusMenu> {
         this.fuzzyMode = new ServerSettingToggleButton<>(Settings.FUZZY_MODE,
                 FuzzyMode.IGNORE_ALL);
         addToLeftToolbar(this.fuzzyMode);
+
+        this.filterMode = new ServerSettingToggleButton<>(Settings.PARTITION_MODE, IncludeExclude.WHITELIST);
+        addToLeftToolbar(this.filterMode);
 
         if (menu.getHost().getConfigManager().hasSetting(Settings.CRAFT_ONLY)) {
             this.craftMode = new ServerSettingToggleButton<>(Settings.CRAFT_ONLY, YesNo.NO);
@@ -82,6 +91,8 @@ public class IOBusScreen extends UpgradeableScreen<IOBusMenu> {
         this.redstoneMode.setVisibility(menu.hasUpgrade(AEItems.REDSTONE_CARD));
         this.fuzzyMode.set(menu.getFuzzyMode());
         this.fuzzyMode.setVisibility(menu.hasUpgrade(AEItems.FUZZY_CARD));
+        this.filterMode.set(menu.getPartitionMode());
+        this.filterMode.setVisibility(menu.canEditFilterMode());
         if (this.craftMode != null) {
             this.craftMode.set(menu.getCraftingMode());
             this.craftMode.setVisibility(menu.hasUpgrade(AEItems.CRAFTING_CARD));
@@ -94,8 +105,52 @@ public class IOBusScreen extends UpgradeableScreen<IOBusMenu> {
     @Override
     public void drawFG(GuiGraphics guiGraphics, int offsetX, int offsetY, int mouseX, int mouseY) {
         super.drawFG(guiGraphics, offsetX, offsetY, mouseX, mouseY);
+
+        drawIndicator(guiGraphics, offsetX, offsetY, "transferCooldown", Icon.LEVEL_ITEM,
+                Component.translatable("gui.ae2.io_bus.operations_per_transfer", menu.getOperationsPerTransfer()));
+        drawIndicator(guiGraphics, offsetX, offsetY, "operationsPerTransfer", Icon.SLOT_BACKGROUND,
+                Component.translatable("gui.ae2.io_bus.filter_slots", menu.getActiveFilterSlots()));
+
+        var filterKey = menu.getPartitionMode() == IncludeExclude.BLACKLIST
+                ? "gui.ae2.io_bus.filter_mode.blacklist"
+                : "gui.ae2.io_bus.filter_mode.whitelist";
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode",
+                menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST,
+                Component.translatable(filterKey));
+
+        var redstoneText = menu.hasUpgrade(AEItems.REDSTONE_CARD)
+                ? Component.translatable("gui.ae2.io_bus.redstone_control.enabled")
+                : Component.translatable("gui.ae2.io_bus.redstone_control.disabled");
+        drawIndicator(guiGraphics, offsetX, offsetY, "redstoneIndicator",
+                menu.hasUpgrade(AEItems.REDSTONE_CARD) ? Icon.REDSTONE_ON : Icon.REDSTONE_OFF,
+                redstoneText);
+
+        var fuzzyText = menu.hasUpgrade(AEItems.FUZZY_CARD)
+                ? Component.translatable("gui.ae2.io_bus.fuzzy.enabled")
+                : Component.translatable("gui.ae2.io_bus.fuzzy.disabled");
+        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator",
+                menu.hasUpgrade(AEItems.FUZZY_CARD) ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE,
+                fuzzyText);
+
+        var toggleText = menu.canEditFilterMode()
+                ? Component.translatable("gui.ae2.io_bus.filter_toggle.available")
+                : Component.translatable("gui.ae2.io_bus.filter_toggle.unavailable");
+        drawIndicator(guiGraphics, offsetX, offsetY, "slotIndicator",
+                menu.canEditFilterMode() ? Icon.BLACKLIST : Icon.WHITELIST,
+                toggleText);
+
         OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
                 offsetX + 8, offsetY + 29, 18 * 9, 18 * 7);
+    }
+
+    private void drawIndicator(GuiGraphics guiGraphics, int offsetX, int offsetY, String widgetId, Icon icon,
+            Component text) {
+        var widget = style.getWidget(widgetId);
+        var bounds = new Rect2i(offsetX, offsetY, this.imageWidth, this.imageHeight);
+        var point = widget.resolve(bounds);
+        icon.getBlitter().dest(point.getX(), point.getY()).blit(guiGraphics);
+        var color = style.getColor(PaletteColor.DEFAULT_TEXT_COLOR);
+        guiGraphics.drawString(font, text, point.getX() + 12, point.getY() + 1, color.toARGB(), false);
     }
 
 }

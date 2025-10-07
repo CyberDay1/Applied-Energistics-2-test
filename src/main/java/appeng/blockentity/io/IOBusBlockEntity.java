@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Setting;
 import appeng.api.config.Settings;
@@ -58,6 +59,7 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
         return IConfigManager.builder(this::onSettingChanged)
                 .registerSetting(Settings.REDSTONE_CONTROLLED, RedstoneMode.IGNORE)
                 .registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL)
+                .registerSetting(Settings.PARTITION_MODE, IncludeExclude.WHITELIST)
                 .build();
     }
 
@@ -151,6 +153,38 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
         return Math.min(config.size(), 18 + getCapacityUpgradeCount() * 9);
     }
 
+    public int getActiveConfigSlots() {
+        return getAvailableConfigSlots();
+    }
+
+    public int getOperationsPerTransfer() {
+        return getOperationsPerTick();
+    }
+
+    public int getTransferCooldownTicks() {
+        return getTransferCooldown();
+    }
+
+    public IncludeExclude getPartitionMode() {
+        return getConfigManager().getSetting(Settings.PARTITION_MODE);
+    }
+
+    public boolean hasFuzzyCard() {
+        return hasFuzzyUpgrade();
+    }
+
+    public boolean hasRedstoneCard() {
+        return hasRedstoneUpgrade();
+    }
+
+    public boolean hasInverterCard() {
+        return isUpgradedWith(AEItems.INVERTER_CARD);
+    }
+
+    public boolean isFilterInverted() {
+        return hasInverterCard() && getPartitionMode() == IncludeExclude.BLACKLIST;
+    }
+
     @Override
     public void onReady() {
         super.onReady();
@@ -200,6 +234,10 @@ public abstract class IOBusBlockEntity extends AENetworkedBlockEntity
             case LOW_SIGNAL -> !powered;
             case IGNORE -> true;
         };
+    }
+
+    public boolean isRedstoneActive() {
+        return isRedstoneEnabled();
     }
 
     protected int getTransferCooldown() {
