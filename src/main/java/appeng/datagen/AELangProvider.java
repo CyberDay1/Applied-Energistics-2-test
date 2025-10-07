@@ -19,11 +19,13 @@ public class AELangProvider extends LanguageProvider {
         add("block.appliedenergistics2.controller", "Controller");
         add("block.appliedenergistics2.energy_acceptor", "Energy Acceptor");
         add("block.appliedenergistics2.crafting_monitor", "Crafting Monitor");
+        add("block.appliedenergistics2.interface", "ME Interface");
         add("block.ae2.drive", "ME Drive");
         add("block.ae2.terminal", "ME Terminal");
         add("block.ae2.crafting_terminal", "ME Crafting Terminal");
         add("block.ae2.pattern_terminal", "ME Pattern Terminal");
         add("block.ae2.pattern_encoding_terminal", "Pattern Encoding Terminal");
+        add("block.ae2.interface", "ME Interface");
         add("block.appliedenergistics2.storage_bus", "ME Storage Bus");
         add("block.appliedenergistics2.import_bus", "ME Import Bus");
         add("block.appliedenergistics2.export_bus", "ME Export Bus");
@@ -177,7 +179,12 @@ public class AELangProvider extends LanguageProvider {
         add("gui.appliedenergistics2.redstone.mode.short.active_without_signal", "Without Signal");
         add("gui.appliedenergistics2.redstone.mode.short.always_active", "Always");
         add("screen.appliedenergistics2.annihilation_plane", "Annihilation Plane");
+        add("screen.appliedenergistics2.interface", "Interface");
+        add("screen.ae2.interface", "Interface");
         add("screen.appliedenergistics2.formation_plane", "Formation Plane");
+        add("gui.ae2.Interface", "Interface");
+        add("gui.ae2.InterfaceInput", "Input");
+        add("gui.ae2.InterfaceOutput", "Output");
         add("gui.ae2.io_bus.transfer_cooldown", "Transfer cooldown: %s ticks");
         add("gui.ae2.io_bus.operations_per_transfer", "Operations per transfer: %s");
         add("gui.ae2.io_bus.filter_mode.whitelist", "Filter mode: Whitelist");

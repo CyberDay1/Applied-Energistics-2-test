@@ -13,6 +13,7 @@
   "log.ae2.spatial.capture_begin": "Capturing region %s³…",
   "log.ae2.spatial.restore_begin": "Restoring region %s³…",
   "tooltip.ae2.spatial.no_cell": "Insert a spatial cell to use this port",
+  "gui.ae2.Interface": "Interface",
   "gui.ae2.InterfaceInput": "Input",
   "gui.ae2.InterfaceOutput": "Output"
 }
