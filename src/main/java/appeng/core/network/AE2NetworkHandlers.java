@@ -29,6 +29,7 @@ import appeng.core.network.payload.SpatialOpCancelC2SPayload;
 import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
+import appeng.core.network.payload.SpatialOpRollbackS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
 import appeng.crafting.CraftingJob;
@@ -351,6 +352,30 @@ public final class AE2NetworkHandlers {
             }
 
             menu.handleOperationCancelled();
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialOpRollbackClient(final SpatialOpRollbackS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            menu.updateRegionSize(payload.regionSize());
+            menu.updateLastAction(LastAction.NONE);
+            menu.handleOperationRolledBack();
         });
         ctx.setPacketHandled(true);
     }

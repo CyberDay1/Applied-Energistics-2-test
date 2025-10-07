@@ -35,6 +35,7 @@ import appeng.core.network.payload.SpatialOpCancelC2SPayload;
 import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
+import appeng.core.network.payload.SpatialOpRollbackS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.items.storage.spatial.SpatialCellItem;
 import appeng.menu.spatial.SpatialIOPortMenu;
@@ -87,6 +88,19 @@ class SpatialIOPortTest {
         blockEntity.cancelOperation();
 
         assertFalse(blockEntity.isInProgress());
+    }
+
+    @Test
+    void rollbackClearsCachedRegionAndAction() {
+        setSpatialCell(4);
+        blockEntity.captureRegion();
+        assertTrue(blockEntity.isInProgress());
+
+        blockEntity.cancelOperation();
+
+        assertFalse(blockEntity.isInProgress());
+        assertEquals(BlockPos.ZERO, blockEntity.getRegionSize());
+        assertEquals(LastAction.NONE, blockEntity.getLastAction());
     }
 
     @Test
@@ -179,6 +193,12 @@ class SpatialIOPortTest {
         SpatialOpCancelS2CPayload.STREAM_CODEC.encode(buffer, cancelS2C);
         var decodedCancelS2C = SpatialOpCancelS2CPayload.STREAM_CODEC.decode(buffer);
         assertEquals(cancelS2C.containerId(), decodedCancelS2C.containerId());
+
+        buffer.clear();
+        var rollback = new SpatialOpRollbackS2CPayload(13, BlockPos.ZERO, new BlockPos(1, 2, 3));
+        SpatialOpRollbackS2CPayload.STREAM_CODEC.encode(buffer, rollback);
+        var decodedRollback = SpatialOpRollbackS2CPayload.STREAM_CODEC.decode(buffer);
+        assertEquals(rollback.regionSize(), decodedRollback.regionSize());
     }
 
     @Test
@@ -195,6 +215,9 @@ class SpatialIOPortTest {
             assertEquals("Operation complete", json.get("gui.ae2.spatial.complete").getAsString());
             assertEquals("Spatial operation cancelled.", json.get("log.ae2.spatial.cancelled").getAsString());
             assertEquals("Operation cancelled", json.get("gui.ae2.spatial.cancelled").getAsString());
+            assertEquals("Spatial operation rolled back (last region %s).",
+                    json.get("log.ae2.spatial.rollback").getAsString());
+            assertEquals("Operation rolled back", json.get("gui.ae2.spatial.rollback").getAsString());
         }
     }
 
@@ -286,6 +309,26 @@ class SpatialIOPortTest {
         }
 
         assertFalse(menu.isShowingCancelledMessage());
+    }
+
+    @Test
+    void rollbackPayloadShowsStatusAndClearsOthers() {
+        var menu = new SpatialIOPortMenu(0, new Inventory(null), blockEntity);
+        menu.setInProgress(true);
+        menu.handleOperationCancelled();
+
+        menu.handleOperationRolledBack();
+
+        assertFalse(menu.isInProgress());
+        assertFalse(menu.isShowingCompletionMessage());
+        assertFalse(menu.isShowingCancelledMessage());
+        assertTrue(menu.isShowingRolledBackMessage());
+
+        for (int i = 0; i < 60; i++) {
+            menu.clientTick();
+        }
+
+        assertFalse(menu.isShowingRolledBackMessage());
     }
 
     private static final class TestSpatialCellItem extends SpatialCellItem {
