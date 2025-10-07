@@ -76,6 +76,7 @@ public final class AEItemIds {
     public static final ResourceLocation SPATIAL_CELL_2 = id("spatial_storage_cell_2");
     public static final ResourceLocation SPATIAL_CELL_16 = id("spatial_storage_cell_16");
     public static final ResourceLocation SPATIAL_CELL_128 = id("spatial_storage_cell_128");
+    public static final ResourceLocation SPATIAL_CELL_512 = id("spatial_storage_cell_512");
     public static final ResourceLocation CREATIVE_CELL = id("creative_storage_cell");
     public static final ResourceLocation PORTABLE_ITEM_CELL1K = id("portable_item_cell_1k");
     public static final ResourceLocation PORTABLE_ITEM_CELL4K = id("portable_item_cell_4k");
@@ -229,6 +230,7 @@ public final class AEItemIds {
     public static final ResourceLocation SPATIAL_2_CELL_COMPONENT = id("spatial_cell_component_2");
     public static final ResourceLocation SPATIAL_16_CELL_COMPONENT = id("spatial_cell_component_16");
     public static final ResourceLocation SPATIAL_128_CELL_COMPONENT = id("spatial_cell_component_128");
+    public static final ResourceLocation SPATIAL_512_CELL_COMPONENT = id("spatial_cell_component_512");
     public static final ResourceLocation CELL_COMPONENT_1K = id("cell_component_1k");
     public static final ResourceLocation CELL_COMPONENT_4K = id("cell_component_4k");
     public static final ResourceLocation CELL_COMPONENT_16K = id("cell_component_16k");
