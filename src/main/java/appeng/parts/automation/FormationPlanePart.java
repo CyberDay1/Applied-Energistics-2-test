@@ -61,11 +61,13 @@ import appeng.items.parts.PartModels;
 import appeng.menu.ISubMenu;
 import appeng.menu.MenuOpener;
 import appeng.menu.implementations.FormationPlaneMenu;
+import appeng.menu.implementations.FormationPlaneMenuHost;
 import appeng.menu.locator.MenuLocators;
 import appeng.util.ConfigInventory;
 import appeng.util.prioritylist.IPartitionList;
 
-public class FormationPlanePart extends UpgradeablePart implements IStorageProvider, IPriorityHost, IConfigInvHost {
+public class FormationPlanePart extends UpgradeablePart
+        implements IStorageProvider, IPriorityHost, IConfigInvHost, FormationPlaneMenuHost {
 
     private static final PlaneModels MODELS = new PlaneModels("part/formation_plane",
             "part/formation_plane_on");

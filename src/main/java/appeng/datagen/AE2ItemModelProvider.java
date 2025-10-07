@@ -28,6 +28,7 @@ public class AE2ItemModelProvider extends ItemModelProvider {
         withExistingParent(AE2Items.PATTERN_TERMINAL.getId().getPath(), modLoc("block/pattern_terminal"));
         withExistingParent(AE2Items.PATTERN_ENCODING_TERMINAL_BLOCK.getId().getPath(),
                 modLoc("block/pattern_encoding_terminal"));
+        withExistingParent(AE2Items.FORMATION_PLANE.getId().getPath(), modLoc("block/formation_plane"));
 
         basicItem(AE2Items.SILICON.get());
         basicItem(AE2Items.CERTUS_QUARTZ_CRYSTAL.get());
