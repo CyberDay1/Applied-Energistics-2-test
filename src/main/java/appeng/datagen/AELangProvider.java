@@ -186,5 +186,7 @@ public class AELangProvider extends LanguageProvider {
         add("gui.ae2.io_bus.fuzzy.disabled", "Fuzzy matching: Disabled");
         add("gui.ae2.io_bus.filter_toggle.available", "Filter toggle: Blacklist available");
         add("gui.ae2.io_bus.filter_toggle.unavailable", "Insert an inverter card to enable blacklist mode");
+        add("gui.ae2.spatial.region_size", "Region Size: %s");
+        add("tooltip.ae2.spatial.no_cell", "Insert a spatial cell to use this port");
     }
 }

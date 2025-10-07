@@ -1,13 +1,13 @@
 package appeng.core.network;
 
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import java.util.List;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import appeng.api.storage.ItemStackView;
 import appeng.client.gui.me.common.ClientCraftingJobTracker;
@@ -169,6 +169,10 @@ public final class AE2NetworkHandlers {
             var port = menu.getBlockEntity();
             if (port != null && !port.isRemoved()) {
                 port.captureRegion();
+                var regionSize = port.getRegionSize();
+                menu.updateRegionSize(regionSize);
+                PacketDistributor.sendToPlayer(player,
+                        new SpatialCaptureC2SPayload(menu.containerId, payload.pos(), regionSize));
             }
         });
         ctx.setPacketHandled(true);
@@ -193,7 +197,55 @@ public final class AE2NetworkHandlers {
             var port = menu.getBlockEntity();
             if (port != null && !port.isRemoved()) {
                 port.restoreRegion();
+                var regionSize = port.getRegionSize();
+                menu.updateRegionSize(regionSize);
+                PacketDistributor.sendToPlayer(player,
+                        new SpatialRestoreC2SPayload(menu.containerId, payload.pos(), regionSize));
             }
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialCaptureClient(final SpatialCaptureC2SPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            menu.updateRegionSize(payload.regionSize());
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialRestoreClient(final SpatialRestoreC2SPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            menu.updateRegionSize(payload.regionSize());
         });
         ctx.setPacketHandled(true);
     }

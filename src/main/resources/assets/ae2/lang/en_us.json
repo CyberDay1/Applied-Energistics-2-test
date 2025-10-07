@@ -1,5 +1,7 @@
 {
   "block.ae2.spatial_io_port": "Spatial IO Port",
   "gui.ae2.spatial.capture": "Capture",
-  "gui.ae2.spatial.restore": "Restore"
+  "gui.ae2.spatial.restore": "Restore",
+  "gui.ae2.spatial.region_size": "Region Size: %s",
+  "tooltip.ae2.spatial.no_cell": "Insert a spatial cell to use this port"
 }

@@ -14,6 +14,7 @@ import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.SlotSemantics;
 import appeng.menu.implementations.MenuTypeBuilder;
+import appeng.menu.guisync.GuiSync;
 
 public class SpatialIOPortMenu extends AEBaseMenu {
     public static final MenuType<SpatialIOPortMenu> TYPE = MenuTypeBuilder
@@ -22,9 +23,19 @@ public class SpatialIOPortMenu extends AEBaseMenu {
 
     private final SpatialIOPortBlockEntity port;
 
+    @GuiSync(0)
+    public int regionSizeX;
+    @GuiSync(1)
+    public int regionSizeY;
+    @GuiSync(2)
+    public int regionSizeZ;
+
     public SpatialIOPortMenu(int id, Inventory playerInventory, SpatialIOPortBlockEntity port) {
         super(TYPE, id, playerInventory, Objects.requireNonNull(port, "port"));
         this.port = port;
+
+        var cached = port.getRegionSize();
+        updateRegionSize(cached);
 
         addSlot(new Slot(port.getInternalInventory().toContainer(), 0, 80, 35) {
             @Override
@@ -64,6 +75,20 @@ public class SpatialIOPortMenu extends AEBaseMenu {
 
     public BlockPos getBlockPos() {
         return port.getBlockPos();
+    }
+
+    public BlockPos getRegionSize() {
+        return new BlockPos(regionSizeX, regionSizeY, regionSizeZ);
+    }
+
+    public void updateRegionSize(BlockPos size) {
+        this.regionSizeX = size.getX();
+        this.regionSizeY = size.getY();
+        this.regionSizeZ = size.getZ();
+    }
+
+    public ItemStack getSpatialCellStack() {
+        return port.getInternalInventory().getStackInSlot(0);
     }
 
     @Override
