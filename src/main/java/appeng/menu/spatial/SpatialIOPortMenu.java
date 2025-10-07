@@ -32,6 +32,8 @@ public class SpatialIOPortMenu extends AEBaseMenu {
     public int regionSizeZ;
     @GuiSync(3)
     public int lastActionOrdinal;
+    @GuiSync(4)
+    public boolean inProgress;
 
     public SpatialIOPortMenu(int id, Inventory playerInventory, SpatialIOPortBlockEntity port) {
         super(TYPE, id, playerInventory, Objects.requireNonNull(port, "port"));
@@ -40,6 +42,7 @@ public class SpatialIOPortMenu extends AEBaseMenu {
         var cached = port.getRegionSize();
         updateRegionSize(cached);
         updateLastAction(port.getLastAction());
+        setInProgress(port.isInProgress());
 
         addSlot(new Slot(port.getInternalInventory().toContainer(), 0, 80, 35) {
             @Override
@@ -101,6 +104,14 @@ public class SpatialIOPortMenu extends AEBaseMenu {
 
     public void updateLastAction(LastAction action) {
         this.lastActionOrdinal = action.ordinal();
+    }
+
+    public boolean isInProgress() {
+        return inProgress;
+    }
+
+    public void setInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
     }
 
     public ItemStack getSpatialCellStack() {

@@ -20,6 +20,7 @@ import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
@@ -51,6 +52,8 @@ public final class AE2Network {
                 AE2NetworkHandlers::handleSpatialCaptureClient);
         play.playToClient(SpatialRestoreC2SPayload.TYPE, SpatialRestoreC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleSpatialRestoreClient);
+        play.playToClient(SpatialOpInProgressS2CPayload.TYPE, SpatialOpInProgressS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialOpInProgressClient);
 
         play.playToServer(AE2ActionC2SPayload.TYPE, AE2ActionC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleActionServer);
