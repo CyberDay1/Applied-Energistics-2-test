@@ -31,6 +31,8 @@ import com.google.gson.JsonParser;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity.LastAction;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelC2SPayload;
+import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
@@ -72,6 +74,17 @@ class SpatialIOPortTest {
         for (int i = 0; i < 6; i++) {
             blockEntity.tickOperation();
         }
+
+        assertFalse(blockEntity.isInProgress());
+    }
+
+    @Test
+    void cancelOperationClearsInProgress() {
+        setSpatialCell(4);
+        blockEntity.captureRegion();
+        assertTrue(blockEntity.isInProgress());
+
+        blockEntity.cancelOperation();
 
         assertFalse(blockEntity.isInProgress());
     }
@@ -154,6 +167,18 @@ class SpatialIOPortTest {
         SpatialOpCompleteS2CPayload.STREAM_CODEC.encode(buffer, complete);
         var decodedComplete = SpatialOpCompleteS2CPayload.STREAM_CODEC.decode(buffer);
         assertEquals(BlockPos.ZERO, decodedComplete.pos());
+
+        buffer.clear();
+        var cancelC2S = new SpatialOpCancelC2SPayload(11, BlockPos.ZERO);
+        SpatialOpCancelC2SPayload.STREAM_CODEC.encode(buffer, cancelC2S);
+        var decodedCancelC2S = SpatialOpCancelC2SPayload.STREAM_CODEC.decode(buffer);
+        assertEquals(cancelC2S.pos(), decodedCancelC2S.pos());
+
+        buffer.clear();
+        var cancelS2C = new SpatialOpCancelS2CPayload(12, BlockPos.ZERO);
+        SpatialOpCancelS2CPayload.STREAM_CODEC.encode(buffer, cancelS2C);
+        var decodedCancelS2C = SpatialOpCancelS2CPayload.STREAM_CODEC.decode(buffer);
+        assertEquals(cancelS2C.containerId(), decodedCancelS2C.containerId());
     }
 
     @Test
@@ -168,6 +193,8 @@ class SpatialIOPortTest {
             assertEquals("Restoring region %s³…", json.get("log.ae2.spatial.restore_begin").getAsString());
             assertEquals("Spatial operation completed.", json.get("log.ae2.spatial.complete").getAsString());
             assertEquals("Operation complete", json.get("gui.ae2.spatial.complete").getAsString());
+            assertEquals("Spatial operation cancelled.", json.get("log.ae2.spatial.cancelled").getAsString());
+            assertEquals("Operation cancelled", json.get("gui.ae2.spatial.cancelled").getAsString());
         }
     }
 
@@ -185,6 +212,8 @@ class SpatialIOPortTest {
         }).bounds(0, 0, 10, 10).build();
         var restoreButton = Button.builder(Component.empty(), button -> {
         }).bounds(0, 0, 10, 10).build();
+        var cancelButton = Button.builder(Component.empty(), button -> {
+        }).bounds(0, 0, 10, 10).build();
 
         Field captureField = SpatialIOPortScreen.class.getDeclaredField("captureButton");
         captureField.setAccessible(true);
@@ -194,6 +223,10 @@ class SpatialIOPortTest {
         restoreField.setAccessible(true);
         restoreField.set(screen, restoreButton);
 
+        Field cancelField = SpatialIOPortScreen.class.getDeclaredField("cancelButton");
+        cancelField.setAccessible(true);
+        cancelField.set(screen, cancelButton);
+
         Method updateButtons = SpatialIOPortScreen.class.getDeclaredMethod("updateButtonStates");
         updateButtons.setAccessible(true);
 
@@ -201,16 +234,20 @@ class SpatialIOPortTest {
 
         assertFalse(captureButton.active);
         assertFalse(restoreButton.active);
+        assertTrue(cancelButton.active);
         assertNotNull(captureButton.getTooltip());
         assertNotNull(restoreButton.getTooltip());
+        assertNull(cancelButton.getTooltip());
 
         menu.handleOperationComplete();
         updateButtons.invoke(screen);
 
         assertTrue(captureButton.active);
         assertTrue(restoreButton.active);
+        assertFalse(cancelButton.active);
         assertNull(captureButton.getTooltip());
         assertNull(restoreButton.getTooltip());
+        assertNotNull(cancelButton.getTooltip());
         assertTrue(menu.isShowingCompletionMessage());
 
         menu.clientTick();
@@ -225,12 +262,30 @@ class SpatialIOPortTest {
 
         assertFalse(menu.isInProgress());
         assertTrue(menu.isShowingCompletionMessage());
+        assertFalse(menu.isShowingCancelledMessage());
 
         for (int i = 0; i < 60; i++) {
             menu.clientTick();
         }
 
         assertFalse(menu.isShowingCompletionMessage());
+    }
+
+    @Test
+    void cancelPayloadReenablesButtonsAndClearsAfterTicks() {
+        var menu = new SpatialIOPortMenu(0, new Inventory(null), blockEntity);
+        menu.setInProgress(true);
+        menu.handleOperationCancelled();
+
+        assertFalse(menu.isInProgress());
+        assertTrue(menu.isShowingCancelledMessage());
+        assertFalse(menu.isShowingCompletionMessage());
+
+        for (int i = 0; i < 60; i++) {
+            menu.clientTick();
+        }
+
+        assertFalse(menu.isShowingCancelledMessage());
     }
 
     private static final class TestSpatialCellItem extends SpatialCellItem {

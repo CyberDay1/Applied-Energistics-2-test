@@ -17,6 +17,7 @@ import appeng.menu.spatial.SpatialIOPortMenu;
 public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMenu> {
     private Button captureButton;
     private Button restoreButton;
+    private Button cancelButton;
     private static final int STATUS_COLOR = 0x55FF55;
 
     public SpatialIOPortScreen(SpatialIOPortMenu menu, Inventory inventory, Component title) {
@@ -38,6 +39,10 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
         restoreButton = addRenderableWidget(Button.builder(Component.translatable("gui.ae2.spatial.restore"), button -> {
             AE2Packets.sendSpatialRestore(menu.containerId, menu.getBlockPos());
         }).bounds(left + 10, top + 50, 80, 20).build());
+
+        cancelButton = addRenderableWidget(Button.builder(Component.translatable("gui.ae2.Cancel"), button -> {
+            AE2Packets.sendSpatialCancel(menu.containerId, menu.getBlockPos());
+        }).bounds(left + 100, top + 35, 66, 20).build());
 
         updateButtonStates();
     }
@@ -102,12 +107,13 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
     }
 
     private void renderStatus(GuiGraphics graphics) {
-        if (!menu.isShowingCompletionMessage()) {
-            return;
+        if (menu.isShowingCompletionMessage()) {
+            var text = Component.translatable("gui.ae2.spatial.complete");
+            graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 100, STATUS_COLOR, false);
+        } else if (menu.isShowingCancelledMessage()) {
+            var text = Component.translatable("gui.ae2.spatial.cancelled");
+            graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 100, STATUS_COLOR, false);
         }
-
-        var text = Component.translatable("gui.ae2.spatial.complete");
-        graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 100, STATUS_COLOR, false);
     }
 
     private static String formatRegionSize(BlockPos regionSize) {
@@ -115,7 +121,7 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
     }
 
     private void updateButtonStates() {
-        if (captureButton == null || restoreButton == null) {
+        if (captureButton == null || restoreButton == null || cancelButton == null) {
             return;
         }
 
@@ -128,6 +134,8 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
 
         captureButton.active = active && !inProgress;
         restoreButton.active = active && !inProgress;
+        cancelButton.active = inProgress;
+        cancelButton.setTooltip(inProgress ? null : Tooltip.create(Component.translatable("gui.ae2.spatial.in_progress")));
 
         Tooltip tooltip = inProgress ? Tooltip.create(Component.translatable("gui.ae2.spatial.in_progress")) : null;
         captureButton.setTooltip(tooltip);

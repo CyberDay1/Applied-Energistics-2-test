@@ -35,9 +35,10 @@ public class SpatialIOPortMenu extends AEBaseMenu {
     @GuiSync(4)
     public boolean inProgress;
 
-    private static final int COMPLETION_MESSAGE_TICKS = 60;
+    private static final int STATUS_MESSAGE_TICKS = 60;
 
     private int completionTicks;
+    private int cancelTicks;
 
     public SpatialIOPortMenu(int id, Inventory playerInventory, SpatialIOPortBlockEntity port) {
         super(TYPE, id, playerInventory, Objects.requireNonNull(port, "port"));
@@ -118,22 +119,37 @@ public class SpatialIOPortMenu extends AEBaseMenu {
         this.inProgress = inProgress;
         if (inProgress) {
             completionTicks = 0;
+            cancelTicks = 0;
         }
     }
 
     public void handleOperationComplete() {
         setInProgress(false);
-        completionTicks = COMPLETION_MESSAGE_TICKS;
+        completionTicks = STATUS_MESSAGE_TICKS;
+        cancelTicks = 0;
+    }
+
+    public void handleOperationCancelled() {
+        setInProgress(false);
+        completionTicks = 0;
+        cancelTicks = STATUS_MESSAGE_TICKS;
     }
 
     public void clientTick() {
         if (completionTicks > 0) {
             completionTicks--;
         }
+        if (cancelTicks > 0) {
+            cancelTicks--;
+        }
     }
 
     public boolean isShowingCompletionMessage() {
         return completionTicks > 0;
+    }
+
+    public boolean isShowingCancelledMessage() {
+        return cancelTicks > 0;
     }
 
     public ItemStack getSpatialCellStack() {
