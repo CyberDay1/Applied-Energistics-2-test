@@ -47,6 +47,10 @@ public final class AE2Network {
                 AE2NetworkHandlers::handlePartitionedCellSyncClient);
         play.playToClient(StorageBusStateS2CPayload.TYPE, StorageBusStateS2CPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleStorageBusStateClient);
+        play.playToClient(SpatialCaptureC2SPayload.TYPE, SpatialCaptureC2SPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialCaptureClient);
+        play.playToClient(SpatialRestoreC2SPayload.TYPE, SpatialRestoreC2SPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialRestoreClient);
 
         play.playToServer(AE2ActionC2SPayload.TYPE, AE2ActionC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleActionServer);

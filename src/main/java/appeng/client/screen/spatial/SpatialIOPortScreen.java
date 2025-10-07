@@ -1,11 +1,14 @@
 package appeng.client.screen.spatial;
 
+import java.util.ArrayList;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
 import appeng.core.network.AE2Packets;
 import appeng.menu.spatial.SpatialIOPortMenu;
 
@@ -32,7 +35,57 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderRegionSize(graphics);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         // TODO: Draw spatial IO port background once textures are available.
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawString(this.font, this.title, 8, 6, 0xFFFFFF, false);
+    }
+
+    @Override
+    protected void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+        if (this.hoveredSlot != null && this.hoveredSlot.index == 0) {
+            var stack = this.hoveredSlot.getItem();
+            if (stack.isEmpty()) {
+                graphics.renderTooltip(this.font, Component.translatable("tooltip.ae2.spatial.no_cell"), mouseX,
+                        mouseY);
+            } else {
+                var tooltip = new ArrayList<>(this.getTooltipFromItem(stack));
+                var regionSize = SpatialIOPortBlockEntity.getRegionSizeFromCell(stack);
+                if (!regionSize.equals(net.minecraft.core.BlockPos.ZERO)) {
+                    tooltip.add(Component.translatable("gui.ae2.spatial.region_size",
+                            formatRegionSize(regionSize)));
+                }
+                graphics.renderTooltip(this.font, tooltip, stack.getTooltipImage(), mouseX, mouseY);
+            }
+        } else {
+            super.renderTooltip(graphics, mouseX, mouseY);
+        }
+    }
+
+    private void renderRegionSize(GuiGraphics graphics) {
+        var regionSize = menu.getRegionSize();
+        Component text;
+        if (regionSize.equals(net.minecraft.core.BlockPos.ZERO)) {
+            text = Component.translatable("gui.ae2.spatial.region_size", "-");
+        } else {
+            text = Component.translatable("gui.ae2.spatial.region_size", formatRegionSize(regionSize));
+        }
+
+        graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 80, 0xFFFFFF, false);
+    }
+
+    private static String formatRegionSize(net.minecraft.core.BlockPos regionSize) {
+        return regionSize.getX() + "x" + regionSize.getY() + "x" + regionSize.getZ();
     }
 }

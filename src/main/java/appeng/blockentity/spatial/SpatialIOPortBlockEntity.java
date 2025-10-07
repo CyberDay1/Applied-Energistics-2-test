@@ -3,18 +3,19 @@ package appeng.blockentity.spatial;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
 
-import appeng.api.implementations.items.ISpatialStorageCell;
 import appeng.block.spatial.SpatialIOPortBlock;
 import appeng.items.storage.spatial.SpatialCellItem;
 import appeng.registry.AE2BlockEntities;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.InternalInventoryHost;
+import appeng.core.AELog;
 
 /**
  * Placeholder block entity for the spatial IO port. It currently just keeps track of the inserted spatial storage cell
@@ -89,19 +90,27 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     public void captureRegion() {
         ItemStack cell = getSpatialCell();
-        if (cell.isEmpty()) {
+        if (!validateCellPresent(cell)) {
             return;
         }
-        updateRegionSize();
+
+        cacheRegionSize(cell);
+        logRegionSize(Component.translatable("gui.ae2.spatial.region_size",
+                formatRegionSize(cachedRegionSize)));
+
         // TODO: Perform capture logic using the computed region size.
     }
 
     public void restoreRegion() {
         ItemStack cell = getSpatialCell();
-        if (cell.isEmpty()) {
+        if (!validateCellPresent(cell)) {
             return;
         }
-        updateRegionSize();
+
+        cacheRegionSize(cell);
+        logRegionSize(Component.translatable("gui.ae2.spatial.region_size",
+                formatRegionSize(cachedRegionSize)));
+
         // TODO: Perform restore logic using the computed region size.
     }
 
@@ -111,7 +120,7 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     private void updateRegionSize() {
         ItemStack cell = getSpatialCell();
-        cachedRegionSize = computeRegionSize(cell);
+        cacheRegionSize(cell);
     }
 
     private ItemStack getSpatialCell() {
@@ -126,16 +135,12 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         return spatialCell.hasCapturedRegion(cell);
     }
 
-    private static BlockPos computeRegionSize(ItemStack stack) {
-        if (stack.isEmpty() || !(stack.getItem() instanceof ISpatialStorageCell spatialCell)) {
-            return BlockPos.ZERO;
-        }
-        int size = spatialCell.getMaxStoredDim(stack);
-        return new BlockPos(size, size, size);
+    private void cacheRegionSize(ItemStack stack) {
+        cachedRegionSize = getRegionSizeFromCell(stack);
     }
 
     public boolean hasSpatialCell() {
-        return !getSpatialCell().isEmpty();
+        return !getSpatialCell().isEmpty() && getSpatialCell().getItem() instanceof SpatialCellItem;
     }
 
     public boolean isLastPowered() {
@@ -144,5 +149,34 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     public @Nullable BlockPos getCachedRegionSizeIfPresent() {
         return cachedRegionSize.equals(BlockPos.ZERO) ? null : cachedRegionSize;
+    }
+
+    public static BlockPos getRegionSizeFromCell(ItemStack stack) {
+        if (stack.isEmpty() || !(stack.getItem() instanceof SpatialCellItem spatialCell)) {
+            return BlockPos.ZERO;
+        }
+
+        int size = spatialCell.getMaxStoredDim(stack);
+        return size > 0 ? new BlockPos(size, size, size) : BlockPos.ZERO;
+    }
+
+    private boolean validateCellPresent(ItemStack cell) {
+        if (cell.isEmpty() || !(cell.getItem() instanceof SpatialCellItem)) {
+            logRegionSize(Component.translatable("tooltip.ae2.spatial.no_cell"));
+            cachedRegionSize = BlockPos.ZERO;
+            return false;
+        }
+        return true;
+    }
+
+    private static void logRegionSize(Component message) {
+        AELog.info(message.getString());
+    }
+
+    private static String formatRegionSize(BlockPos size) {
+        if (size.equals(BlockPos.ZERO)) {
+            return "0x0x0";
+        }
+        return size.getX() + "x" + size.getY() + "x" + size.getZ();
     }
 }
