@@ -165,6 +165,9 @@ public class LocalizationProvider implements IAE2DataProvider {
         add("gui.ae2.upgrades.redstone", "Redstone cards allow the bus to respect redstone signal settings.");
         add("gui.ae2.upgrades.fuzzy", "Fuzzy cards enable partial and variant item matching.");
         add("gui.ae2.upgrades.inverter", "Inverter cards swap whitelist and blacklist filtering.");
+        add("gui.ae2.level_emitter.filter", "Filter");
+        add("gui.ae2.level_emitter.mode.items", "Items");
+        add("gui.ae2.level_emitter.mode.fluids", "Fluids");
     }
 
     private CompletableFuture<?> save(CachedOutput cache, Map<String, String> localizations) {

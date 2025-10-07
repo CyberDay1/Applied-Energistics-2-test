@@ -24,6 +24,15 @@
         "left": 8,
         "top": 6
       }
+    },
+    "filter_label": {
+      "text": {
+        "translate": "gui.ae2.level_emitter.filter"
+      },
+      "position": {
+        "left": 134,
+        "top": 28
+      }
     }
   },
   "widgets": {
