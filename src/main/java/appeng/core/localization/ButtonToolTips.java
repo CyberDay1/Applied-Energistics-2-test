@@ -63,6 +63,7 @@ public enum ButtonToolTips implements LocalizationEnum {
     DoesntDespawn("This item won't de-spawn."),
     EmitLevelAbove("Emit when levels are above or equal to limit."),
     EmitLevelsBelow("Emit when levels are below limit."),
+    LevelEmitterMode("Level Emitter Mode"),
     EmitWhenCrafting("Emit Redstone while item is crafting."),
     EmitterMode("Crafting Emitter Mode"),
     Encode("Encode Pattern"),

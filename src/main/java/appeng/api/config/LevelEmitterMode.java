@@ -25,8 +25,20 @@ package appeng.api.config;
 
 public enum LevelEmitterMode {
 
-    STORED_AMOUNT,
+    GREATER_OR_EQUAL {
+        @Override
+        public boolean shouldEmit(long storedAmount, long threshold) {
+            return storedAmount >= threshold;
+        }
+    },
 
-    STORABLE_AMOUNT
+    LESS_OR_EQUAL {
+        @Override
+        public boolean shouldEmit(long storedAmount, long threshold) {
+            return storedAmount <= threshold;
+        }
+    };
+
+    public abstract boolean shouldEmit(long storedAmount, long threshold);
 
 }
