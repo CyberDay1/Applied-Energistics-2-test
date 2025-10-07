@@ -21,13 +21,17 @@ package appeng.menu.implementations;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 
 import appeng.api.config.Settings;
+import appeng.api.inventories.InternalInventory;
 import appeng.api.util.IConfigManager;
 import appeng.blockentity.misc.InterfaceBlockEntity;
 import appeng.client.gui.implementations.InterfaceScreen;
+import appeng.grid.SimpleGridNode.OfflineReason;
 import appeng.helpers.InterfaceLogicHost;
 import appeng.menu.SlotSemantics;
+import appeng.menu.guisync.GuiSync;
 import appeng.menu.slot.AppEngSlot;
 import appeng.menu.slot.FakeSlot;
 
@@ -42,28 +46,28 @@ public class InterfaceMenu extends UpgradeableMenu<InterfaceLogicHost> {
             .create(InterfaceMenu::new, InterfaceLogicHost.class)
             .build("interface");
 
+    @GuiSync(20)
+    public OfflineReason offlineReason = OfflineReason.NONE;
+
     public InterfaceMenu(MenuType<? extends InterfaceMenu> menuType, int id, Inventory ip, InterfaceLogicHost host) {
         super(menuType, id, ip, host);
 
         registerClientAction(ACTION_OPEN_SET_AMOUNT, Integer.class, this::openSetAmountMenu);
+    }
 
-        var logic = host.getInterfaceLogic();
+    @Override
+    protected void setupInventorySlots() {
+        if (getHost().getBlockEntity() instanceof InterfaceBlockEntity blockEntity) {
+            this.addSlot(new AppEngSlot(blockEntity.getInputBuffer(), 0), SlotSemantics.MACHINE_INPUT);
+            this.addSlot(new OutputBufferSlot(blockEntity.getOutputBuffer(), 0), SlotSemantics.MACHINE_OUTPUT);
+        }
+    }
 
-        var config = logic.getConfig().createMenuWrapper();
+    @Override
+    protected void setupConfig() {
+        var config = getHost().getInterfaceLogic().getConfig().createMenuWrapper();
         for (int x = 0; x < config.size(); x++) {
             this.addSlot(new FakeSlot(config, x), SlotSemantics.CONFIG);
-        }
-
-        if (host.getBlockEntity() instanceof InterfaceBlockEntity blockEntity) {
-            var storage = blockEntity.getMenuStorage();
-            for (int x = 0; x < storage.size(); x++) {
-                this.addSlot(new AppEngSlot(storage, x), SlotSemantics.STORAGE);
-            }
-        } else {
-            var storage = logic.getStorage().createMenuWrapper();
-            for (int x = 0; x < storage.size(); x++) {
-                this.addSlot(new AppEngSlot(storage, x), SlotSemantics.STORAGE);
-            }
         }
     }
 
@@ -86,6 +90,48 @@ public class InterfaceMenu extends UpgradeableMenu<InterfaceLogicHost> {
                 SetStockAmountMenu.open((ServerPlayer) getPlayer(), getLocator(), configSlot,
                         stack.what(), (int) stack.amount());
             }
+        }
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+
+        if (isServerSide()) {
+            offlineReason = computeOfflineReason();
+        }
+    }
+
+    public OfflineReason getOfflineReason() {
+        return offlineReason;
+    }
+
+    private OfflineReason computeOfflineReason() {
+        var node = getHost().getInterfaceLogic().getMainNode();
+        if (!node.isPowered()) {
+            return OfflineReason.NONE;
+        }
+
+        var gridNode = node.getNode();
+        if (gridNode == null) {
+            return OfflineReason.NONE;
+        }
+
+        if (!gridNode.meetsChannelRequirements()) {
+            return OfflineReason.CHANNELS;
+        }
+
+        return node.isActive() ? OfflineReason.NONE : OfflineReason.REDSTONE;
+    }
+
+    private static class OutputBufferSlot extends AppEngSlot {
+        OutputBufferSlot(InternalInventory inv, int invSlot) {
+            super(inv, invSlot);
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return false;
         }
     }
 }

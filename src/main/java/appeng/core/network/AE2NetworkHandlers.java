@@ -19,6 +19,7 @@ import appeng.core.network.payload.AE2LoginAckC2SPayload;
 import appeng.core.network.payload.AE2LoginSyncS2CPayload;
 import appeng.core.network.payload.CraftingJobSyncS2CPayload;
 import appeng.core.network.payload.EncodePatternC2SPayload;
+import appeng.core.network.payload.InterfaceBuffersS2CPayload;
 import appeng.core.network.payload.PartitionedCellSyncS2CPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
@@ -35,6 +36,7 @@ import appeng.core.network.payload.StorageBusStateS2CPayload;
 import appeng.crafting.CraftingJob;
 import appeng.crafting.CraftingJobManager;
 import appeng.items.patterns.EncodedPatternItem;
+import appeng.blockentity.misc.InterfaceBlockEntity;
 import appeng.menu.PartitionedCellMenu;
 import appeng.menu.SlotSemantics;
 import appeng.menu.implementations.PatternEncodingTerminalMenu;
@@ -492,6 +494,27 @@ public final class AE2NetworkHandlers {
             if (player.containerMenu instanceof StorageBusMenu menu) {
                 menu.applyState(payload.accessMode(), payload.storageFilter(), payload.filterOnExtract(),
                         payload.connectedTo());
+            }
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleInterfaceBuffersClient(final InterfaceBuffersS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+
+            var level = player.level();
+            if (level == null) {
+                return;
+            }
+
+            var blockEntity = level.getBlockEntity(payload.pos());
+            if (blockEntity instanceof InterfaceBlockEntity interfaceBlockEntity) {
+                interfaceBlockEntity.applyClientBuffers(payload.input(), payload.output());
             }
         });
         ctx.setPacketHandled(true);
