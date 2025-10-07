@@ -12,4 +12,12 @@ public class AnnihilationPlaneScreen extends FormationPlaneScreen {
             Component title, ScreenStyle style) {
         super(menu, playerInventory, title, style);
     }
+
+    @Override
+    protected void updateBeforeRender() {
+        super.updateBeforeRender();
+
+        var statusKey = menu.isPlaneOnline() ? "gui.ae2.status.online" : "gui.ae2.status.offline";
+        setTextContent("status", Component.translatable(statusKey));
+    }
 }

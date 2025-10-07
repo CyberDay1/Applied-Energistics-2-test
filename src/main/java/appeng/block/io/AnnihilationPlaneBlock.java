@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -38,5 +39,16 @@ public class AnnihilationPlaneBlock extends AEBaseEntityBlock<AnnihilationPlaneB
         }
 
         return super.useWithoutItem(state, level, pos, player, hitResult);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos,
+            boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+        var blockEntity = getBlockEntity(level, pos);
+        if (blockEntity != null) {
+            blockEntity.onNeighborChanged();
+        }
     }
 }

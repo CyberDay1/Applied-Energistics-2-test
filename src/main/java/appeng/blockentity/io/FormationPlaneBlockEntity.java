@@ -66,6 +66,11 @@ public class FormationPlaneBlockEntity extends AENetworkedBlockEntity implements
     }
 
     @Override
+    public boolean isPlaneActive() {
+        return getMainNode().isActive();
+    }
+
+    @Override
     public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
         super.saveAdditional(data, registries);
         config.writeToChildTag(data, "config", registries);

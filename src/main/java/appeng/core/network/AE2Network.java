@@ -16,6 +16,7 @@ import appeng.core.network.payload.EncodePatternC2SPayload;
 import appeng.core.network.payload.InterfaceBuffersS2CPayload;
 import appeng.core.network.payload.PartitionedCellSyncS2CPayload;
 import appeng.core.network.payload.PlanCraftingJobC2SPayload;
+import appeng.core.network.payload.PlaneActivityS2CPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
@@ -53,6 +54,8 @@ public final class AE2Network {
                 AE2NetworkHandlers::handlePartitionedCellSyncClient);
         play.playToClient(StorageBusStateS2CPayload.TYPE, StorageBusStateS2CPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleStorageBusStateClient);
+        play.playToClient(PlaneActivityS2CPayload.TYPE, PlaneActivityS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handlePlaneActivityClient);
         play.playToClient(InterfaceBuffersS2CPayload.TYPE, InterfaceBuffersS2CPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleInterfaceBuffersClient);
         play.playToClient(SpatialCaptureC2SPayload.TYPE, SpatialCaptureC2SPayload.STREAM_CODEC,

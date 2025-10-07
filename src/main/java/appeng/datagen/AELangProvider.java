@@ -44,6 +44,7 @@ public class AELangProvider extends LanguageProvider {
         add("block.ae2.crafting_co_processor", "Crafting Co-Processor");
         add("block.ae2.crafting_unit", "Crafting Storage Unit");
         add("block.ae2.crafting_accelerator", "Crafting Acceleration Unit");
+        add("block.ae2.annihilation_plane", "Annihilation Plane");
 
         add("item.appliedenergistics2.silicon", "Silicon");
         add("item.appliedenergistics2.certus_quartz_crystal", "Certus Quartz Crystal");
@@ -179,6 +180,9 @@ public class AELangProvider extends LanguageProvider {
         add("gui.appliedenergistics2.redstone.mode.short.active_without_signal", "Without Signal");
         add("gui.appliedenergistics2.redstone.mode.short.always_active", "Always");
         add("screen.appliedenergistics2.annihilation_plane", "Annihilation Plane");
+        add("gui.ae2.annihilation_plane.title", "Annihilation Plane");
+        add("gui.ae2.status.online", "Status: Online");
+        add("gui.ae2.status.offline", "Status: Offline");
         add("screen.appliedenergistics2.interface", "Interface");
         add("screen.appliedenergistics2.interface.title", "ME Interface");
         add("screen.appliedenergistics2.interface.temporary_inventory", "Temporary Items");
