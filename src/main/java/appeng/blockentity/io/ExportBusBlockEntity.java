@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import appeng.api.behaviors.StackExportStrategy;
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.SchedulingMode;
 import appeng.api.config.Settings;
@@ -46,6 +47,7 @@ public class ExportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
         return IConfigManager.builder(this::onSettingChanged)
                 .registerSetting(Settings.REDSTONE_CONTROLLED, RedstoneMode.IGNORE)
                 .registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL)
+                .registerSetting(Settings.PARTITION_MODE, IncludeExclude.WHITELIST)
                 .registerSetting(Settings.CRAFT_ONLY, YesNo.NO)
                 .registerSetting(Settings.SCHEDULING_MODE, SchedulingMode.DEFAULT)
                 .build();

@@ -218,12 +218,32 @@ public abstract class IOBusPart extends UpgradeablePart implements IGridTickable
         return getOperationsPerTick();
     }
 
+    public int getTransferCooldownTicks() {
+        return tickRates.getMin();
+    }
+
     public IncludeExclude getPartitionMode() {
         return this.getConfigManager().getSetting(Settings.PARTITION_MODE);
     }
 
     public boolean isFilterInverted() {
         return isUpgradedWith(AEItems.INVERTER_CARD) && getPartitionMode() == IncludeExclude.BLACKLIST;
+    }
+
+    public boolean hasRedstoneUpgrade() {
+        return isUpgradedWith(AEItems.REDSTONE_CARD);
+    }
+
+    public boolean hasFuzzyUpgrade() {
+        return isUpgradedWith(AEItems.FUZZY_CARD);
+    }
+
+    public boolean hasInverterUpgrade() {
+        return isUpgradedWith(AEItems.INVERTER_CARD);
+    }
+
+    public boolean isRedstoneActive() {
+        return !isSleeping();
     }
 
     protected int getOperationsPerTick() {

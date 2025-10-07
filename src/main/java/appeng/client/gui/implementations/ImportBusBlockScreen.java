@@ -43,11 +43,14 @@ public class ImportBusBlockScreen extends UpgradeableScreen<ImportBusBlockMenu> 
         super.updateBeforeRender();
 
         this.redstoneMode.set(menu.getRedStoneMode());
-        this.redstoneMode.setVisibility(menu.hasUpgrade(AEItems.REDSTONE_CARD));
+        this.redstoneMode.setVisibility(true);
+        this.redstoneMode.setActive(menu.hasRedstoneUpgrade());
         this.fuzzyMode.set(menu.getFuzzyMode());
-        this.fuzzyMode.setVisibility(menu.hasUpgrade(AEItems.FUZZY_CARD));
+        this.fuzzyMode.setVisibility(true);
+        this.fuzzyMode.setActive(menu.hasFuzzyUpgrade());
         this.filterMode.set(menu.getPartitionMode());
-        this.filterMode.setVisibility(menu.canEditFilterMode());
+        this.filterMode.setVisibility(true);
+        this.filterMode.setActive(menu.canEditFilterMode());
     }
 
     @Override
@@ -64,23 +67,31 @@ public class ImportBusBlockScreen extends UpgradeableScreen<ImportBusBlockMenu> 
         var filterKey = menu.getPartitionMode() == IncludeExclude.BLACKLIST
                 ? "gui.ae2.io_bus.filter_mode.blacklist"
                 : "gui.ae2.io_bus.filter_mode.whitelist";
-        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode",
-                menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST,
-                Component.translatable(filterKey));
+        var filterIcon = menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode", filterIcon, Component.translatable(filterKey));
 
         var redstoneIcon = menu.hasRedstoneUpgrade() && menu.isRedstoneActive() ? Icon.REDSTONE_ON : Icon.REDSTONE_OFF;
-        var redstoneText = menu.hasRedstoneUpgrade()
-                ? (menu.isRedstoneActive() ? Component.translatable("gui.ae2.io_bus.redstone_control.enabled")
-                        : Component.translatable("gui.ae2.io_bus.redstone_control.blocked"))
-                : Component.translatable("gui.ae2.io_bus.redstone_control.disabled");
+        Component redstoneText;
+        if (!menu.hasRedstoneUpgrade()) {
+            redstoneText = Component.translatable("gui.ae2.io_bus.redstone_control.disabled");
+        } else if (menu.isRedstoneActive()) {
+            redstoneText = Component.translatable("gui.ae2.io_bus.redstone_control.enabled");
+        } else {
+            redstoneText = Component.translatable("gui.ae2.io_bus.redstone_control.blocked");
+        }
         drawIndicator(guiGraphics, offsetX, offsetY, "redstoneIndicator", redstoneIcon, redstoneText);
 
         var fuzzyText = menu.hasFuzzyUpgrade()
                 ? Component.translatable("gui.ae2.io_bus.fuzzy.enabled")
                 : Component.translatable("gui.ae2.io_bus.fuzzy.disabled");
-        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator",
-                menu.hasFuzzyUpgrade() ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE,
-                fuzzyText);
+        var fuzzyIcon = menu.hasFuzzyUpgrade() ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE;
+        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator", fuzzyIcon, fuzzyText);
+
+        var toggleText = menu.canEditFilterMode()
+                ? Component.translatable("gui.ae2.io_bus.filter_toggle.available")
+                : Component.translatable("gui.ae2.io_bus.filter_toggle.unavailable");
+        var toggleIcon = menu.canEditFilterMode() ? Icon.VALID : Icon.INVALID;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterToggle", toggleIcon, toggleText);
 
         OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
                 offsetX + 8, offsetY + 29, 18 * 9, 18 * 7);

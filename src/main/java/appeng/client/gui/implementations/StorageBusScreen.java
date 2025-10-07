@@ -78,9 +78,11 @@ public class StorageBusScreen extends UpgradeableScreen<StorageBusMenu> {
         this.rwMode.set(this.menu.getReadWriteMode());
         this.filterOnExtract.set(this.menu.getFilterOnExtract());
         this.fuzzyMode.set(this.menu.getFuzzyMode());
-        this.fuzzyMode.setVisibility(menu.supportsFuzzySearch());
+        this.fuzzyMode.setVisibility(true);
+        this.fuzzyMode.setActive(menu.supportsFuzzySearch());
         this.filterMode.set(menu.getPartitionMode());
-        this.filterMode.setVisibility(menu.canEditFilterMode());
+        this.filterMode.setVisibility(true);
+        this.filterMode.setActive(menu.canEditFilterMode());
     }
 
     @Override
@@ -99,29 +101,26 @@ public class StorageBusScreen extends UpgradeableScreen<StorageBusMenu> {
         }
         poseStack.popPose();
 
-        drawIndicator(guiGraphics, offsetX, offsetY, "transferCooldown", Icon.SLOT_BACKGROUND,
+        drawIndicator(guiGraphics, offsetX, offsetY, "slotIndicator", Icon.SLOT_BACKGROUND,
                 Component.translatable("gui.ae2.io_bus.filter_slots", menu.getActiveFilterSlots()));
 
         var filterKey = menu.getPartitionMode() == IncludeExclude.BLACKLIST
                 ? "gui.ae2.io_bus.filter_mode.blacklist"
                 : "gui.ae2.io_bus.filter_mode.whitelist";
-        drawIndicator(guiGraphics, offsetX, offsetY, "operationsPerTransfer",
-                menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST,
-                Component.translatable(filterKey));
+        var filterIcon = menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode", filterIcon, Component.translatable(filterKey));
 
         var fuzzyText = menu.supportsFuzzySearch()
                 ? Component.translatable("gui.ae2.io_bus.fuzzy.enabled")
                 : Component.translatable("gui.ae2.io_bus.fuzzy.disabled");
-        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator",
-                menu.supportsFuzzySearch() ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE,
-                fuzzyText);
+        var fuzzyIcon = menu.supportsFuzzySearch() ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE;
+        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator", fuzzyIcon, fuzzyText);
 
         var toggleText = menu.canEditFilterMode()
                 ? Component.translatable("gui.ae2.io_bus.filter_toggle.available")
                 : Component.translatable("gui.ae2.io_bus.filter_toggle.unavailable");
-        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode",
-                menu.canEditFilterMode() ? Icon.BLACKLIST : Icon.WHITELIST,
-                toggleText);
+        var toggleIcon = menu.canEditFilterMode() ? Icon.VALID : Icon.INVALID;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterToggle", toggleIcon, toggleText);
 
         OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
                 offsetX + 8, offsetY + 29, 18 * 9, 18 * 7);

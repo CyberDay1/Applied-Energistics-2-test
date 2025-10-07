@@ -88,11 +88,14 @@ public class IOBusScreen extends UpgradeableScreen<IOBusMenu> {
         super.updateBeforeRender();
 
         this.redstoneMode.set(menu.getRedStoneMode());
-        this.redstoneMode.setVisibility(menu.hasUpgrade(AEItems.REDSTONE_CARD));
+        this.redstoneMode.setVisibility(true);
+        this.redstoneMode.setActive(menu.hasRedstoneUpgrade());
         this.fuzzyMode.set(menu.getFuzzyMode());
-        this.fuzzyMode.setVisibility(menu.hasUpgrade(AEItems.FUZZY_CARD));
+        this.fuzzyMode.setVisibility(true);
+        this.fuzzyMode.setActive(menu.hasFuzzyUpgrade());
         this.filterMode.set(menu.getPartitionMode());
-        this.filterMode.setVisibility(menu.canEditFilterMode());
+        this.filterMode.setVisibility(true);
+        this.filterMode.setActive(menu.canEditFilterMode());
         if (this.craftMode != null) {
             this.craftMode.set(menu.getCraftingMode());
             this.craftMode.setVisibility(menu.hasUpgrade(AEItems.CRAFTING_CARD));
@@ -106,38 +109,44 @@ public class IOBusScreen extends UpgradeableScreen<IOBusMenu> {
     public void drawFG(GuiGraphics guiGraphics, int offsetX, int offsetY, int mouseX, int mouseY) {
         super.drawFG(guiGraphics, offsetX, offsetY, mouseX, mouseY);
 
-        drawIndicator(guiGraphics, offsetX, offsetY, "transferCooldown", Icon.LEVEL_ITEM,
+        drawIndicator(guiGraphics, offsetX, offsetY, "transferCooldown", Icon.LEVEL_ENERGY,
+                Component.translatable("gui.ae2.io_bus.transfer_cooldown", menu.getTransferCooldownTicks()));
+        drawIndicator(guiGraphics, offsetX, offsetY, "operationsPerTransfer", Icon.LEVEL_ITEM,
                 Component.translatable("gui.ae2.io_bus.operations_per_transfer", menu.getOperationsPerTransfer()));
-        drawIndicator(guiGraphics, offsetX, offsetY, "operationsPerTransfer", Icon.SLOT_BACKGROUND,
+        drawIndicator(guiGraphics, offsetX, offsetY, "slotIndicator", Icon.SLOT_BACKGROUND,
                 Component.translatable("gui.ae2.io_bus.filter_slots", menu.getActiveFilterSlots()));
 
         var filterKey = menu.getPartitionMode() == IncludeExclude.BLACKLIST
                 ? "gui.ae2.io_bus.filter_mode.blacklist"
                 : "gui.ae2.io_bus.filter_mode.whitelist";
-        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode",
-                menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST,
-                Component.translatable(filterKey));
+        var filterIcon = menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode", filterIcon, Component.translatable(filterKey));
 
-        var redstoneText = menu.hasUpgrade(AEItems.REDSTONE_CARD)
-                ? Component.translatable("gui.ae2.io_bus.redstone_control.enabled")
-                : Component.translatable("gui.ae2.io_bus.redstone_control.disabled");
-        drawIndicator(guiGraphics, offsetX, offsetY, "redstoneIndicator",
-                menu.hasUpgrade(AEItems.REDSTONE_CARD) ? Icon.REDSTONE_ON : Icon.REDSTONE_OFF,
-                redstoneText);
+        Component redstoneText;
+        Icon redstoneIcon;
+        if (!menu.hasRedstoneUpgrade()) {
+            redstoneText = Component.translatable("gui.ae2.io_bus.redstone_control.disabled");
+            redstoneIcon = Icon.REDSTONE_OFF;
+        } else if (menu.isRedstoneActive()) {
+            redstoneText = Component.translatable("gui.ae2.io_bus.redstone_control.enabled");
+            redstoneIcon = Icon.REDSTONE_ON;
+        } else {
+            redstoneText = Component.translatable("gui.ae2.io_bus.redstone_control.blocked");
+            redstoneIcon = Icon.REDSTONE_OFF;
+        }
+        drawIndicator(guiGraphics, offsetX, offsetY, "redstoneIndicator", redstoneIcon, redstoneText);
 
-        var fuzzyText = menu.hasUpgrade(AEItems.FUZZY_CARD)
+        var fuzzyText = menu.hasFuzzyUpgrade()
                 ? Component.translatable("gui.ae2.io_bus.fuzzy.enabled")
                 : Component.translatable("gui.ae2.io_bus.fuzzy.disabled");
-        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator",
-                menu.hasUpgrade(AEItems.FUZZY_CARD) ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE,
-                fuzzyText);
+        var fuzzyIcon = menu.hasFuzzyUpgrade() ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE;
+        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator", fuzzyIcon, fuzzyText);
 
         var toggleText = menu.canEditFilterMode()
                 ? Component.translatable("gui.ae2.io_bus.filter_toggle.available")
                 : Component.translatable("gui.ae2.io_bus.filter_toggle.unavailable");
-        drawIndicator(guiGraphics, offsetX, offsetY, "slotIndicator",
-                menu.canEditFilterMode() ? Icon.BLACKLIST : Icon.WHITELIST,
-                toggleText);
+        var toggleIcon = menu.canEditFilterMode() ? Icon.VALID : Icon.INVALID;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterToggle", toggleIcon, toggleText);
 
         OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
                 offsetX + 8, offsetY + 29, 18 * 9, 18 * 7);

@@ -79,6 +79,21 @@ public class IOBusMenu extends UpgradeableMenu<IOBusPart> implements KeyTypeSele
     @GuiSync(24)
     public int operationsPerTransfer = 1;
 
+    @GuiSync(25)
+    public int transferCooldownTicks = 5;
+
+    @GuiSync(26)
+    public boolean hasRedstoneUpgrade;
+
+    @GuiSync(27)
+    public boolean redstoneActive;
+
+    @GuiSync(28)
+    public boolean hasFuzzyUpgrade;
+
+    @GuiSync(29)
+    public boolean hasInverterUpgrade;
+
     public IOBusMenu(MenuType<?> menuType, int id, Inventory ip, IOBusPart host) {
         super(menuType, id, ip, host);
     }
@@ -118,6 +133,11 @@ public class IOBusMenu extends UpgradeableMenu<IOBusPart> implements KeyTypeSele
             partitionMode = getHost().getPartitionMode();
             activeFilterSlots = getHost().getActiveConfigSlots();
             operationsPerTransfer = getHost().getConfiguredOperationsPerTick();
+            transferCooldownTicks = getHost().getTransferCooldownTicks();
+            hasRedstoneUpgrade = getHost().hasRedstoneUpgrade();
+            redstoneActive = getHost().isRedstoneActive();
+            hasFuzzyUpgrade = getHost().hasFuzzyUpgrade();
+            hasInverterUpgrade = getHost().hasInverterUpgrade();
         }
     }
 
@@ -144,7 +164,27 @@ public class IOBusMenu extends UpgradeableMenu<IOBusPart> implements KeyTypeSele
     }
 
     public boolean canEditFilterMode() {
-        return hasUpgrade(AEItems.INVERTER_CARD);
+        return hasInverterUpgrade;
+    }
+
+    public int getTransferCooldownTicks() {
+        return transferCooldownTicks;
+    }
+
+    public boolean hasRedstoneUpgrade() {
+        return hasRedstoneUpgrade;
+    }
+
+    public boolean isRedstoneActive() {
+        return redstoneActive;
+    }
+
+    public boolean hasFuzzyUpgrade() {
+        return hasFuzzyUpgrade;
+    }
+
+    public boolean hasInverterUpgrade() {
+        return hasInverterUpgrade;
     }
 
     @Nullable
