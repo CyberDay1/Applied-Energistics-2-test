@@ -24,6 +24,7 @@ import net.minecraft.world.inventory.MenuType;
 
 import appeng.api.config.Settings;
 import appeng.api.util.IConfigManager;
+import appeng.blockentity.misc.InterfaceBlockEntity;
 import appeng.client.gui.implementations.InterfaceScreen;
 import appeng.helpers.InterfaceLogicHost;
 import appeng.menu.SlotSemantics;
@@ -53,9 +54,16 @@ public class InterfaceMenu extends UpgradeableMenu<InterfaceLogicHost> {
             this.addSlot(new FakeSlot(config, x), SlotSemantics.CONFIG);
         }
 
-        var storage = logic.getStorage().createMenuWrapper();
-        for (int x = 0; x < storage.size(); x++) {
-            this.addSlot(new AppEngSlot(storage, x), SlotSemantics.STORAGE);
+        if (host.getBlockEntity() instanceof InterfaceBlockEntity blockEntity) {
+            var storage = blockEntity.getMenuStorage();
+            for (int x = 0; x < storage.size(); x++) {
+                this.addSlot(new AppEngSlot(storage, x), SlotSemantics.STORAGE);
+            }
+        } else {
+            var storage = logic.getStorage().createMenuWrapper();
+            for (int x = 0; x < storage.size(); x++) {
+                this.addSlot(new AppEngSlot(storage, x), SlotSemantics.STORAGE);
+            }
         }
     }
 
