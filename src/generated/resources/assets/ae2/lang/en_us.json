@@ -1134,6 +1134,8 @@
   "gui.ae2.spatial.capture": "Capture",
   "gui.ae2.spatial.restore": "Restore",
   "gui.ae2.spatial.in_progress": "Spatial IO in progress",
+  "gui.ae2.spatial.complete": "Operation complete",
   "log.ae2.spatial.capture_begin": "Capturing region %s³…",
-  "log.ae2.spatial.restore_begin": "Restoring region %s³…"
+  "log.ae2.spatial.restore_begin": "Restoring region %s³…",
+  "log.ae2.spatial.complete": "Spatial operation completed."
 }

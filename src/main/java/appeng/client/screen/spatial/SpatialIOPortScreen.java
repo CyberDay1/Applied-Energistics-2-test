@@ -17,6 +17,7 @@ import appeng.menu.spatial.SpatialIOPortMenu;
 public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMenu> {
     private Button captureButton;
     private Button restoreButton;
+    private static final int STATUS_COLOR = 0x55FF55;
 
     public SpatialIOPortScreen(SpatialIOPortMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -44,6 +45,7 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
     @Override
     protected void containerTick() {
         super.containerTick();
+        menu.clientTick();
         updateButtonStates();
     }
 
@@ -52,6 +54,7 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
         this.renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
         renderRegionSize(graphics);
+        renderStatus(graphics);
         renderTooltip(graphics, mouseX, mouseY);
     }
 
@@ -96,6 +99,15 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
         }
 
         graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 80, 0xFFFFFF, false);
+    }
+
+    private void renderStatus(GuiGraphics graphics) {
+        if (!menu.isShowingCompletionMessage()) {
+            return;
+        }
+
+        var text = Component.translatable("gui.ae2.spatial.complete");
+        graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 100, STATUS_COLOR, false);
     }
 
     private static String formatRegionSize(BlockPos regionSize) {

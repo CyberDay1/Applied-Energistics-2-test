@@ -48,6 +48,7 @@ import appeng.core.network.serverbound.UpdatePartitionedCellPriorityPacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistModePacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistPacket;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 
@@ -76,6 +77,7 @@ public class InitNetwork {
         clientbound(registrar, SetLinkStatusPacket.TYPE, SetLinkStatusPacket.STREAM_CODEC);
         clientbound(registrar, ExportedGridContent.TYPE, ExportedGridContent.STREAM_CODEC);
         clientbound(registrar, SpatialOpInProgressS2CPayload.TYPE, SpatialOpInProgressS2CPayload.STREAM_CODEC);
+        clientbound(registrar, SpatialOpCompleteS2CPayload.TYPE, SpatialOpCompleteS2CPayload.STREAM_CODEC);
 
         // Serverbound
         serverbound(registrar, ColorApplicatorSelectColorPacket.TYPE, ColorApplicatorSelectColorPacket.STREAM_CODEC);

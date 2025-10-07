@@ -25,6 +25,7 @@ import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
@@ -280,6 +281,28 @@ public final class AE2NetworkHandlers {
             }
 
             menu.setInProgress(payload.inProgress());
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialOpCompleteClient(final SpatialOpCompleteS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            menu.handleOperationComplete();
         });
         ctx.setPacketHandled(true);
     }
