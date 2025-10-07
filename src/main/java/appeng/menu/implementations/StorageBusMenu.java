@@ -35,6 +35,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
 import appeng.api.config.AccessRestriction;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.Settings;
 import appeng.api.config.StorageFilter;
 import appeng.api.config.YesNo;
@@ -83,6 +84,12 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
     @GuiSync(9)
     @Nullable
     public OfflineReason offlineReason;
+
+    @GuiSync(10)
+    public IncludeExclude partitionMode = IncludeExclude.WHITELIST;
+
+    @GuiSync(11)
+    public int activeFilterSlots = 18;
 
     private AccessRestriction lastSentAccessMode;
     private StorageFilter lastSentStorageFilter;
@@ -141,6 +148,9 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
             if (!Objects.equals(offlineReason, newOfflineReason)) {
                 offlineReason = newOfflineReason;
             }
+
+            partitionMode = getHost().getPartitionMode();
+            activeFilterSlots = getHost().getActiveConfigSlots();
         }
     }
 
@@ -233,6 +243,18 @@ public class StorageBusMenu extends UpgradeableMenu<StorageBusPart> {
 
     public boolean supportsFuzzySearch() {
         return hasUpgrade(AEItems.FUZZY_CARD);
+    }
+
+    public boolean canEditFilterMode() {
+        return hasUpgrade(AEItems.INVERTER_CARD);
+    }
+
+    public IncludeExclude getPartitionMode() {
+        return partitionMode;
+    }
+
+    public int getActiveFilterSlots() {
+        return activeFilterSlots;
     }
 
     @Nullable

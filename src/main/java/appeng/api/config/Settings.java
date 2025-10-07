@@ -91,6 +91,7 @@ public final class Settings {
     public static final Setting<YesNo> INSCRIBER_SEPARATE_SIDES = register("inscriber_separate_sides", YesNo.NO,
             YesNo.YES);
     public static final Setting<YesNo> AUTO_EXPORT = register("auto_export", YesNo.NO, YesNo.YES);
+    public static final Setting<IncludeExclude> PARTITION_MODE = register("partition_mode", IncludeExclude.class);
 
     @Deprecated(forRemoval = true)
     public static final Setting<YesNo> INSCRIBER_BUFFER_SIZE = register("inscriber_buffer_size", YesNo.NO, YesNo.YES);

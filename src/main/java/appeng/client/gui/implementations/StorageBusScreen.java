@@ -25,10 +25,12 @@ import net.minecraft.world.entity.player.Inventory;
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.ActionItems;
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.Settings;
 import appeng.api.config.StorageFilter;
 import appeng.api.config.YesNo;
 import appeng.client.gui.OfflineOverlayRenderer;
+import appeng.client.gui.Icon;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.ActionButton;
@@ -37,12 +39,15 @@ import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.localization.GuiText;
 import appeng.menu.implementations.StorageBusMenu;
 
+import net.minecraft.client.renderer.Rect2i;
+
 public class StorageBusScreen extends UpgradeableScreen<StorageBusMenu> {
 
     private final SettingToggleButton<AccessRestriction> rwMode;
     private final SettingToggleButton<StorageFilter> storageFilter;
     private final SettingToggleButton<YesNo> filterOnExtract;
     private final SettingToggleButton<FuzzyMode> fuzzyMode;
+    private final SettingToggleButton<IncludeExclude> filterMode;
 
     public StorageBusScreen(StorageBusMenu menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
@@ -60,6 +65,8 @@ public class StorageBusScreen extends UpgradeableScreen<StorageBusMenu> {
         this.addToLeftToolbar(this.storageFilter);
         this.addToLeftToolbar(this.filterOnExtract);
         this.addToLeftToolbar(this.fuzzyMode);
+        this.filterMode = new ServerSettingToggleButton<>(Settings.PARTITION_MODE, IncludeExclude.WHITELIST);
+        this.addToLeftToolbar(this.filterMode);
         this.addToLeftToolbar(this.rwMode);
     }
 
@@ -71,15 +78,16 @@ public class StorageBusScreen extends UpgradeableScreen<StorageBusMenu> {
         this.rwMode.set(this.menu.getReadWriteMode());
         this.filterOnExtract.set(this.menu.getFilterOnExtract());
         this.fuzzyMode.set(this.menu.getFuzzyMode());
-        this.fuzzyMode.setVisibility(menu.supportsFuzzySearch());
+        this.fuzzyMode.setVisibility(true);
+        this.fuzzyMode.setActive(menu.supportsFuzzySearch());
+        this.filterMode.set(menu.getPartitionMode());
+        this.filterMode.setVisibility(true);
+        this.filterMode.setActive(menu.canEditFilterMode());
     }
 
     @Override
     public void drawFG(GuiGraphics guiGraphics, int offsetX, int offsetY, int mouseX, int mouseY) {
         super.drawFG(guiGraphics, offsetX, offsetY, mouseX, mouseY);
-
-        OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
-                offsetX + 8, offsetY + 29, 18 * 9, 18 * 7);
 
         var poseStack = guiGraphics.pose();
         poseStack.pushPose();
@@ -92,5 +100,39 @@ public class StorageBusScreen extends UpgradeableScreen<StorageBusMenu> {
             guiGraphics.drawString(font, GuiText.Unattached.text(), 0, 0, color.toARGB(), false);
         }
         poseStack.popPose();
+
+        drawIndicator(guiGraphics, offsetX, offsetY, "slotIndicator", Icon.SLOT_BACKGROUND,
+                Component.translatable("gui.ae2.io_bus.filter_slots", menu.getActiveFilterSlots()));
+
+        var filterKey = menu.getPartitionMode() == IncludeExclude.BLACKLIST
+                ? "gui.ae2.io_bus.filter_mode.blacklist"
+                : "gui.ae2.io_bus.filter_mode.whitelist";
+        var filterIcon = menu.getPartitionMode() == IncludeExclude.BLACKLIST ? Icon.BLACKLIST : Icon.WHITELIST;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterMode", filterIcon, Component.translatable(filterKey));
+
+        var fuzzyText = menu.supportsFuzzySearch()
+                ? Component.translatable("gui.ae2.io_bus.fuzzy.enabled")
+                : Component.translatable("gui.ae2.io_bus.fuzzy.disabled");
+        var fuzzyIcon = menu.supportsFuzzySearch() ? Icon.FUZZY_PERCENT_99 : Icon.FUZZY_IGNORE;
+        drawIndicator(guiGraphics, offsetX, offsetY, "fuzzyIndicator", fuzzyIcon, fuzzyText);
+
+        var toggleText = menu.canEditFilterMode()
+                ? Component.translatable("gui.ae2.io_bus.filter_toggle.available")
+                : Component.translatable("gui.ae2.io_bus.filter_toggle.unavailable");
+        var toggleIcon = menu.canEditFilterMode() ? Icon.VALID : Icon.INVALID;
+        drawIndicator(guiGraphics, offsetX, offsetY, "filterToggle", toggleIcon, toggleText);
+
+        OfflineOverlayRenderer.drawIfOffline(guiGraphics, this.font, menu.getOfflineReason(),
+                offsetX + 8, offsetY + 29, 18 * 9, 18 * 7);
+    }
+
+    private void drawIndicator(GuiGraphics guiGraphics, int offsetX, int offsetY, String widgetId, Icon icon,
+            Component text) {
+        var widget = style.getWidget(widgetId);
+        var bounds = new Rect2i(offsetX, offsetY, this.imageWidth, this.imageHeight);
+        var point = widget.resolve(bounds);
+        icon.getBlitter().dest(point.getX(), point.getY()).blit(guiGraphics);
+        var color = style.getColor(PaletteColor.DEFAULT_TEXT_COLOR);
+        guiGraphics.drawString(font, text, point.getX() + 12, point.getY() + 1, color.toARGB(), false);
     }
 }

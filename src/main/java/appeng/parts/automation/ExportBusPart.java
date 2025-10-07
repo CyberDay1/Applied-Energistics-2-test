@@ -33,6 +33,7 @@ import net.minecraft.world.inventory.MenuType;
 import appeng.api.behaviors.StackExportStrategy;
 import appeng.api.behaviors.StackTransferContext;
 import appeng.api.config.Actionable;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.SchedulingMode;
 import appeng.api.config.Settings;
 import appeng.api.config.YesNo;
@@ -207,12 +208,16 @@ public class ExportBusPart extends IOBusPart implements ICraftingRequester {
 
     @NotNull
     private StackTransferContext createTransferContext(IStorageService storageService, IEnergyService energyService) {
-        return new StackTransferContextImpl(
+        var context = new StackTransferContextImpl(
                 storageService,
                 energyService,
                 this.source,
                 getOperationsPerTick(),
                 DefaultPriorityList.INSTANCE);
+        boolean invert = this.isUpgradedWith(AEItems.INVERTER_CARD)
+                && getPartitionMode() == IncludeExclude.BLACKLIST;
+        context.setInverted(invert);
+        return context;
     }
 
     @Override

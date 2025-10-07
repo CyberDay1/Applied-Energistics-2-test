@@ -15,7 +15,6 @@ import appeng.core.definitions.AEBlocks;
 import appeng.api.behaviors.StackImportStrategy;
 import appeng.parts.automation.StackTransferContextImpl;
 import appeng.parts.automation.StackWorldBehaviors;
-import appeng.core.definitions.AEItems;
 
 public class ImportBusBlockEntity extends IOBusBlockEntity implements IGridTickable {
 
@@ -61,7 +60,7 @@ public class ImportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
                 getOperationsPerTick(),
                 getFilterList());
 
-        context.setInverted(isUpgradedWith(AEItems.INVERTER_CARD));
+        context.setInverted(isFilterInverted());
 
         strategy.transfer(context);
 

@@ -174,5 +174,17 @@ public class AELangProvider extends LanguageProvider {
         add("gui.appliedenergistics2.redstone.mode.short.active_with_signal", "With Signal");
         add("gui.appliedenergistics2.redstone.mode.short.active_without_signal", "Without Signal");
         add("gui.appliedenergistics2.redstone.mode.short.always_active", "Always");
+        add("gui.ae2.io_bus.transfer_cooldown", "Transfer cooldown: %s ticks");
+        add("gui.ae2.io_bus.operations_per_transfer", "Operations per transfer: %s");
+        add("gui.ae2.io_bus.filter_mode.whitelist", "Filter mode: Whitelist");
+        add("gui.ae2.io_bus.filter_mode.blacklist", "Filter mode: Blacklist");
+        add("gui.ae2.io_bus.filter_slots", "Active filter slots: %s");
+        add("gui.ae2.io_bus.redstone_control.enabled", "Redstone control: Active");
+        add("gui.ae2.io_bus.redstone_control.disabled", "Redstone control: Disabled");
+        add("gui.ae2.io_bus.redstone_control.blocked", "Redstone control: Blocked by signal");
+        add("gui.ae2.io_bus.fuzzy.enabled", "Fuzzy matching: Enabled");
+        add("gui.ae2.io_bus.fuzzy.disabled", "Fuzzy matching: Disabled");
+        add("gui.ae2.io_bus.filter_toggle.available", "Filter toggle: Blacklist available");
+        add("gui.ae2.io_bus.filter_toggle.unavailable", "Insert an inverter card to enable blacklist mode");
     }
 }

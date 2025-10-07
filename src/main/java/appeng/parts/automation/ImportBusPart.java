@@ -26,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.MenuType;
 
 import appeng.api.behaviors.StackImportStrategy;
+import appeng.api.config.IncludeExclude;
 import appeng.api.networking.IGrid;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartItem;
@@ -70,7 +71,9 @@ public class ImportBusPart extends IOBusPart implements KeyTypeSelectionHost {
                 getOperationsPerTick(),
                 getFilter());
 
-        context.setInverted(this.isUpgradedWith(AEItems.INVERTER_CARD));
+        boolean invert = this.isUpgradedWith(AEItems.INVERTER_CARD)
+                && getPartitionMode() == IncludeExclude.BLACKLIST;
+        context.setInverted(invert);
         importStrategy.transfer(context);
 
         return context.hasDoneWork();

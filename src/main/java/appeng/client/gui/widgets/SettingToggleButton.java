@@ -40,6 +40,7 @@ import appeng.api.config.CondenserOutput;
 import appeng.api.config.CpuSelectionMode;
 import appeng.api.config.FullnessMode;
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.InscriberInputCapacity;
 import appeng.api.config.LockCraftingMode;
 import appeng.api.config.OperationMode;
@@ -247,6 +248,11 @@ public class SettingToggleButton<T extends Enum<T>> extends IconButton {
                     ButtonToolTips.FilterOnExtract, ButtonToolTips.FilterOnExtractEnabled);
             registerApp(Icon.FILTER_ON_EXTRACT_DISABLED, Settings.FILTER_ON_EXTRACT, YesNo.NO,
                     ButtonToolTips.FilterOnExtract, ButtonToolTips.FilterOnExtractDisabled);
+
+            registerApp(Icon.WHITELIST, Settings.PARTITION_MODE, IncludeExclude.WHITELIST,
+                    ButtonToolTips.PartitionMode, ButtonToolTips.PartitionWhitelist);
+            registerApp(Icon.BLACKLIST, Settings.PARTITION_MODE, IncludeExclude.BLACKLIST,
+                    ButtonToolTips.PartitionMode, ButtonToolTips.PartitionBlacklist);
 
             registerApp(Icon.CRAFT_HAMMER, Settings.CPU_SELECTION_MODE, CpuSelectionMode.ANY,
                     ButtonToolTips.CpuSelectionMode, ButtonToolTips.CpuSelectionModeAny);

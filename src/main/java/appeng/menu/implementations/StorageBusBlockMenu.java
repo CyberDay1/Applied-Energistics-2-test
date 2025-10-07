@@ -7,11 +7,10 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
+import appeng.api.config.IncludeExclude;
 import appeng.blockentity.storage.StorageBusBlockEntity;
 import appeng.grid.SimpleGridNode.OfflineReason;
-import appeng.menu.SlotSemantics;
 import appeng.menu.guisync.GuiSync;
-import appeng.menu.slot.FakeSlot;
 
 public class StorageBusBlockMenu extends UpgradeableMenu<StorageBusBlockEntity> {
 
@@ -22,6 +21,18 @@ public class StorageBusBlockMenu extends UpgradeableMenu<StorageBusBlockEntity> 
     @GuiSync(11)
     @Nullable
     public OfflineReason offlineReason;
+
+    @GuiSync(12)
+    public IncludeExclude partitionMode = IncludeExclude.WHITELIST;
+
+    @GuiSync(13)
+    public int activeFilterSlots = 18;
+
+    @GuiSync(14)
+    public boolean hasFuzzyCard;
+
+    @GuiSync(15)
+    public boolean hasInverterUpgrade;
 
     public StorageBusBlockMenu(MenuType<? extends StorageBusBlockMenu> menuType, int id, Inventory inventory,
             StorageBusBlockEntity host) {
@@ -36,10 +47,13 @@ public class StorageBusBlockMenu extends UpgradeableMenu<StorageBusBlockEntity> 
 
     @Override
     protected void setupConfig() {
-        var wrapper = getHost().getConfig().createMenuWrapper();
-        for (int i = 0; i < wrapper.size(); i++) {
-            addSlot(new FakeSlot(wrapper, i), SlotSemantics.CONFIG);
-        }
+        addExpandableConfigSlots(getHost().getConfig(), 2, 9, 5);
+    }
+
+    @Override
+    public boolean isSlotEnabled(int idx) {
+        int rowsUnlocked = Math.max(0, (getHost().getActiveConfigSlots() - 18) / 9);
+        return idx < rowsUnlocked;
     }
 
     @Override
@@ -51,12 +65,37 @@ public class StorageBusBlockMenu extends UpgradeableMenu<StorageBusBlockEntity> 
             if (!Objects.equals(offlineReason, newOfflineReason)) {
                 offlineReason = newOfflineReason;
             }
+
+            partitionMode = getHost().getPartitionMode();
+            activeFilterSlots = getHost().getActiveConfigSlots();
+            hasFuzzyCard = getHost().hasFuzzyCard();
+            hasInverterUpgrade = getHost().hasInverterCard();
         }
     }
 
     @Nullable
     public OfflineReason getOfflineReason() {
         return offlineReason;
+    }
+
+    public IncludeExclude getPartitionMode() {
+        return partitionMode;
+    }
+
+    public int getActiveFilterSlots() {
+        return activeFilterSlots;
+    }
+
+    public boolean hasFuzzyUpgrade() {
+        return hasFuzzyCard;
+    }
+
+    public boolean hasInverterUpgrade() {
+        return hasInverterUpgrade;
+    }
+
+    public boolean canEditFilterMode() {
+        return hasInverterUpgrade;
     }
 
     @Nullable

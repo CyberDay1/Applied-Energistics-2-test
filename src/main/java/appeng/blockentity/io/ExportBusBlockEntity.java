@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import appeng.api.behaviors.StackExportStrategy;
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.IncludeExclude;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.SchedulingMode;
 import appeng.api.config.Settings;
@@ -22,7 +23,6 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.util.IConfigManager;
 import appeng.api.stacks.AEKey;
 import appeng.core.definitions.AEBlocks;
-import appeng.core.definitions.AEItems;
 import appeng.parts.automation.StackTransferContextImpl;
 import appeng.parts.automation.StackWorldBehaviors;
 
@@ -47,6 +47,7 @@ public class ExportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
         return IConfigManager.builder(this::onSettingChanged)
                 .registerSetting(Settings.REDSTONE_CONTROLLED, RedstoneMode.IGNORE)
                 .registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL)
+                .registerSetting(Settings.PARTITION_MODE, IncludeExclude.WHITELIST)
                 .registerSetting(Settings.CRAFT_ONLY, YesNo.NO)
                 .registerSetting(Settings.SCHEDULING_MODE, SchedulingMode.DEFAULT)
                 .build();
@@ -85,7 +86,7 @@ public class ExportBusBlockEntity extends IOBusBlockEntity implements IGridTicka
                 getOperationsPerTick(),
                 getFilterList());
 
-        context.setInverted(isUpgradedWith(AEItems.INVERTER_CARD));
+        context.setInverted(isFilterInverted());
 
         var schedulingMode = getConfigManager().getSetting(Settings.SCHEDULING_MODE);
         var totalSlots = getAvailableConfigSlots();
