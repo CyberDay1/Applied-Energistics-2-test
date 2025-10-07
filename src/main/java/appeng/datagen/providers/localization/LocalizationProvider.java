@@ -51,6 +51,15 @@ public class LocalizationProvider implements IAE2DataProvider {
             add("entity.ae2." + entry.getKey(), entry.getValue());
         }
 
+        // Temporary shim while both ae2 and appliedenergistics2 namespaces are supported.
+        add("block.appliedenergistics2.interface", "ME Interface");
+        add("screen.ae2.interface.title", "ME Interface");
+        add("screen.appliedenergistics2.interface.title", "ME Interface");
+        add("screen.ae2.interface.temporary_inventory", "Temporary Items");
+        add("screen.appliedenergistics2.interface.temporary_inventory", "Temporary Items");
+        add("screen.ae2.interface.config", "Config");
+        add("screen.appliedenergistics2.interface.config", "Config");
+
         addEnum(GuiText.class);
         addEnum(ButtonToolTips.class);
         addEnum(PlayerMessages.class);
