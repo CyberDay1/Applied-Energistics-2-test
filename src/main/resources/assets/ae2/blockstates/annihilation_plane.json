@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down": { "model": "ae2:block/annihilation_plane", "x": 90, "y": 0 },
+    "facing=up": { "model": "ae2:block/annihilation_plane", "x": -90, "y": 0 },
+    "facing=north": { "model": "ae2:block/annihilation_plane" },
+    "facing=south": { "model": "ae2:block/annihilation_plane", "y": 180 },
+    "facing=west": { "model": "ae2:block/annihilation_plane", "y": 270 },
+    "facing=east": { "model": "ae2:block/annihilation_plane", "y": 90 }
+  }
+}

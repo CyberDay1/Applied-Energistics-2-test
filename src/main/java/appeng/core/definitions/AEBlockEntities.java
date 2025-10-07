@@ -44,6 +44,7 @@ import appeng.blockentity.crafting.CraftingMonitorBlockEntity;
 import appeng.blockentity.crafting.MolecularAssemblerBlockEntity;
 import appeng.blockentity.crafting.PatternProviderBlockEntity;
 import appeng.blockentity.io.ExportBusBlockEntity;
+import appeng.blockentity.io.AnnihilationPlaneBlockEntity;
 import appeng.blockentity.io.FormationPlaneBlockEntity;
 import appeng.blockentity.io.ImportBusBlockEntity;
 import appeng.blockentity.misc.CellWorkbenchBlockEntity;
@@ -128,6 +129,11 @@ public final class AEBlockEntities {
             ImportBusBlockEntity.class, ImportBusBlockEntity::new, AEBlocks.IMPORT_BUS);
     public static final DeferredBlockEntityType<ExportBusBlockEntity> EXPORT_BUS = create("export_bus",
             ExportBusBlockEntity.class, ExportBusBlockEntity::new, AEBlocks.EXPORT_BUS);
+    public static final DeferredBlockEntityType<AnnihilationPlaneBlockEntity> ANNIHILATION_PLANE = create(
+            "annihilation_plane",
+            AnnihilationPlaneBlockEntity.class,
+            AnnihilationPlaneBlockEntity::new,
+            AEBlocks.ANNIHILATION_PLANE);
     public static final DeferredBlockEntityType<FormationPlaneBlockEntity> FORMATION_PLANE = create("formation_plane",
             FormationPlaneBlockEntity.class, FormationPlaneBlockEntity::new, AEBlocks.FORMATION_PLANE);
     public static final DeferredBlockEntityType<CondenserBlockEntity> CONDENSER = create("condenser",

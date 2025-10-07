@@ -150,6 +150,10 @@ public final class AE2Items {
             "spatial_io_port",
             () -> new BlockItem(AE2Blocks.SPATIAL_IO_PORT.get(), new Properties()));
 
+    public static final RegistryObject<Item> ANNIHILATION_PLANE = AE2Registries.ITEMS.register(
+            "annihilation_plane",
+            () -> new BlockItem(AE2Blocks.ANNIHILATION_PLANE.get(), new Properties()));
+
     public static final RegistryObject<Item> FORMATION_PLANE = AE2Registries.ITEMS.register(
             "formation_plane",
             () -> new BlockItem(AE2Blocks.FORMATION_PLANE.get(), new Properties()));

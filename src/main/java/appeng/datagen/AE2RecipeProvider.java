@@ -15,6 +15,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.Items;
 
 import appeng.AE2Registries;
+import appeng.core.definitions.AEBlocks;
+import appeng.core.definitions.AEItems;
 import appeng.registry.AE2Items;
 
 public class AE2RecipeProvider extends RecipeProvider {
@@ -101,6 +103,16 @@ public class AE2RecipeProvider extends RecipeProvider {
                 .define('P', AE2Items.CALCULATION_PROCESSOR.get())
                 .unlockedBy("has_calculation_processor", has(AE2Items.CALCULATION_PROCESSOR.get()))
                 .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/fuzzy_card"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.ANNIHILATION_PLANE.get())
+                .pattern("CGC")
+                .pattern("CAC")
+                .pattern("CGC")
+                .define('C', AE2Items.CABLE.get())
+                .define('G', AEBlocks.QUARTZ_GLASS)
+                .define('A', AEItems.ANNIHILATION_CORE)
+                .unlockedBy("has_annihilation_core", has(AEItems.ANNIHILATION_CORE))
+                .save(output, new ResourceLocation(AE2Registries.MODID, "crafting/annihilation_plane"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AE2Items.FORMATION_PLANE.get())
                 .pattern("CGC")

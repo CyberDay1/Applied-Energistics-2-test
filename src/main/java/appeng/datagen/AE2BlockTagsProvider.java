@@ -44,12 +44,15 @@ public class AE2BlockTagsProvider extends BlockTagsProvider {
                 .add(AE2Blocks.PATTERN_TERMINAL.get())
                 .add(AE2Blocks.PATTERN_ENCODING_TERMINAL.get())
                 .add(AE2Blocks.CRAFTING_MONITOR.get())
+                .add(AE2Blocks.ANNIHILATION_PLANE.get())
                 .add(AE2Blocks.FORMATION_PLANE.get());
 
         tag(METEORITE_REPLACEABLE)
                 .addTag(BlockTags.STONE_ORE_REPLACEABLES)
                 .addTag(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
 
-        tag(IO_PLANES).add(AE2Blocks.FORMATION_PLANE.get());
+        tag(IO_PLANES)
+                .add(AE2Blocks.ANNIHILATION_PLANE.get())
+                .add(AE2Blocks.FORMATION_PLANE.get());
     }
 }
