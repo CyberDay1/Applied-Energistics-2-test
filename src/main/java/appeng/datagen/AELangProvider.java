@@ -180,7 +180,13 @@ public class AELangProvider extends LanguageProvider {
         add("gui.appliedenergistics2.redstone.mode.short.always_active", "Always");
         add("screen.appliedenergistics2.annihilation_plane", "Annihilation Plane");
         add("screen.appliedenergistics2.interface", "Interface");
+        add("screen.appliedenergistics2.interface.title", "ME Interface");
+        add("screen.appliedenergistics2.interface.temporary_inventory", "Temporary Items");
+        add("screen.appliedenergistics2.interface.config", "Config");
         add("screen.ae2.interface", "Interface");
+        add("screen.ae2.interface.title", "ME Interface");
+        add("screen.ae2.interface.temporary_inventory", "Temporary Items");
+        add("screen.ae2.interface.config", "Config");
         add("screen.appliedenergistics2.formation_plane", "Formation Plane");
         add("gui.ae2.Interface", "Interface");
         add("gui.ae2.InterfaceInput", "Input");
