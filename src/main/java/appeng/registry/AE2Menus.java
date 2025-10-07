@@ -8,6 +8,7 @@ import appeng.menu.terminal.CraftingTerminalMenu;
 import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
 import appeng.menu.simple.SimpleDriveMenu;
+import appeng.menu.spatial.SpatialIOPortMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.registries.RegistryObject;
 
@@ -32,6 +33,9 @@ public final class AE2Menus {
 
     public static final RegistryObject<MenuType<SimpleDriveMenu>> SIMPLE_DRIVE_MENU =
         AE2Registries.MENUS.register("simple_drive", () -> SimpleDriveMenu.TYPE);
+
+    public static final RegistryObject<MenuType<SpatialIOPortMenu>> SPATIAL_IO_PORT_MENU =
+        AE2Registries.MENUS.register("spatial_io_port", () -> SpatialIOPortMenu.TYPE);
 
     private AE2Menus() {}
 }

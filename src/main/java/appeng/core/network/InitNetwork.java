@@ -47,6 +47,8 @@ import appeng.core.network.serverbound.UpdateHoldingCtrlPacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellPriorityPacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistModePacket;
 import appeng.core.network.serverbound.UpdatePartitionedCellWhitelistPacket;
+import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialRestoreC2SPayload;
 
 public class InitNetwork {
     public static void init(RegisterPayloadHandlersEvent event) {
@@ -97,6 +99,8 @@ public class InitNetwork {
                 UpdatePartitionedCellWhitelistModePacket.STREAM_CODEC);
         serverbound(registrar, UpdatePartitionedCellWhitelistPacket.TYPE,
                 UpdatePartitionedCellWhitelistPacket.STREAM_CODEC);
+        serverbound(registrar, SpatialCaptureC2SPayload.TYPE, SpatialCaptureC2SPayload.STREAM_CODEC);
+        serverbound(registrar, SpatialRestoreC2SPayload.TYPE, SpatialRestoreC2SPayload.STREAM_CODEC);
 
         // Bidirectional
         bidirectional(registrar, ConfigValuePacket.TYPE, ConfigValuePacket.STREAM_CODEC);

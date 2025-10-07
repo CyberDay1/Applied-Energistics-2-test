@@ -21,6 +21,7 @@ import appeng.block.simple.DriveBlock;
 import appeng.block.terminal.CraftingTerminalBlock;
 import appeng.block.terminal.PatternTerminalBlock;
 import appeng.block.terminal.TerminalBlock;
+import appeng.block.spatial.SpatialIOPortBlock;
 
 public final class AE2Blocks {
     public static final RegistryObject<Block> CERTUS_QUARTZ_ORE = AE2Registries.BLOCKS.register(
@@ -80,6 +81,9 @@ public final class AE2Blocks {
 
     public static final RegistryObject<Block> CRAFTING_MONITOR = AE2Registries.BLOCKS.register("crafting_monitor",
             () -> new CraftingMonitorBlock(CraftingUnitType.MONITOR));
+
+    public static final RegistryObject<Block> SPATIAL_IO_PORT =
+        AE2Registries.BLOCKS.register("spatial_io_port", SpatialIOPortBlock::new);
 
     private AE2Blocks() {}
 }

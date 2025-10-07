@@ -146,6 +146,10 @@ public final class AE2Items {
             "crafting_monitor",
             () -> new BlockItem(AE2Blocks.CRAFTING_MONITOR.get(), new Properties()));
 
+    public static final RegistryObject<Item> SPATIAL_IO_PORT = AE2Registries.ITEMS.register(
+            "spatial_io_port",
+            () -> new BlockItem(AE2Blocks.SPATIAL_IO_PORT.get(), new Properties()));
+
     public static final RegistryObject<Item> BLANK_PATTERN = AE2Registries.ITEMS.register(
             "blank_pattern",
             () -> new BlankPatternItem(new Properties()));

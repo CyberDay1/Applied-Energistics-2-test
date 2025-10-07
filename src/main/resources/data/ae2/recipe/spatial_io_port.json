@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "CGC",
+    "IRI"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "R": { "item": "minecraft:redstone" },
+    "C": { "item": "minecraft:chest" },
+    "G": { "item": "minecraft:glass" }
+  },
+  "result": {
+    "item": "ae2:spatial_io_port"
+  }
+}
