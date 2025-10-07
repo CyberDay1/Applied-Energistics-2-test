@@ -46,9 +46,11 @@ import appeng.helpers.IPriorityHost;
 import appeng.helpers.InterfaceLogic;
 import appeng.helpers.InterfaceLogicHost;
 import appeng.me.helpers.BlockEntityNodeListener;
+import appeng.util.inv.AppEngInternalInventory;
+import appeng.util.inv.InternalInventoryHost;
 
 public class InterfaceBlockEntity extends AENetworkedBlockEntity
-        implements IPriorityHost, IUpgradeableObject, IConfigurableObject, InterfaceLogicHost {
+        implements IPriorityHost, IUpgradeableObject, IConfigurableObject, InterfaceLogicHost, InternalInventoryHost {
 
     private static final IGridNodeListener<InterfaceBlockEntity> NODE_LISTENER = new BlockEntityNodeListener<>() {
         @Override
@@ -58,9 +60,16 @@ public class InterfaceBlockEntity extends AENetworkedBlockEntity
     };
 
     private final InterfaceLogic logic = createLogic();
+    /**
+     * Temporary inventory that backs the Interface menu until the full IO logic is
+     * implemented. This allows the UI to present a tangible slot grid without yet
+     * synchronizing with the networked storage backend.
+     */
+    private final AppEngInternalInventory menuStorage = new AppEngInternalInventory(this, 9);
 
     public InterfaceBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
+        this.menuStorage.setEnableClientEvents(true);
     }
 
     protected InterfaceLogic createLogic() {
@@ -83,24 +92,36 @@ public class InterfaceBlockEntity extends AENetworkedBlockEntity
     public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops) {
         super.addAdditionalDrops(level, pos, drops);
         this.logic.addDrops(drops);
+        for (int i = 0; i < menuStorage.size(); i++) {
+            var stack = menuStorage.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                drops.add(stack);
+                menuStorage.setItemDirect(i, ItemStack.EMPTY);
+            }
+        }
     }
 
     @Override
     public void clearContent() {
         super.clearContent();
         this.logic.clearContent();
+        for (int i = 0; i < menuStorage.size(); i++) {
+            menuStorage.setItemDirect(i, ItemStack.EMPTY);
+        }
     }
 
     @Override
     public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
         super.saveAdditional(data, registries);
         this.logic.writeToNBT(data, registries);
+        menuStorage.writeToNBT(data, "MenuStorage", registries);
     }
 
     @Override
     public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
         super.loadTag(data, registries);
         this.logic.readFromNBT(data, registries);
+        menuStorage.readFromNBT(data, "MenuStorage", registries);
     }
 
     @Override
@@ -118,6 +139,15 @@ public class InterfaceBlockEntity extends AENetworkedBlockEntity
         return AEBlocks.INTERFACE.stack();
     }
 
+    /**
+     * Provides the temporary inventory exposed via the Interface menu. This will
+     * later be replaced with the real storage bridge when the IO logic is
+     * implemented.
+     */
+    public AppEngInternalInventory getMenuStorage() {
+        return menuStorage;
+    }
+
     @Nullable
     @Override
     public InternalInventory getSubInventory(ResourceLocation id) {
@@ -125,5 +155,15 @@ public class InterfaceBlockEntity extends AENetworkedBlockEntity
             return logic.getUpgrades();
         }
         return super.getSubInventory(id);
+    }
+
+    @Override
+    public void saveChangedInventory(AppEngInternalInventory inv) {
+        setChanged();
+    }
+
+    @Override
+    public boolean isClientSide() {
+        return level != null && level.isClientSide();
     }
 }

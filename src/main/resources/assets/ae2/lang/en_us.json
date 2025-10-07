@@ -1,4 +1,8 @@
 {
+  "block.ae2.interface": "ME Interface",
+  "block.appliedenergistics2.interface": "ME Interface",
+  "screen.ae2.interface": "Interface",
+  "screen.appliedenergistics2.interface": "Interface",
   "block.ae2.spatial_io_port": "Spatial IO Port",
   "gui.ae2.spatial.capture": "Capture",
   "gui.ae2.spatial.restore": "Restore",
