@@ -25,6 +25,7 @@ import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
 import appeng.crafting.CraftingJob;
@@ -173,6 +174,7 @@ public final class AE2NetworkHandlers {
                 var regionSize = port.getCachedSize();
                 menu.updateRegionSize(regionSize);
                 menu.updateLastAction(port.getLastAction());
+                menu.setInProgress(port.isInProgress());
                 if (port.getLastAction() != LastAction.NONE) {
                     PacketDistributor.sendToPlayer(player,
                             new SpatialCaptureC2SPayload(menu.containerId, payload.pos(), regionSize));
@@ -204,6 +206,7 @@ public final class AE2NetworkHandlers {
                 var regionSize = port.getCachedSize();
                 menu.updateRegionSize(regionSize);
                 menu.updateLastAction(port.getLastAction());
+                menu.setInProgress(port.isInProgress());
                 if (port.getLastAction() != LastAction.NONE) {
                     PacketDistributor.sendToPlayer(player,
                             new SpatialRestoreC2SPayload(menu.containerId, payload.pos(), regionSize));
@@ -255,6 +258,28 @@ public final class AE2NetworkHandlers {
 
             menu.updateRegionSize(payload.regionSize());
             menu.updateLastAction(LastAction.RESTORE);
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialOpInProgressClient(final SpatialOpInProgressS2CPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            menu.setInProgress(payload.inProgress());
         });
         ctx.setPacketHandled(true);
     }

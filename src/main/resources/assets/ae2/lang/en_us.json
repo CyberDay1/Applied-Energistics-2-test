@@ -3,7 +3,8 @@
   "gui.ae2.spatial.capture": "Capture",
   "gui.ae2.spatial.restore": "Restore",
   "gui.ae2.spatial.region_size": "Region Size: %s",
-  "log.ae2.spatial.capture_start": "Spatial capture initiated (%s)",
-  "log.ae2.spatial.restore_start": "Spatial restore initiated (%s)",
+  "gui.ae2.spatial.in_progress": "Spatial IO in progress",
+  "log.ae2.spatial.capture_begin": "Capturing region %s³…",
+  "log.ae2.spatial.restore_begin": "Restoring region %s³…",
   "tooltip.ae2.spatial.no_cell": "Insert a spatial cell to use this port"
 }

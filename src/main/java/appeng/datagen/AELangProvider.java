@@ -189,8 +189,9 @@ public class AELangProvider extends LanguageProvider {
         add("gui.ae2.spatial.capture", "Capture");
         add("gui.ae2.spatial.restore", "Restore");
         add("gui.ae2.spatial.region_size", "Region Size: %s");
-        add("log.ae2.spatial.capture_start", "Spatial capture initiated (%s)");
-        add("log.ae2.spatial.restore_start", "Spatial restore initiated (%s)");
+        add("gui.ae2.spatial.in_progress", "Spatial IO in progress");
+        add("log.ae2.spatial.capture_begin", "Capturing region %s³…");
+        add("log.ae2.spatial.restore_begin", "Restoring region %s³…");
         add("tooltip.ae2.spatial.no_cell", "Insert a spatial cell to use this port");
     }
 }

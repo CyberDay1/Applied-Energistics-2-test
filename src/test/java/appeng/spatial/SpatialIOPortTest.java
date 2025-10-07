@@ -1,18 +1,25 @@
 package appeng.spatial;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,9 +31,11 @@ import com.google.gson.JsonParser;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity.LastAction;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.items.storage.spatial.SpatialCellItem;
 import appeng.menu.spatial.SpatialIOPortMenu;
+import appeng.client.screen.spatial.SpatialIOPortScreen;
 import appeng.registry.AE2Blocks;
 import appeng.util.BootstrapMinecraftExtension;
 
@@ -47,7 +56,23 @@ class SpatialIOPortTest {
 
         setSpatialCell(2);
         blockEntity.captureRegion();
+        for (int i = 0; i < 6; i++) {
+            blockEntity.tickOperation();
+        }
         blockEntity.restoreRegion();
+    }
+
+    @Test
+    void captureOperationMarksAndClearsInProgress() {
+        setSpatialCell(4);
+        blockEntity.captureRegion();
+        assertTrue(blockEntity.isInProgress());
+
+        for (int i = 0; i < 6; i++) {
+            blockEntity.tickOperation();
+        }
+
+        assertFalse(blockEntity.isInProgress());
     }
 
     @Test
@@ -116,6 +141,12 @@ class SpatialIOPortTest {
         SpatialRestoreC2SPayload.STREAM_CODEC.encode(buffer, restorePayload);
         var decodedRestore = SpatialRestoreC2SPayload.STREAM_CODEC.decode(buffer);
         assertEquals(new BlockPos(8, 8, 8), decodedRestore.regionSize());
+
+        buffer.clear();
+        var inProgress = new SpatialOpInProgressS2CPayload(7, BlockPos.ZERO, true);
+        SpatialOpInProgressS2CPayload.STREAM_CODEC.encode(buffer, inProgress);
+        var decodedOp = SpatialOpInProgressS2CPayload.STREAM_CODEC.decode(buffer);
+        assertTrue(decodedOp.inProgress());
     }
 
     @Test
@@ -125,11 +156,52 @@ class SpatialIOPortTest {
             JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
             assertEquals("Capture", json.get("gui.ae2.spatial.capture").getAsString());
             assertEquals("Restore", json.get("gui.ae2.spatial.restore").getAsString());
-            assertEquals("Spatial capture initiated (%s)",
-                    json.get("log.ae2.spatial.capture_start").getAsString());
-            assertEquals("Spatial restore initiated (%s)",
-                    json.get("log.ae2.spatial.restore_start").getAsString());
+            assertEquals("Spatial IO in progress", json.get("gui.ae2.spatial.in_progress").getAsString());
+            assertEquals("Capturing region %s³…", json.get("log.ae2.spatial.capture_begin").getAsString());
+            assertEquals("Restoring region %s³…", json.get("log.ae2.spatial.restore_begin").getAsString());
         }
+    }
+
+    @Test
+    void screenDisablesButtonsDuringOperations() throws Exception {
+        setSpatialCell(16);
+        blockEntity.captureRegion();
+
+        var menu = new SpatialIOPortMenu(0, new Inventory(null), blockEntity);
+        menu.setInProgress(true);
+
+        var screen = new SpatialIOPortScreen(menu, new Inventory(null), Component.literal("Spatial"));
+
+        var captureButton = Button.builder(Component.empty(), button -> {
+        }).bounds(0, 0, 10, 10).build();
+        var restoreButton = Button.builder(Component.empty(), button -> {
+        }).bounds(0, 0, 10, 10).build();
+
+        Field captureField = SpatialIOPortScreen.class.getDeclaredField("captureButton");
+        captureField.setAccessible(true);
+        captureField.set(screen, captureButton);
+
+        Field restoreField = SpatialIOPortScreen.class.getDeclaredField("restoreButton");
+        restoreField.setAccessible(true);
+        restoreField.set(screen, restoreButton);
+
+        Method updateButtons = SpatialIOPortScreen.class.getDeclaredMethod("updateButtonStates");
+        updateButtons.setAccessible(true);
+
+        updateButtons.invoke(screen);
+
+        assertFalse(captureButton.active);
+        assertFalse(restoreButton.active);
+        assertNotNull(captureButton.getTooltip());
+        assertNotNull(restoreButton.getTooltip());
+
+        menu.setInProgress(false);
+        updateButtons.invoke(screen);
+
+        assertTrue(captureButton.active);
+        assertTrue(restoreButton.active);
+        assertNull(captureButton.getTooltip());
+        assertNull(restoreButton.getTooltip());
     }
 
     private static final class TestSpatialCellItem extends SpatialCellItem {

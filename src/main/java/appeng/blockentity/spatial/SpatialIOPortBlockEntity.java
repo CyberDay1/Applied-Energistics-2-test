@@ -5,7 +5,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -14,9 +17,13 @@ import org.jetbrains.annotations.Nullable;
 import appeng.block.spatial.SpatialIOPortBlock;
 import appeng.items.storage.spatial.SpatialCellItem;
 import appeng.registry.AE2BlockEntities;
+import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.InternalInventoryHost;
 import appeng.core.AELog;
+import appeng.menu.spatial.SpatialIOPortMenu;
+
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * Placeholder block entity for the spatial IO port. It currently just keeps track of the inserted spatial storage cell
@@ -26,11 +33,16 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
     private static final String TAG_INVENTORY = "Inventory";
     private static final String TAG_LAST_POWERED = "LastPowered";
     private static final String TAG_LAST_ACTION = "LastAction";
+    private static final String TAG_IN_PROGRESS = "InProgress";
+
+    private static final int OPERATION_DURATION_TICKS = 5;
 
     private final AppEngInternalInventory inventory = new AppEngInternalInventory(this, 2);
     private boolean lastPowered;
     private BlockPos cachedRegionSize = BlockPos.ZERO;
     private LastAction lastAction = LastAction.NONE;
+    private boolean inProgress;
+    private int ticksRemaining;
 
     public SpatialIOPortBlockEntity(BlockPos pos, BlockState state) {
         super(AE2BlockEntities.SPATIAL_IO_PORT.get(), pos, state);
@@ -44,6 +56,7 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         inventory.writeToNBT(tag, TAG_INVENTORY, registries);
         tag.putBoolean(TAG_LAST_POWERED, lastPowered);
         tag.putString(TAG_LAST_ACTION, lastAction.name());
+        tag.putBoolean(TAG_IN_PROGRESS, inProgress);
     }
 
     @Override
@@ -59,6 +72,10 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
             }
         } else {
             lastAction = LastAction.NONE;
+        }
+        inProgress = tag.getBoolean(TAG_IN_PROGRESS);
+        if (!inProgress) {
+            ticksRemaining = 0;
         }
         updateRegionSize();
     }
@@ -103,7 +120,7 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     public void captureRegion() {
         ItemStack cell = getSpatialCell();
-        if (!validateCellPresent(cell)) {
+        if (!validateCellPresent(cell) || inProgress) {
             return;
         }
 
@@ -113,7 +130,7 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     public void restoreRegion() {
         ItemStack cell = getSpatialCell();
-        if (!validateCellPresent(cell)) {
+        if (!validateCellPresent(cell) || inProgress) {
             return;
         }
 
@@ -126,8 +143,13 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
             return;
         }
 
-        log(Component.translatable("log.ae2.spatial.capture_start", formatRegionSize(cachedRegionSize)));
+        if (!beginOperation()) {
+            return;
+        }
+
+        log(Component.translatable("log.ae2.spatial.capture_begin", getRegionEdge(cachedRegionSize)));
         lastAction = LastAction.CAPTURE;
+        performCapture();
         setChanged();
     }
 
@@ -136,9 +158,63 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
             return;
         }
 
-        log(Component.translatable("log.ae2.spatial.restore_start", formatRegionSize(cachedRegionSize)));
+        if (!beginOperation()) {
+            return;
+        }
+
+        log(Component.translatable("log.ae2.spatial.restore_begin", getRegionEdge(cachedRegionSize)));
         lastAction = LastAction.RESTORE;
+        performRestore();
         setChanged();
+    }
+
+    public boolean beginOperation() {
+        if (inProgress) {
+            return false;
+        }
+
+        inProgress = true;
+        ticksRemaining = OPERATION_DURATION_TICKS;
+        setChanged();
+        broadcastInProgress(true);
+        return true;
+    }
+
+    public void endOperation() {
+        if (!inProgress) {
+            return;
+        }
+
+        inProgress = false;
+        ticksRemaining = 0;
+        rollbackOperation();
+        setChanged();
+        broadcastInProgress(false);
+    }
+
+    public boolean isInProgress() {
+        return inProgress;
+    }
+
+    public void tickOperation() {
+        if (!inProgress) {
+            return;
+        }
+
+        if (ticksRemaining > 0) {
+            ticksRemaining--;
+        }
+
+        if (ticksRemaining <= 0) {
+            endOperation();
+        }
+    }
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, SpatialIOPortBlockEntity blockEntity) {
+        if (level != null && level.isClientSide) {
+            return;
+        }
+        blockEntity.tickOperation();
     }
 
     public BlockPos getRegionSize() {
@@ -215,11 +291,43 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         AELog.info(message.getString());
     }
 
+    private void performCapture() {
+        // Placeholder for the actual spatial capture implementation in Phase 5.
+    }
+
+    private void performRestore() {
+        // Placeholder for the actual spatial restore implementation in Phase 5.
+    }
+
+    private void rollbackOperation() {
+        if (lastAction == LastAction.RESTORE) {
+            // Placeholder for rolling back failed restores until the real mechanics land in Phase 5.
+        }
+    }
+
+    private void broadcastInProgress(boolean inProgress) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        for (ServerPlayer player : serverLevel.players()) {
+            if (player.containerMenu instanceof SpatialIOPortMenu menu && menu.getBlockEntity() == this) {
+                menu.setInProgress(inProgress);
+                PacketDistributor.sendToPlayer(player, new SpatialOpInProgressS2CPayload(menu.containerId,
+                        worldPosition, inProgress));
+            }
+        }
+    }
+
     private static String formatRegionSize(BlockPos size) {
         if (size.equals(BlockPos.ZERO)) {
             return "0x0x0";
         }
         return size.getX() + "x" + size.getY() + "x" + size.getZ();
+    }
+
+    private static int getRegionEdge(BlockPos size) {
+        return size.getX();
     }
 
     public enum LastAction {

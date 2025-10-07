@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -111,7 +112,13 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
         var hasSize = !this.menu.getRegionSize().equals(BlockPos.ZERO);
 
         boolean active = hasCell && hasSize;
-        captureButton.active = active;
-        restoreButton.active = active;
+        boolean inProgress = menu.isInProgress();
+
+        captureButton.active = active && !inProgress;
+        restoreButton.active = active && !inProgress;
+
+        Tooltip tooltip = inProgress ? Tooltip.create(Component.translatable("gui.ae2.spatial.in_progress")) : null;
+        captureButton.setTooltip(tooltip);
+        restoreButton.setTooltip(tooltip);
     }
 }
