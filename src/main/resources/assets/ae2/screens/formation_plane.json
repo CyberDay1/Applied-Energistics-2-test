@@ -25,6 +25,16 @@
         "left": 8,
         "top": 6
       }
+    },
+    "status": {
+      "text": {
+        "translate": "gui.ae2.status.offline"
+      },
+      "position": {
+        "left": 8,
+        "top": 20
+      },
+      "color": "dark_gray"
     }
   },
   "widgets": {

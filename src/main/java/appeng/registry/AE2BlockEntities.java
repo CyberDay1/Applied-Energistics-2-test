@@ -7,6 +7,7 @@ import appeng.blockentity.ControllerBlockEntity;
 import appeng.blockentity.EnergyAcceptorBlockEntity;
 import appeng.blockentity.InscriberBlockEntity;
 import appeng.blockentity.io.AnnihilationPlaneBlockEntity;
+import appeng.blockentity.io.FormationPlaneBlockEntity;
 import appeng.blockentity.simple.DriveBlockEntity;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
 import appeng.blockentity.terminal.CraftingTerminalBlockEntity;
@@ -75,6 +76,11 @@ public final class AE2BlockEntities {
         AE2Registries.BLOCK_ENTITIES.register("annihilation_plane",
             () -> BlockEntityType.Builder.of(AnnihilationPlaneBlockEntity::new,
                 AE2Blocks.ANNIHILATION_PLANE.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<FormationPlaneBlockEntity>> FORMATION_PLANE =
+        AE2Registries.BLOCK_ENTITIES.register("formation_plane",
+            () -> BlockEntityType.Builder.of(FormationPlaneBlockEntity::new,
+                AE2Blocks.FORMATION_PLANE.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<SpatialIOPortBlockEntity>> SPATIAL_IO_PORT =
         AE2Registries.BLOCK_ENTITIES.register("spatial_io_port",
