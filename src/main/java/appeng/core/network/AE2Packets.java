@@ -23,6 +23,8 @@ import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
+import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
 
 import appeng.crafting.CraftingJob;
@@ -85,5 +87,13 @@ public final class AE2Packets {
             StorageFilter storageFilter, YesNo filterOnExtract, @Nullable Component connectedTo) {
         PacketDistributor.sendToPlayer(player,
                 new StorageBusStateS2CPayload(containerId, accessMode, storageFilter, filterOnExtract, connectedTo));
+    }
+
+    public static void sendSpatialCapture(int containerId, BlockPos pos) {
+        PacketDistributor.sendToServer(new SpatialCaptureC2SPayload(containerId, pos));
+    }
+
+    public static void sendSpatialRestore(int containerId, BlockPos pos) {
+        PacketDistributor.sendToServer(new SpatialRestoreC2SPayload(containerId, pos));
     }
 }

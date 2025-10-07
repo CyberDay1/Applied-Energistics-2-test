@@ -1,212 +1,148 @@
-/*
- * This file is part of Applied Energistics 2.
- * Copyright (c) 2013 - 2014, AlgorithmX2, All rights reserved.
- *
- * Applied Energistics 2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Applied Energistics 2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
- */
-
 package appeng.blockentity.spatial;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
 
-import appeng.api.config.Actionable;
-import appeng.api.config.PowerMultiplier;
-import appeng.api.config.YesNo;
+import org.jetbrains.annotations.Nullable;
+
 import appeng.api.implementations.items.ISpatialStorageCell;
-import appeng.api.inventories.InternalInventory;
-import appeng.api.networking.GridFlags;
-import appeng.api.networking.IGridNodeListener;
-import appeng.api.networking.events.GridSpatialEvent;
-import appeng.api.util.AECableType;
-import appeng.blockentity.grid.AENetworkedInvBlockEntity;
-import appeng.hooks.ticking.TickHandler;
-import appeng.util.ILevelRunnable;
+import appeng.block.spatial.SpatialIOPortBlock;
+import appeng.items.storage.spatial.SpatialCellItem;
+import appeng.registry.AE2BlockEntities;
 import appeng.util.inv.AppEngInternalInventory;
-import appeng.util.inv.FilteredInternalInventory;
-import appeng.util.inv.filter.IAEItemFilter;
+import appeng.util.inv.InternalInventoryHost;
 
-public class SpatialIOPortBlockEntity extends AENetworkedInvBlockEntity {
+/**
+ * Placeholder block entity for the spatial IO port. It currently just keeps track of the inserted spatial storage cell
+ * and remembers the computed region size for the cell tier. Actual capture/restore logic will be implemented later.
+ */
+public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInventoryHost {
+    private static final String TAG_INVENTORY = "Inventory";
+    private static final String TAG_LAST_POWERED = "LastPowered";
 
-    private final AppEngInternalInventory inv = new AppEngInternalInventory(this, 2);
-    private final InternalInventory invExt = new FilteredInternalInventory(this.inv, new SpatialIOFilter());
-    private YesNo lastRedstoneState = YesNo.UNDECIDED;
+    private final AppEngInternalInventory inventory = new AppEngInternalInventory(this, 2);
+    private boolean lastPowered;
+    private BlockPos cachedRegionSize = BlockPos.ZERO;
 
-    private final ILevelRunnable transitionCallback = level -> transition();
-
-    private boolean isActive = false;
-
-    public SpatialIOPortBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
-        super(blockEntityType, pos, blockState);
-        this.getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL);
+    public SpatialIOPortBlockEntity(BlockPos pos, BlockState state) {
+        super(AE2BlockEntities.SPATIAL_IO_PORT.get(), pos, state);
+        inventory.setMaxStackSize(0, 1);
+        inventory.setMaxStackSize(1, 1);
     }
 
     @Override
-    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries) {
-        super.saveAdditional(data, registries);
-        data.putInt("lastRedstoneState", this.lastRedstoneState.ordinal());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        inventory.writeToNBT(tag, TAG_INVENTORY, registries);
+        tag.putBoolean(TAG_LAST_POWERED, lastPowered);
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.Provider registries) {
-        super.loadTag(data, registries);
-        if (data.contains("lastRedstoneState")) {
-            this.lastRedstoneState = YesNo.values()[data.getInt("lastRedstoneState")];
+    public void load(CompoundTag tag, HolderLookup.Provider registries) {
+        super.load(tag, registries);
+        inventory.readFromNBT(tag, TAG_INVENTORY, registries);
+        lastPowered = tag.getBoolean(TAG_LAST_POWERED);
+        updateRegionSize();
+    }
+
+    @Override
+    public void saveChangedInventory(AppEngInternalInventory inv) {
+        setChanged();
+    }
+
+    @Override
+    public void onChangeInventory(AppEngInternalInventory inv, int slot) {
+        if (inv == inventory && slot == 0) {
+            updateRegionSize();
         }
     }
 
     @Override
-    protected void writeToStream(RegistryFriendlyByteBuf data) {
-        super.writeToStream(data);
-        data.writeBoolean(this.isActive());
+    public boolean isClientSide() {
+        return level != null && level.isClientSide;
     }
 
-    @Override
-    protected boolean readFromStream(RegistryFriendlyByteBuf data) {
-        boolean ret = super.readFromStream(data);
-
-        final boolean isActive = data.readBoolean();
-        ret = isActive != this.isActive || ret;
-        this.isActive = isActive;
-
-        return ret;
+    public AppEngInternalInventory getInternalInventory() {
+        return inventory;
     }
 
-    public boolean getRedstoneState() {
-        if (this.lastRedstoneState == YesNo.UNDECIDED) {
-            this.updateRedstoneState();
-        }
-
-        return this.lastRedstoneState == YesNo.YES;
-    }
-
-    public void updateRedstoneState() {
-        final YesNo currentState = this.level.getBestNeighborSignal(this.worldPosition) != 0 ? YesNo.YES : YesNo.NO;
-        if (this.lastRedstoneState != currentState) {
-            this.lastRedstoneState = currentState;
-            if (this.lastRedstoneState == YesNo.YES) {
-                this.triggerTransition();
+    public void onRedstoneChanged(boolean powered) {
+        if (powered && !lastPowered) {
+            if (hasCapturedRegion()) {
+                restoreRegion();
+            } else {
+                captureRegion();
             }
         }
-    }
-
-    public boolean isActive() {
+        lastPowered = powered;
         if (level != null && !level.isClientSide) {
-            return this.getMainNode().isOnline();
-        } else {
-            return this.isActive;
-        }
-    }
-
-    @Override
-    public void onMainNodeStateChanged(IGridNodeListener.State reason) {
-        if (reason != IGridNodeListener.State.GRID_BOOT) {
-            this.markForUpdate();
-        }
-    }
-
-    private void triggerTransition() {
-        if (!isClientSide()) {
-            final ItemStack cell = this.inv.getStackInSlot(0);
-            if (this.isSpatialCell(cell)) {
-                // this needs to be cross world synced.
-                TickHandler.instance().addCallable(null, transitionCallback);
+            BlockState state = level.getBlockState(worldPosition);
+            if (state.getBlock() instanceof SpatialIOPortBlock && state.getValue(SpatialIOPortBlock.POWERED) != powered) {
+                level.setBlock(worldPosition, state.setValue(SpatialIOPortBlock.POWERED, powered), 3);
             }
         }
     }
 
-    private boolean isSpatialCell(ItemStack cell) {
-        if (!cell.isEmpty() && cell.getItem() instanceof ISpatialStorageCell sc) {
-            return sc.isSpatialStorage(cell);
-        }
-        return false;
-    }
-
-    private void transition() {
-        if (!(this.level instanceof ServerLevel serverLevel)) {
+    public void captureRegion() {
+        ItemStack cell = getSpatialCell();
+        if (cell.isEmpty()) {
             return;
         }
+        updateRegionSize();
+        // TODO: Perform capture logic using the computed region size.
+    }
 
-        final ItemStack cell = this.inv.getStackInSlot(0);
-        if (!this.isSpatialCell(cell) || !this.inv.getStackInSlot(1).isEmpty()) {
+    public void restoreRegion() {
+        ItemStack cell = getSpatialCell();
+        if (cell.isEmpty()) {
             return;
         }
+        updateRegionSize();
+        // TODO: Perform restore logic using the computed region size.
+    }
 
-        final ISpatialStorageCell sc = (ISpatialStorageCell) cell.getItem();
+    public BlockPos getRegionSize() {
+        return cachedRegionSize;
+    }
 
-        if (!getMainNode().isActive()) {
-            return;
+    private void updateRegionSize() {
+        ItemStack cell = getSpatialCell();
+        cachedRegionSize = computeRegionSize(cell);
+    }
+
+    private ItemStack getSpatialCell() {
+        return inventory.getStackInSlot(0);
+    }
+
+    private boolean hasCapturedRegion() {
+        ItemStack cell = getSpatialCell();
+        if (cell.isEmpty() || !(cell.getItem() instanceof SpatialCellItem spatialCell)) {
+            return false;
         }
-
-        getMainNode().ifPresent((grid, node) -> {
-            var spc = grid.getSpatialService();
-            if (!spc.hasRegion() || !spc.isValidRegion()) {
-                return;
-            }
-
-            var energy = grid.getEnergyService();
-            final double req = spc.requiredPower();
-            final double pr = energy.extractAEPower(req, Actionable.SIMULATE, PowerMultiplier.CONFIG);
-            if (Math.abs(pr - req) < req * 0.001) {
-                var evt = grid.postEvent(new GridSpatialEvent(getLevel(), getBlockPos(), req));
-                if (!evt.isTransitionPrevented()) {
-                    int playerId = node.getOwningPlayerId();
-
-                    boolean success = sc.doSpatialTransition(cell, serverLevel, spc.getMin(), spc.getMax(),
-                            playerId);
-                    if (success) {
-                        energy.extractAEPower(req, Actionable.MODULATE, PowerMultiplier.CONFIG);
-                        this.inv.setItemDirect(0, ItemStack.EMPTY);
-                        this.inv.setItemDirect(1, cell);
-                    }
-                }
-            }
-        });
+        return spatialCell.hasCapturedRegion(cell);
     }
 
-    @Override
-    public AECableType getCableConnectionType(Direction dir) {
-        return AECableType.SMART;
-    }
-
-    @Override
-    protected InternalInventory getExposedInventoryForSide(Direction side) {
-        return this.invExt;
-    }
-
-    @Override
-    public InternalInventory getInternalInventory() {
-        return this.inv;
-    }
-
-    private class SpatialIOFilter implements IAEItemFilter {
-        @Override
-        public boolean allowExtract(InternalInventory inv, int slot, int amount) {
-            return slot == 1;
+    private static BlockPos computeRegionSize(ItemStack stack) {
+        if (stack.isEmpty() || !(stack.getItem() instanceof ISpatialStorageCell spatialCell)) {
+            return BlockPos.ZERO;
         }
+        int size = spatialCell.getMaxStoredDim(stack);
+        return new BlockPos(size, size, size);
+    }
 
-        @Override
-        public boolean allowInsert(InternalInventory inv, int slot, ItemStack stack) {
-            return slot == 0 && SpatialIOPortBlockEntity.this.isSpatialCell(stack);
-        }
+    public boolean hasSpatialCell() {
+        return !getSpatialCell().isEmpty();
+    }
 
+    public boolean isLastPowered() {
+        return lastPowered;
+    }
+
+    public @Nullable BlockPos getCachedRegionSizeIfPresent() {
+        return cachedRegionSize.equals(BlockPos.ZERO) ? null : cachedRegionSize;
     }
 }

@@ -24,6 +24,8 @@ import appeng.core.network.payload.PlanCraftingJobC2SPayload;
 import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
+import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
 import appeng.crafting.CraftingJob;
 import appeng.crafting.CraftingJobManager;
@@ -33,6 +35,7 @@ import appeng.menu.SlotSemantics;
 import appeng.menu.implementations.PatternEncodingTerminalMenu;
 import appeng.menu.implementations.StorageBusMenu;
 import appeng.menu.terminal.PatternTerminalMenu;
+import appeng.menu.spatial.SpatialIOPortMenu;
 
 public final class AE2NetworkHandlers {
     private AE2NetworkHandlers() {
@@ -143,6 +146,54 @@ public final class AE2NetworkHandlers {
             }
 
             menu.setProcessingModeServer(payload.processing());
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialCaptureServer(final SpatialCaptureC2SPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player() instanceof ServerPlayer player)) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            var port = menu.getBlockEntity();
+            if (port != null && !port.isRemoved()) {
+                port.captureRegion();
+            }
+        });
+        ctx.setPacketHandled(true);
+    }
+
+    public static void handleSpatialRestoreServer(final SpatialRestoreC2SPayload payload,
+            final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player() instanceof ServerPlayer player)) {
+                return;
+            }
+            if (!(player.containerMenu instanceof SpatialIOPortMenu menu)) {
+                return;
+            }
+            if (menu.containerId != payload.containerId()) {
+                return;
+            }
+            if (!menu.getBlockPos().equals(payload.pos())) {
+                return;
+            }
+
+            var port = menu.getBlockEntity();
+            if (port != null && !port.isRemoved()) {
+                port.restoreRegion();
+            }
         });
         ctx.setPacketHandled(true);
     }

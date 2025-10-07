@@ -7,6 +7,7 @@ import appeng.blockentity.ControllerBlockEntity;
 import appeng.blockentity.EnergyAcceptorBlockEntity;
 import appeng.blockentity.InscriberBlockEntity;
 import appeng.blockentity.simple.DriveBlockEntity;
+import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
 import appeng.blockentity.terminal.CraftingTerminalBlockEntity;
 import appeng.blockentity.crafting.PatternEncodingTerminalBlockEntity;
 import appeng.blockentity.terminal.PatternTerminalBlockEntity;
@@ -68,6 +69,11 @@ public final class AE2BlockEntities {
         AE2Registries.BLOCK_ENTITIES.register("crafting_monitor",
             () -> BlockEntityType.Builder.of(CraftingMonitorBlockEntity::new,
                 AE2Blocks.CRAFTING_MONITOR.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<SpatialIOPortBlockEntity>> SPATIAL_IO_PORT =
+        AE2Registries.BLOCK_ENTITIES.register("spatial_io_port",
+            () -> BlockEntityType.Builder.of(SpatialIOPortBlockEntity::new,
+                AE2Blocks.SPATIAL_IO_PORT.get()).build(null));
 
     private AE2BlockEntities() {}
 }

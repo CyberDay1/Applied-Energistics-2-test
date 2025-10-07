@@ -19,6 +19,8 @@ import appeng.core.network.payload.PlannedCraftingJobS2CPayload;
 import appeng.core.network.payload.S2CJobUpdatePayload;
 import appeng.core.network.payload.SetPatternEncodingModeC2SPayload;
 import appeng.core.network.payload.StorageBusStateS2CPayload;
+import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialRestoreC2SPayload;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class AE2Network {
@@ -54,6 +56,10 @@ public final class AE2Network {
                 AE2NetworkHandlers::handleEncodePatternServer);
         play.playToServer(SetPatternEncodingModeC2SPayload.TYPE, SetPatternEncodingModeC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleSetPatternEncodingModeServer);
+        play.playToServer(SpatialCaptureC2SPayload.TYPE, SpatialCaptureC2SPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialCaptureServer);
+        play.playToServer(SpatialRestoreC2SPayload.TYPE, SpatialRestoreC2SPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialRestoreServer);
 
         // Login (handshake) payloads
         final LoginPayloadRegistrar login = event.login();
