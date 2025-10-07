@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import appeng.block.spatial.SpatialIOPortBlock;
 import appeng.items.storage.spatial.SpatialCellItem;
 import appeng.registry.AE2BlockEntities;
+import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.InternalInventoryHost;
@@ -192,6 +193,19 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         broadcastInProgress(false);
     }
 
+    private void onOperationComplete() {
+        if (!inProgress) {
+            return;
+        }
+
+        inProgress = false;
+        ticksRemaining = 0;
+        log(Component.translatable("log.ae2.spatial.complete"));
+        setChanged();
+        broadcastInProgress(false);
+        broadcastCompletion();
+    }
+
     public boolean isInProgress() {
         return inProgress;
     }
@@ -206,7 +220,7 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
         }
 
         if (ticksRemaining <= 0) {
-            endOperation();
+            onOperationComplete();
         }
     }
 
@@ -315,6 +329,20 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
                 menu.setInProgress(inProgress);
                 PacketDistributor.sendToPlayer(player, new SpatialOpInProgressS2CPayload(menu.containerId,
                         worldPosition, inProgress));
+            }
+        }
+    }
+
+    private void broadcastCompletion() {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        for (ServerPlayer player : serverLevel.players()) {
+            if (player.containerMenu instanceof SpatialIOPortMenu menu && menu.getBlockEntity() == this) {
+                menu.handleOperationComplete();
+                PacketDistributor.sendToPlayer(player,
+                        new SpatialOpCompleteS2CPayload(menu.containerId, worldPosition));
             }
         }
     }

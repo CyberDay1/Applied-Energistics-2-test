@@ -31,6 +31,7 @@ import com.google.gson.JsonParser;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity;
 import appeng.blockentity.spatial.SpatialIOPortBlockEntity.LastAction;
 import appeng.core.network.payload.SpatialCaptureC2SPayload;
+import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 import appeng.items.storage.spatial.SpatialCellItem;
@@ -147,6 +148,12 @@ class SpatialIOPortTest {
         SpatialOpInProgressS2CPayload.STREAM_CODEC.encode(buffer, inProgress);
         var decodedOp = SpatialOpInProgressS2CPayload.STREAM_CODEC.decode(buffer);
         assertTrue(decodedOp.inProgress());
+
+        buffer.clear();
+        var complete = new SpatialOpCompleteS2CPayload(9, BlockPos.ZERO);
+        SpatialOpCompleteS2CPayload.STREAM_CODEC.encode(buffer, complete);
+        var decodedComplete = SpatialOpCompleteS2CPayload.STREAM_CODEC.decode(buffer);
+        assertEquals(BlockPos.ZERO, decodedComplete.pos());
     }
 
     @Test
@@ -159,6 +166,8 @@ class SpatialIOPortTest {
             assertEquals("Spatial IO in progress", json.get("gui.ae2.spatial.in_progress").getAsString());
             assertEquals("Capturing region %s³…", json.get("log.ae2.spatial.capture_begin").getAsString());
             assertEquals("Restoring region %s³…", json.get("log.ae2.spatial.restore_begin").getAsString());
+            assertEquals("Spatial operation completed.", json.get("log.ae2.spatial.complete").getAsString());
+            assertEquals("Operation complete", json.get("gui.ae2.spatial.complete").getAsString());
         }
     }
 
@@ -195,13 +204,33 @@ class SpatialIOPortTest {
         assertNotNull(captureButton.getTooltip());
         assertNotNull(restoreButton.getTooltip());
 
-        menu.setInProgress(false);
+        menu.handleOperationComplete();
         updateButtons.invoke(screen);
 
         assertTrue(captureButton.active);
         assertTrue(restoreButton.active);
         assertNull(captureButton.getTooltip());
         assertNull(restoreButton.getTooltip());
+        assertTrue(menu.isShowingCompletionMessage());
+
+        menu.clientTick();
+        assertTrue(menu.isShowingCompletionMessage());
+    }
+
+    @Test
+    void completionPayloadReenablesButtonsAndClearsAfterTicks() {
+        var menu = new SpatialIOPortMenu(0, new Inventory(null), blockEntity);
+        menu.setInProgress(true);
+        menu.handleOperationComplete();
+
+        assertFalse(menu.isInProgress());
+        assertTrue(menu.isShowingCompletionMessage());
+
+        for (int i = 0; i < 60; i++) {
+            menu.clientTick();
+        }
+
+        assertFalse(menu.isShowingCompletionMessage());
     }
 
     private static final class TestSpatialCellItem extends SpatialCellItem {
