@@ -39,6 +39,7 @@ public class SpatialIOPortMenu extends AEBaseMenu {
 
     private int completionTicks;
     private int cancelTicks;
+    private int rollbackTicks;
 
     public SpatialIOPortMenu(int id, Inventory playerInventory, SpatialIOPortBlockEntity port) {
         super(TYPE, id, playerInventory, Objects.requireNonNull(port, "port"));
@@ -120,6 +121,7 @@ public class SpatialIOPortMenu extends AEBaseMenu {
         if (inProgress) {
             completionTicks = 0;
             cancelTicks = 0;
+            rollbackTicks = 0;
         }
     }
 
@@ -127,12 +129,21 @@ public class SpatialIOPortMenu extends AEBaseMenu {
         setInProgress(false);
         completionTicks = STATUS_MESSAGE_TICKS;
         cancelTicks = 0;
+        rollbackTicks = 0;
     }
 
     public void handleOperationCancelled() {
         setInProgress(false);
         completionTicks = 0;
         cancelTicks = STATUS_MESSAGE_TICKS;
+        rollbackTicks = 0;
+    }
+
+    public void handleOperationRolledBack() {
+        setInProgress(false);
+        completionTicks = 0;
+        cancelTicks = 0;
+        rollbackTicks = STATUS_MESSAGE_TICKS;
     }
 
     public void clientTick() {
@@ -142,6 +153,9 @@ public class SpatialIOPortMenu extends AEBaseMenu {
         if (cancelTicks > 0) {
             cancelTicks--;
         }
+        if (rollbackTicks > 0) {
+            rollbackTicks--;
+        }
     }
 
     public boolean isShowingCompletionMessage() {
@@ -150,6 +164,10 @@ public class SpatialIOPortMenu extends AEBaseMenu {
 
     public boolean isShowingCancelledMessage() {
         return cancelTicks > 0;
+    }
+
+    public boolean isShowingRolledBackMessage() {
+        return rollbackTicks > 0;
     }
 
     public ItemStack getSpatialCellStack() {

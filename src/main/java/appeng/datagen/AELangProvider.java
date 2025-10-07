@@ -193,5 +193,11 @@ public class AELangProvider extends LanguageProvider {
         add("log.ae2.spatial.capture_begin", "Capturing region %s³…");
         add("log.ae2.spatial.restore_begin", "Restoring region %s³…");
         add("tooltip.ae2.spatial.no_cell", "Insert a spatial cell to use this port");
+        add("gui.ae2.spatial.complete", "Operation complete");
+        add("gui.ae2.spatial.cancelled", "Operation cancelled");
+        add("gui.ae2.spatial.rollback", "Operation rolled back");
+        add("log.ae2.spatial.complete", "Spatial operation completed.");
+        add("log.ae2.spatial.cancelled", "Spatial operation cancelled.");
+        add("log.ae2.spatial.rollback", "Spatial operation rolled back (last region %s).");
     }
 }

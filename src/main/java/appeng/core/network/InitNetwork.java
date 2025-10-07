@@ -52,6 +52,7 @@ import appeng.core.network.payload.SpatialOpCancelC2SPayload;
 import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
+import appeng.core.network.payload.SpatialOpRollbackS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 
 public class InitNetwork {
@@ -81,6 +82,7 @@ public class InitNetwork {
         clientbound(registrar, SpatialOpInProgressS2CPayload.TYPE, SpatialOpInProgressS2CPayload.STREAM_CODEC);
         clientbound(registrar, SpatialOpCompleteS2CPayload.TYPE, SpatialOpCompleteS2CPayload.STREAM_CODEC);
         clientbound(registrar, SpatialOpCancelS2CPayload.TYPE, SpatialOpCancelS2CPayload.STREAM_CODEC);
+        clientbound(registrar, SpatialOpRollbackS2CPayload.TYPE, SpatialOpRollbackS2CPayload.STREAM_CODEC);
 
         // Serverbound
         serverbound(registrar, ColorApplicatorSelectColorPacket.TYPE, ColorApplicatorSelectColorPacket.STREAM_CODEC);

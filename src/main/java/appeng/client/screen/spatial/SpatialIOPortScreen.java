@@ -107,7 +107,10 @@ public class SpatialIOPortScreen extends AbstractContainerScreen<SpatialIOPortMe
     }
 
     private void renderStatus(GuiGraphics graphics) {
-        if (menu.isShowingCompletionMessage()) {
+        if (menu.isShowingRolledBackMessage()) {
+            var text = Component.translatable("gui.ae2.spatial.rollback");
+            graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 100, STATUS_COLOR, false);
+        } else if (menu.isShowingCompletionMessage()) {
             var text = Component.translatable("gui.ae2.spatial.complete");
             graphics.drawString(this.font, text, this.leftPos + 10, this.topPos + 100, STATUS_COLOR, false);
         } else if (menu.isShowingCancelledMessage()) {

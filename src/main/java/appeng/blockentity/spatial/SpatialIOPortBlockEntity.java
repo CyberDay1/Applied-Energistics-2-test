@@ -20,6 +20,7 @@ import appeng.registry.AE2BlockEntities;
 import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
+import appeng.core.network.payload.SpatialOpRollbackS2CPayload;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.InternalInventoryHost;
 import appeng.core.AELog;
@@ -192,16 +193,16 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
 
     public void cancelOperation() {
         if (!inProgress) {
+            rollbackOperation();
             return;
         }
 
         inProgress = false;
         ticksRemaining = 0;
         log(Component.translatable("log.ae2.spatial.cancelled"));
-        rollbackOperation();
-        setChanged();
         broadcastInProgress(false);
         broadcastCancellation();
+        rollbackOperation();
     }
 
     private void onOperationComplete() {
@@ -325,7 +326,39 @@ public class SpatialIOPortBlockEntity extends BlockEntity implements InternalInv
     }
 
     protected void rollbackOperation() {
-        AELog.info("Spatial IO rollback stub invoked.");
+        var previousSize = cachedRegionSize;
+        var previousAction = lastAction;
+        var wasInProgress = inProgress;
+
+        if (!wasInProgress && previousSize.equals(BlockPos.ZERO) && previousAction == LastAction.NONE) {
+            return;
+        }
+
+        inProgress = false;
+        ticksRemaining = 0;
+        cachedRegionSize = BlockPos.ZERO;
+        lastAction = LastAction.NONE;
+
+        log(Component.translatable("log.ae2.spatial.rollback", formatRegionSize(previousSize)));
+
+        setChanged();
+        broadcastRollback(cachedRegionSize);
+    }
+
+    private void broadcastRollback(BlockPos size) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        for (ServerPlayer player : serverLevel.players()) {
+            if (player.containerMenu instanceof SpatialIOPortMenu menu && menu.getBlockEntity() == this) {
+                menu.updateRegionSize(size);
+                menu.updateLastAction(LastAction.NONE);
+                menu.handleOperationRolledBack();
+                PacketDistributor.sendToPlayer(player,
+                        new SpatialOpRollbackS2CPayload(menu.containerId, worldPosition, size));
+            }
+        }
     }
 
     private void broadcastInProgress(boolean inProgress) {

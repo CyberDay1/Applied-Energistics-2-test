@@ -24,6 +24,7 @@ import appeng.core.network.payload.SpatialOpCancelC2SPayload;
 import appeng.core.network.payload.SpatialOpCancelS2CPayload;
 import appeng.core.network.payload.SpatialOpCompleteS2CPayload;
 import appeng.core.network.payload.SpatialOpInProgressS2CPayload;
+import appeng.core.network.payload.SpatialOpRollbackS2CPayload;
 import appeng.core.network.payload.SpatialRestoreC2SPayload;
 
 @EventBusSubscriber(modid = AppEng.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
@@ -61,6 +62,8 @@ public final class AE2Network {
                 AE2NetworkHandlers::handleSpatialOpCompleteClient);
         play.playToClient(SpatialOpCancelS2CPayload.TYPE, SpatialOpCancelS2CPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleSpatialOpCancelClient);
+        play.playToClient(SpatialOpRollbackS2CPayload.TYPE, SpatialOpRollbackS2CPayload.STREAM_CODEC,
+                AE2NetworkHandlers::handleSpatialOpRollbackClient);
 
         play.playToServer(AE2ActionC2SPayload.TYPE, AE2ActionC2SPayload.STREAM_CODEC,
                 AE2NetworkHandlers::handleActionServer);
