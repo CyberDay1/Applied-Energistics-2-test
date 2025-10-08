@@ -63,7 +63,20 @@ def scLegacyFile = new File(settingsDir, ".gradle/stonecutter.generated.json")
 scLegacyFile.parentFile.mkdirs()
 scLegacyFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(scLegacy))
 
-stonecutter.create(rootProject, scLegacyFile)
+stonecutter.create(rootProject, scLegacyFile) {
+    versions {
+        vers("1.21.1", "1.21.1", "21.1.xxx")
+        vers("1.21.2", "1.21.2", "21.2.xxx")
+        vers("1.21.3", "1.21.3", "21.3.xxx")
+        vers("1.21.4", "1.21.4", "21.4.154")
+        vers("1.21.5", "1.21.5", "21.5.95")
+        vers("1.21.6", "1.21.6", "21.6.20-beta")
+        vers("1.21.7", "1.21.7", "21.7.xxx")
+        vers("1.21.8", "1.21.8", "21.8.xxx")
+        vers("1.21.9", "1.21.9", "21.9.xxx")
+        vers("1.21.10", "1.21.10", "21.10.xxx")
+    }
+}
 
 def scDefault = scVersions.find { it.name == scConfig.default } ?: scVersions.first()
 
@@ -156,12 +169,18 @@ stonecutter {
     centralScript = true
     vcsVersion = "1.21.1"
 
-    versions("1.21.1")
-
-    shared {
-        set("MC", "1.21.1")
-        set("NEOFORGE", "21.1.xxx")
-    }
+    versions(
+            "1.21.1",
+            "1.21.2",
+            "1.21.3",
+            "1.21.4",
+            "1.21.5",
+            "1.21.6",
+            "1.21.7",
+            "1.21.8",
+            "1.21.9",
+            "1.21.10"
+    )
 }
 
 rootProject.name = 'ae2'
