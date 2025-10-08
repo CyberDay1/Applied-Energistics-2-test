@@ -22,7 +22,12 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+//? if eval(current.version, ">=1.21.4") {
 import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.CapabilityToken;
+//? } else {
+import net.minecraftforge.common.capabilities.Capability;
+//? }
 
 import appeng.api.behaviors.GenericInternalInventory;
 import appeng.api.implementations.blockentities.ICraftingMachine;
@@ -55,16 +60,29 @@ public final class AECapabilities {
             .createSided(AppEng.makeId("crankable"), ICrankable.class);
 
     /**
-     * NeoForge capability tokens exposed for add-ons that directly integrate with the new capability system.
+     * Capability references exposed for add-ons.
      */
     public static final Capability<MEStorage> ME_STORAGE_ENTITY = AE2Capabilities.ME_STORAGE;
 
     public static final Capability<ICraftingMachine> CRAFTING_MACHINE_ENTITY = AE2Capabilities.CRAFTING_MACHINE;
 
-    public static final Capability<GenericInternalInventory> GENERIC_INTERNAL_INV_ENTITY = AE2Capabilities.GENERIC_INTERNAL_INV;
+    public static final Capability<GenericInternalInventory> GENERIC_INTERNAL_INV_ENTITY =
+            AE2Capabilities.GENERIC_INTERNAL_INV;
 
-    public static final Capability<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST_ENTITY = AE2Capabilities.IN_WORLD_GRID_NODE_HOST;
+    public static final Capability<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST_ENTITY =
+            AE2Capabilities.IN_WORLD_GRID_NODE_HOST;
 
     public static final Capability<ICrankable> CRANKABLE_ENTITY = AE2Capabilities.CRANKABLE;
+
+    //? if eval(current.version, ">=1.21.4") {
+    public static final CapabilityToken<MEStorage> ME_STORAGE_ENTITY_TOKEN = AE2Capabilities.ME_STORAGE_TOKEN;
+    public static final CapabilityToken<ICraftingMachine> CRAFTING_MACHINE_ENTITY_TOKEN =
+            AE2Capabilities.CRAFTING_MACHINE_TOKEN;
+    public static final CapabilityToken<GenericInternalInventory> GENERIC_INTERNAL_INV_ENTITY_TOKEN =
+            AE2Capabilities.GENERIC_INTERNAL_INV_TOKEN;
+    public static final CapabilityToken<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST_ENTITY_TOKEN =
+            AE2Capabilities.IN_WORLD_GRID_NODE_HOST_TOKEN;
+    public static final CapabilityToken<ICrankable> CRANKABLE_ENTITY_TOKEN = AE2Capabilities.CRANKABLE_TOKEN;
+    //? }
 
 }
