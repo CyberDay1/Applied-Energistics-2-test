@@ -11,12 +11,15 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.fml.loading.moddiscovery.ModInfo;
 
+import appeng.core.MixinCompatBootstrap;
+
 /**
  * Disables the Create compatibility mixin if create isn't loaded.
  */
 public class ConfigPlugin implements IMixinConfigPlugin {
     @Override
     public void onLoad(String mixinPackage) {
+        MixinCompatBootstrap.init();
     }
 
     @Override
