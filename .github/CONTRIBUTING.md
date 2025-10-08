@@ -37,6 +37,8 @@ Please note that we might close any issue not matching these requirements.
     checkout -b my_contribution_branch`. Please avoid working
     directly on the `master` branch.
 * Always commit atomic edits so each change set stays reviewable.
+* If a timeout or interruption is imminent, push your current work to a temporary branch (for example,
+  `phase2/wip/pr-49-hud-overlay-runtime`), open a pull request immediately, and list remaining TODOs so the effort stays visible.
 * Configure your local workspace with Stonecutter before making changes. For example:
 
   ```bash
@@ -44,13 +46,7 @@ Please note that we might close any issue not matching these requirements.
   ```
 
 * Use Stonecutter conditional comments (such as `//? if <condition>`) to guard version-specific code paths.
-* Never force Gradle builds inside PRs. If validation is required, request a run
-  of the guarded CI workflow instead of pushing build artifacts, and do not run
-  `./gradlew build` locally unless CI has requested it.
-* If you are at risk of missing a deadline or experiencing local timeouts,
-  commit your progress to a dedicated work-in-progress branch (for example,
-  `phase2/wip/pr-49-hud-overlay-runtime`) and open a pull request with a clear
-  TODO list so the work stays unblocked.
+* Never force `./gradlew build` locally; request the guarded CI workflow instead of running the full build yourself.
 * Make commits of logical units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
 * Make sure your commit messages are in the proper format.
@@ -71,6 +67,13 @@ Please note that we might close any issue not matching these requirements.
 ````
 * Always fully test your changes. If they are large enough in scope, then fully test AE2.
 * Describing the process you used to test your changes in detail will help speed up this process.
+
+### Example: Porting to a New Minecraft Version
+
+1. Add a new version entry to `stonecutter.json` with the appropriate `MC` and `NEOFORGE` placeholders.
+2. Adjust configuration files and code using Stonecutter conditionals to isolate version-specific changes.
+3. Run `./gradlew runData` with the target `-Psc.version` once configuration stabilizes.
+4. Open a pull request summarizing progress and TODOs if the port is still in progress.
 
 ## Making Trivial Changes
 

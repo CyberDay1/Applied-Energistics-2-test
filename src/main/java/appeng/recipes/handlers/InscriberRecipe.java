@@ -26,6 +26,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -63,6 +64,17 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
                             MODE_CODEC.fieldOf("mode").forGetter(ir -> ir.processType))
                     .apply(builder, InscriberRecipe::new));
 
+//? if eval(current.version, "<=1.21.4") {
+    // TODO(stonecutter): Validate FriendlyByteBuf variant against live 1.21.4 runtime once available.
+    public static final StreamCodec<FriendlyByteBuf, InscriberRecipe> STREAM_CODEC = StreamCodec.composite(
+            Ingredients.STREAM_CODEC,
+            InscriberRecipe::getSerializedIngredients,
+            ItemStack.STREAM_CODEC,
+            InscriberRecipe::getResultItem,
+            NeoForgeStreamCodecs.enumCodec(InscriberProcessType.class),
+            InscriberRecipe::getProcessType,
+            InscriberRecipe::new);
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, InscriberRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredients.STREAM_CODEC,
             InscriberRecipe::getSerializedIngredients,
@@ -71,13 +83,16 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
             NeoForgeStreamCodecs.enumCodec(InscriberProcessType.class),
             InscriberRecipe::getProcessType,
             InscriberRecipe::new);
+//? }
 
+//? if eval(current.version, "<=1.21.1") {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("inscriber");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<InscriberRecipe> TYPE = new RecipeType<>() {
     };
+//? }
 
     private final Ingredient middleInput;
     private final Ingredient topOptional;

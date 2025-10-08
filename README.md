@@ -117,14 +117,9 @@ An example string would be `org.appliedenergistics:appliedenergistics2:12.9.5:ap
 
 AE2 now relies on [Stonecutter](https://github.com/Kikugie/stonecutter) to swap between supported NeoForge versions during development and CI.
 
-* Select a version locally with:
-
-  ```bash
-  ./gradlew sc:useVersion -Psc.version=1.21.x
-  ```
-
-* Lint-only checks run by default through `./gradlew spotlessCheck`. Full builds require a guarded CI dispatch with the `Run build` input enabled.
-* Supported NeoForge versions: `1.21.1` → `1.21.10` (the guarded workflow currently validates `1.21.4` and `1.21.9`).
+* Switching versions: `./gradlew sc:useVersion -Psc.version=1.21.x`
+* Builds are lint-only by default; request the guarded CI workflow dispatch with `run_build=true` for full builds.
+* Supported versions: `1.21.1` → `1.21.10` (CI currently spot-checks `1.21.4` and `1.21.9`).
 * The `runData` and `build` tasks may fail until the multi-version configuration is finalized.
 
 ## Contribution
