@@ -9,7 +9,7 @@ stonecutter.registerChiseled(tasks.register("chiseledBuild", stonecutter.chisele
 })
 
 parameters {
-    consts.put("MC", "1.21.1")
-    consts.put("NEOFORGE", "21.1.xxx")
+    consts["MC"] = stonecutter.current.version
+    consts["NEOFORGE"] = stonecutter.current.data["NEOFORGE"]?.toString() ?: ""
 }
 
