@@ -23,6 +23,8 @@
 
 # include markdowns
 !*.md
+!REPORTS/
+!.gitkeep
 !LICENSE
 
 # include sourcecode

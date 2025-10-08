@@ -68,6 +68,17 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             Input.CODEC.fieldOf("input").forGetter(EntropyRecipe::getInput),
             Output.CODEC.fieldOf("output").forGetter(EntropyRecipe::getOutput)).apply(builder, EntropyRecipe::new));
 
+//? if eval(current.version, "<=1.21.4") {
+    // TODO(stonecutter): Confirm FriendlyByteBuf composite works once 1.21.4 backporting starts.
+    public static final StreamCodec<FriendlyByteBuf, EntropyRecipe> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(EntropyMode.class),
+            EntropyRecipe::getMode,
+            Input.STREAM_CODEC,
+            EntropyRecipe::getInput,
+            Output.STREAM_CODEC,
+            EntropyRecipe::getOutput,
+            EntropyRecipe::new);
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = StreamCodec.composite(
             NeoForgeStreamCodecs.enumCodec(EntropyMode.class),
             EntropyRecipe::getMode,
@@ -76,13 +87,16 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             Output.STREAM_CODEC,
             EntropyRecipe::getOutput,
             EntropyRecipe::new);
+//? }
 
+//? if eval(current.version, "<=1.21.1") {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("entropy");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<EntropyRecipe> TYPE = new RecipeType<>() {
     };
+//? }
 
     private final EntropyMode mode;
     private final Input input;

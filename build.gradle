@@ -19,7 +19,11 @@ repositories {
 }
 
 dependencies {
-    implementation "net.neoforged:neoforge:${NEOFORGE}"
+    if (NEOFORGE.contains('x')) {
+        logger.lifecycle("[stonecutter] TODO: define NeoForge artifact for version ${NEOFORGE} before enabling full builds.")
+    } else {
+        implementation "net.neoforged:neoforge:${NEOFORGE}"
+    }
 }
 
 def accessTransformerFile = file("accesstransformer.cfg")

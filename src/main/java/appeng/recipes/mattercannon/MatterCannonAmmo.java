@@ -28,6 +28,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -53,12 +54,14 @@ import appeng.registry.AE2RecipeTypes;
  * Defines a type of ammo that can be used for the {@link appeng.items.tools.powered.MatterCannonItem}.
  */
 public class MatterCannonAmmo implements Recipe<RecipeInput> {
+//? if eval(current.version, "<=1.21.1") {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("matter_cannon");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<MatterCannonAmmo> TYPE = new RecipeType<>() {
     };
+//? }
 
     public static final MapCodec<MatterCannonAmmo> CODEC = RecordCodecBuilder.mapCodec((builder) -> {
         return builder.group(
@@ -67,12 +70,22 @@ public class MatterCannonAmmo implements Recipe<RecipeInput> {
                 .apply(builder, MatterCannonAmmo::new);
     });
 
+//? if eval(current.version, "<=1.21.4") {
+    // TODO(stonecutter): Validate FriendlyByteBuf serialization for <= 1.21.4 once runtime testing is possible.
+    public static final StreamCodec<FriendlyByteBuf, MatterCannonAmmo> STREAM_CODEC = StreamCodec.composite(
+            Ingredient.CONTENTS_STREAM_CODEC,
+            MatterCannonAmmo::getAmmo,
+            ByteBufCodecs.FLOAT,
+            MatterCannonAmmo::getWeight,
+            MatterCannonAmmo::new);
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, MatterCannonAmmo> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC,
             MatterCannonAmmo::getAmmo,
             ByteBufCodecs.FLOAT,
             MatterCannonAmmo::getWeight,
             MatterCannonAmmo::new);
+//? }
 
     private final Ingredient ammo;
 

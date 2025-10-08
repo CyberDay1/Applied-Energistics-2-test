@@ -6,3 +6,10 @@ license="LGPL-3.0"
 modId="appliedenergistics2"
 version="${version}"
 displayName="Applied Energistics 2"
+
+# Stonecutter injects ${NEOFORGE} at build time.
+[[dependencies.appliedenergistics2]]
+modId="neoforge"
+versionRange="[${NEOFORGE},)"
+ordering="NONE"
+side="BOTH"
