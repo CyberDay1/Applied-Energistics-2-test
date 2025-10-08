@@ -11,8 +11,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
-//?}
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
+*///?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -68,14 +68,14 @@ public class StorageCellUpgradeRecipe extends CustomRecipe {
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getResultComponent,
                     StorageCellUpgradeRecipe::new);
 //?} else {
-    public static final StreamCodec<RegistryFriendlyByteBuf, StorageCellUpgradeRecipe> STREAM_CODEC = StreamCodec
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, StorageCellUpgradeRecipe> STREAM_CODEC = StreamCodec
             .composite(
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getInputCell,
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getInputComponent,
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getResultCell,
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getResultComponent,
                     StorageCellUpgradeRecipe::new);
-//?}
+*///?}
 
     public Item getInputCell() {
         return inputCell;

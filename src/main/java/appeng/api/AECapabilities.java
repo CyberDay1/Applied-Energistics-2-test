@@ -26,8 +26,8 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.CapabilityToken;
 //?} else {
-import net.minecraftforge.common.capabilities.Capability;
-//?}
+/*import net.minecraftforge.common.capabilities.Capability;
+*///?}
 
 import appeng.api.behaviors.GenericInternalInventory;
 import appeng.api.implementations.blockentities.ICraftingMachine;

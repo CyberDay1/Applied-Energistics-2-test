@@ -32,8 +32,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.network.FriendlyByteBuf;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
-//?}
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
+*///?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -59,13 +59,13 @@ import appeng.registry.AE2RecipeTypes;
  */
 public class MatterCannonAmmo implements Recipe<RecipeInput> {
 //? <=1.21.1 {
-    @Deprecated(forRemoval = true, since = "1.21.1")
+    /*@Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("matter_cannon");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<MatterCannonAmmo> TYPE = new RecipeType<>() {
     };
-//?}
+*///?}
 
     public static final MapCodec<MatterCannonAmmo> CODEC = RecordCodecBuilder.mapCodec((builder) -> {
         return builder.group(
@@ -83,13 +83,13 @@ public class MatterCannonAmmo implements Recipe<RecipeInput> {
             MatterCannonAmmo::getWeight,
             MatterCannonAmmo::new);
 //?} else {
-    public static final StreamCodec<RegistryFriendlyByteBuf, MatterCannonAmmo> STREAM_CODEC = StreamCodec.composite(
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, MatterCannonAmmo> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC,
             MatterCannonAmmo::getAmmo,
             ByteBufCodecs.FLOAT,
             MatterCannonAmmo::getWeight,
             MatterCannonAmmo::new);
-//?}
+*///?}
 
     private final Ingredient ammo;
 

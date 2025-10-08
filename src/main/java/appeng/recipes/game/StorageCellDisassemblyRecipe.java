@@ -11,8 +11,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
-//?}
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
+*///?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
@@ -32,10 +32,10 @@ import appeng.registry.AE2RecipeTypes;
  */
 public class StorageCellDisassemblyRecipe extends CustomRecipe {
 //? <=1.21.1 {
-    @Deprecated(forRemoval = true, since = "1.21.1")
+    /*@Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<StorageCellDisassemblyRecipe> TYPE = new RecipeType<>() {
     };
-//?}
+*///?}
     public static final MapCodec<StorageCellDisassemblyRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder
             .group(
                     BuiltInRegistries.ITEM.byNameCodec().fieldOf("cell")
@@ -54,14 +54,14 @@ public class StorageCellDisassemblyRecipe extends CustomRecipe {
                     StorageCellDisassemblyRecipe::getCellDisassemblyItems,
                     StorageCellDisassemblyRecipe::new);
 //?} else {
-    public static final StreamCodec<RegistryFriendlyByteBuf, StorageCellDisassemblyRecipe> STREAM_CODEC = StreamCodec
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, StorageCellDisassemblyRecipe> STREAM_CODEC = StreamCodec
             .composite(
                     ByteBufCodecs.registry(BuiltInRegistries.ITEM.key()),
                     StorageCellDisassemblyRecipe::getStorageCell,
                     ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()),
                     StorageCellDisassemblyRecipe::getCellDisassemblyItems,
                     StorageCellDisassemblyRecipe::new);
-//?}
+*///?}
 
     private final List<ItemStack> disassemblyItems;
     private final Item storageCell;
