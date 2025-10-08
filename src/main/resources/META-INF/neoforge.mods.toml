@@ -2,14 +2,23 @@ modLoader="javafml"
 loaderVersion="[${NEOFORGE},)"
 license="LGPL-3.0"
 
+# Placeholders are filled at build time by Stonecutter.
+
 [[mods]]
 modId="appliedenergistics2"
 version="${version}"
 displayName="Applied Energistics 2"
 
-# Stonecutter injects ${NEOFORGE} at build time.
+[[dependencies.appliedenergistics2]]
+modId="minecraft"
+type="required"
+versionRange="[${MC},)"
+ordering="NONE"
+side="BOTH"
+
 [[dependencies.appliedenergistics2]]
 modId="neoforge"
+type="required"
 versionRange="[${NEOFORGE},)"
 ordering="NONE"
 side="BOTH"

@@ -27,7 +27,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
+//? if eval(current.version, ">=1.21.5") {
 import net.minecraft.network.RegistryFriendlyByteBuf;
+//? }
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
