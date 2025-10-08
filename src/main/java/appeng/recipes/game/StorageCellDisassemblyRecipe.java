@@ -7,7 +7,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+//? if eval(current.version, "<=1.21.4") {
+import net.minecraft.network.FriendlyByteBuf;
+//? }
+//? if eval(current.version, ">=1.21.5") {
 import net.minecraft.network.RegistryFriendlyByteBuf;
+//? }
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
@@ -26,8 +31,11 @@ import appeng.registry.AE2RecipeTypes;
  * Used to handle disassembly of the (Portable) Storage Cells.
  */
 public class StorageCellDisassemblyRecipe extends CustomRecipe {
+//? if eval(current.version, "<=1.21.1") {
+    @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<StorageCellDisassemblyRecipe> TYPE = new RecipeType<>() {
     };
+//? }
     public static final MapCodec<StorageCellDisassemblyRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder
             .group(
                     BuiltInRegistries.ITEM.byNameCodec().fieldOf("cell")
@@ -36,6 +44,16 @@ public class StorageCellDisassemblyRecipe extends CustomRecipe {
                             .forGetter(StorageCellDisassemblyRecipe::getCellDisassemblyItems))
             .apply(builder, StorageCellDisassemblyRecipe::new));
 
+//? if eval(current.version, "<=1.21.4") {
+    // TODO(stonecutter): Audit FriendlyByteBuf path for storage cell disassembly results.
+    public static final StreamCodec<FriendlyByteBuf, StorageCellDisassemblyRecipe> STREAM_CODEC = StreamCodec
+            .composite(
+                    ByteBufCodecs.registry(BuiltInRegistries.ITEM.key()),
+                    StorageCellDisassemblyRecipe::getStorageCell,
+                    ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()),
+                    StorageCellDisassemblyRecipe::getCellDisassemblyItems,
+                    StorageCellDisassemblyRecipe::new);
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, StorageCellDisassemblyRecipe> STREAM_CODEC = StreamCodec
             .composite(
                     ByteBufCodecs.registry(BuiltInRegistries.ITEM.key()),
@@ -43,6 +61,7 @@ public class StorageCellDisassemblyRecipe extends CustomRecipe {
                     ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()),
                     StorageCellDisassemblyRecipe::getCellDisassemblyItems,
                     StorageCellDisassemblyRecipe::new);
+//? }
 
     private final List<ItemStack> disassemblyItems;
     private final Item storageCell;

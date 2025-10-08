@@ -21,18 +21,20 @@ jobs:
       - name: Spotless check
         run: ./gradlew spotlessCheck --console=plain
 
-  ciBuild:
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_build == 'true' }}
+  cibuild:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # TODO: Expand to cover 1.21.1 -> 1.21.10 once the guarded validation succeeds.
-        mc: [ '1.21.4', '1.21.9' ]
+        # TODO: Expand matrix to all 1.21.1 -> 1.21.10 once validation succeeds.
+        mc: ['1.21.4','1.21.9']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-      - name: Build
-        run: ./gradlew ciBuild -Psc.version=${{ matrix.mc }} --no-daemon --stacktrace --console=plain
+      - name: Select Stonecutter target
+        run: ./gradlew sc:useVersion -Psc.version=${{ matrix.mc }}
+      - name: Chiseled Build
+        run: ./gradlew ciBuild --no-daemon --stacktrace --console=plain
