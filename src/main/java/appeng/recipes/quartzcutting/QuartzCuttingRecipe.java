@@ -10,7 +10,12 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+//? if eval(current.version, "<=1.21.4") {
+import net.minecraft.network.FriendlyByteBuf;
+//? }
+//? if eval(current.version, ">=1.21.5") {
 import net.minecraft.network.RegistryFriendlyByteBuf;
+//? }
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +37,11 @@ import appeng.registry.AE2RecipeTypes;
 public class QuartzCuttingRecipe implements CraftingRecipe {
     static final int MAX_HEIGHT = 3;
     static final int MAX_WIDTH = 3;
+//? if eval(current.version, "<=1.21.1") {
+    @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<QuartzCuttingRecipe> TYPE = new RecipeType<>() {
     };
+//? }
     public static final MapCodec<QuartzCuttingRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder.group(
             ItemStack.STRICT_CODEC.fieldOf("result").forGetter(QuartzCuttingRecipe::getResult),
             Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").flatXmap((r) -> {
@@ -49,6 +57,26 @@ public class QuartzCuttingRecipe implements CraftingRecipe {
             }, DataResult::success).forGetter(QuartzCuttingRecipe::getIngredients))
             .apply(builder, QuartzCuttingRecipe::new));
 
+//? if eval(current.version, "<=1.21.4") {
+    // TODO(stonecutter): Confirm FriendlyByteBuf handling for quartz cutting recipe serialization.
+    public static final StreamCodec<FriendlyByteBuf, QuartzCuttingRecipe> STREAM_CODEC = StreamCodec.composite(
+            ItemStack.STREAM_CODEC, QuartzCuttingRecipe::getResult,
+            StreamCodec.of(
+                    (buffer, value) -> {
+                        buffer.writeVarInt(value.size());
+                        for (var ingredient : value) {
+                            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
+                        }
+                    },
+                    buffer -> {
+                        int count = buffer.readVarInt();
+                        NonNullList<Ingredient> ingredients = NonNullList.withSize(count, Ingredient.EMPTY);
+                        ingredients.replaceAll(ignored -> Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
+                        return ingredients;
+                    }),
+            QuartzCuttingRecipe::getIngredients,
+            QuartzCuttingRecipe::new);
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, QuartzCuttingRecipe> STREAM_CODEC = StreamCodec.composite(
             ItemStack.STREAM_CODEC, QuartzCuttingRecipe::getResult,
             StreamCodec.of(
@@ -66,6 +94,7 @@ public class QuartzCuttingRecipe implements CraftingRecipe {
                     }),
             QuartzCuttingRecipe::getIngredients,
             QuartzCuttingRecipe::new);
+//? }
 
     final ItemStack result;
     final NonNullList<Ingredient> ingredients;
