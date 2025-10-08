@@ -124,16 +124,8 @@ public abstract class AppEngBase implements AppEng {
         InitBlockEntityMoveStrategies.init();
 
         AEParts.init();
-        AE2Registries.BLOCKS.register(modEventBus);
-        AE2Registries.ITEMS.register(modEventBus);
-        AE2Registries.BLOCK_ENTITIES.register(modEventBus);
-        AE2Registries.MENUS.register(modEventBus);
-        AE2Registries.RECIPE_SERIALIZERS.register(modEventBus);
-        AE2Registries.RECIPE_TYPES.register(modEventBus);
-        AE2Registries.SOUNDS.register(modEventBus);
-        AE2Registries.LOOT_MODIFIERS.register(modEventBus);
+        AE2Registries.register(modEventBus);
         AE2Registries.FEATURES.register(modEventBus);
-        AE2Registries.CONDITIONS.register(modEventBus);
         AE2LootModifiers.init();
         AE2RecipeSerializers.init();
         AE2RecipeTypes.init();

@@ -11,6 +11,10 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.bus.api.IEventBus;
+//? if eval(current.version, ">=1.21.5") {
+import net.minecraft.core.RegistrySetBuilder;
+//? }
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -39,4 +43,38 @@ public final class AE2Registries {
             DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
     public static final DeferredRegister<MapCodec<? extends ICondition>> CONDITIONS =
             DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, MODID);
+
+    //? if eval(current.version, ">=1.21.5") {
+    private static final RegistrySetBuilder BOOTSTRAP = new RegistrySetBuilder();
+
+    public static RegistrySetBuilder bootstrapBuilder() {
+        return BOOTSTRAP;
+    }
+    //? }
+
+    public static void register(IEventBus modEventBus) {
+        //? if eval(current.version, ">=1.21.5") {
+        BLOCKS.register(modEventBus);
+        ITEMS.register(modEventBus);
+        BLOCK_ENTITIES.register(modEventBus);
+        MENUS.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
+        RECIPE_TYPES.register(modEventBus);
+        SOUNDS.register(modEventBus);
+        LOOT_MODIFIERS.register(modEventBus);
+        CONDITIONS.register(modEventBus);
+        // The builder is returned for data generation / bootstrap chaining if needed by consumers.
+        bootstrapBuilder();
+        //? } else {
+        BLOCKS.register(modEventBus);
+        ITEMS.register(modEventBus);
+        BLOCK_ENTITIES.register(modEventBus);
+        MENUS.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
+        RECIPE_TYPES.register(modEventBus);
+        SOUNDS.register(modEventBus);
+        LOOT_MODIFIERS.register(modEventBus);
+        CONDITIONS.register(modEventBus);
+        //? }
+    }
 }
