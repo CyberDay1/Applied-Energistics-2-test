@@ -39,3 +39,9 @@ tasks.register("runData", JavaExec) {
     mainClass.set("appeng.data.AE2DataGen")
     jvmArgs("-Dneoforge.enabledGameTestNamespaces=appliedenergistics2")
 }
+
+tasks.register("runClientSmoke", JavaExec) {
+    group = "verification"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass.set("net.minecraft.client.main.Main")
+}
