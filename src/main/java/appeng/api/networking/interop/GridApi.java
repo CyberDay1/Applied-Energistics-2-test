@@ -26,16 +26,23 @@ public final class GridApi {
     }
 
     public Optional<IInWorldGridNodeHost> findNodeHost(Level level, BlockPos pos) {
-        return Optional.ofNullable(GridHelper.getNodeHost(level, pos));
+        var optionalHost = Optional.ofNullable(GridHelper.getNodeHost(level, pos));
+        // TODO: review Optional migration
+        return optionalHost;
     }
 
     public Optional<IGridNode> findExposedNode(Level level, BlockPos pos, Direction side) {
-        return Optional.ofNullable(GridHelper.getExposedNode(level, pos, side));
+        var optionalNode = Optional.ofNullable(GridHelper.getExposedNode(level, pos, side));
+        // TODO: review Optional migration
+        return optionalNode;
     }
 
     public Optional<IInWorldGridNodeHost> findNodeHost(Level level, BlockPos pos, @Nullable BlockEntity blockEntity) {
         if (blockEntity != null && blockEntity.getLevel() == level) {
-            return Optional.ofNullable(blockEntity.getCapability(AECapabilities.IN_WORLD_GRID_NODE_HOST_ENTITY, null));
+            var optionalHost = Optional
+                    .ofNullable(blockEntity.getCapability(AECapabilities.IN_WORLD_GRID_NODE_HOST_ENTITY, null));
+            // TODO: review Optional migration
+            return optionalHost;
         }
         return findNodeHost(level, pos);
     }
