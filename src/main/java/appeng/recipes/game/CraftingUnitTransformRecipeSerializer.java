@@ -2,14 +2,13 @@ package appeng.recipes.game;
 
 import com.mojang.serialization.MapCodec;
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-*///?}
+//? endif
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class CraftingUnitTransformRecipeSerializer implements RecipeSerializer<CraftingUnitTransformRecipe> {
@@ -19,7 +18,7 @@ public class CraftingUnitTransformRecipeSerializer implements RecipeSerializer<C
         return CraftingUnitTransformRecipe.CODEC;
     }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     // TODO(stonecutter): Confirm FriendlyByteBuf codec parity with >=1.21.5 implementation.
     @Override
     public CraftingUnitTransformRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
@@ -30,10 +29,10 @@ public class CraftingUnitTransformRecipeSerializer implements RecipeSerializer<C
     public void toNetwork(FriendlyByteBuf buffer, CraftingUnitTransformRecipe recipe) {
         CraftingUnitTransformRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//?} else {
-    /*@Override
+//? else {
+    @Override
     public StreamCodec<RegistryFriendlyByteBuf, CraftingUnitTransformRecipe> streamCodec() {
         return CraftingUnitTransformRecipe.STREAM_CODEC;
     }
-*///?}
+//? endif
 }

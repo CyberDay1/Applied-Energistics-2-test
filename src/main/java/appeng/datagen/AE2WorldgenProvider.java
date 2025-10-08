@@ -1,4 +1,4 @@
-//? >=1.21.4 {
+//? if (>=1.21.4) {
 package appeng.datagen;
 
 import java.util.List;
@@ -82,4 +82,4 @@ public class AE2WorldgenProvider extends DatapackBuiltinEntriesProvider {
         context.register(AE2Features.METEORITE_PLACED, new PlacedFeature(meteorite, meteoritePlacement));
     }
 }
-//?}
+//? endif

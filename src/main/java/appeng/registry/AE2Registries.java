@@ -12,9 +12,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
-//? >=1.21.5 {
-/*import net.minecraft.core.RegistrySetBuilder;
-*///?}
+//? if (>=1.21.5) {
+import net.minecraft.core.RegistrySetBuilder;
+//? endif
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -44,17 +44,17 @@ public final class AE2Registries {
     public static final DeferredRegister<MapCodec<? extends ICondition>> CONDITIONS =
             DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, MODID);
 
-    //? >=1.21.5 {
-    /*private static final RegistrySetBuilder BOOTSTRAP = new RegistrySetBuilder();
+    //? if (>=1.21.5) {
+    private static final RegistrySetBuilder BOOTSTRAP = new RegistrySetBuilder();
 
     public static RegistrySetBuilder bootstrapBuilder() {
         return BOOTSTRAP;
     }
-    *///?}
+    //? endif
 
     public static void register(IEventBus modEventBus) {
-        //? >=1.21.5 {
-        /*BLOCKS.register(modEventBus);
+        //? if (>=1.21.5) {
+        BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
         MENUS.register(modEventBus);
@@ -65,7 +65,7 @@ public final class AE2Registries {
         CONDITIONS.register(modEventBus);
         // The builder is returned for data generation / bootstrap chaining if needed by consumers.
         bootstrapBuilder();
-        *///?} else {
+        //? else {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
@@ -75,6 +75,6 @@ public final class AE2Registries {
         SOUNDS.register(modEventBus);
         LOOT_MODIFIERS.register(modEventBus);
         CONDITIONS.register(modEventBus);
-        //?}
+        //? endif
     }
 }

@@ -20,14 +20,13 @@ package appeng.recipes.transform;
 
 import com.mojang.serialization.MapCodec;
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-*///?}
+//? endif
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class TransformRecipeSerializer implements RecipeSerializer<TransformRecipe> {
@@ -37,7 +36,7 @@ public class TransformRecipeSerializer implements RecipeSerializer<TransformReci
         return TransformRecipe.CODEC;
     }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     // TODO(stonecutter): Remove FriendlyByteBuf override once <= 1.21.4 targets are validated.
     @Override
     public TransformRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
@@ -48,11 +47,11 @@ public class TransformRecipeSerializer implements RecipeSerializer<TransformReci
     public void toNetwork(FriendlyByteBuf buffer, TransformRecipe recipe) {
         TransformRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//?} else {
-    /*@Override
+//? else {
+    @Override
     public StreamCodec<RegistryFriendlyByteBuf, TransformRecipe> streamCodec() {
         return TransformRecipe.STREAM_CODEC;
     }
-*///?}
+//? endif
 
 }

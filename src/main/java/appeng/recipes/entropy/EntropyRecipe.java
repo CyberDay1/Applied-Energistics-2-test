@@ -33,12 +33,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
-*///?}
+//? endif
+//? if (>=1.21.5) {
+import net.minecraft.network.RegistryFriendlyByteBuf;
+//? endif
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -72,21 +72,21 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             Input.CODEC.fieldOf("input").forGetter(EntropyRecipe::getInput),
             Output.CODEC.fieldOf("output").forGetter(EntropyRecipe::getOutput)).apply(builder, EntropyRecipe::new));
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     public static final StreamCodec<FriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
-//?}
-//? >=1.21.5 {
-    /*public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
-*///?}
+//? endif
+//? if (>=1.21.5) {
+    public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
+//? endif
 
-//? <=1.21.1 {
-    /*@Deprecated(forRemoval = true, since = "1.21.1")
+//? if (<=1.21.1) {
+    @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("entropy");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<EntropyRecipe> TYPE = new RecipeType<>() {
     };
-*///?}
+//? endif
 
     private final EntropyMode mode;
     private final Input input;
@@ -287,7 +287,7 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             return state;
         }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
         public static void toNetwork(FriendlyByteBuf buffer, FluidOutput output) {
             buffer.writeById(BuiltInRegistries.FLUID::getId, output.fluid);
             buffer.writeBoolean(output.keepProperties);
@@ -300,10 +300,10 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             var properties = buffer.readMap(FriendlyByteBuf::readUtf, fbb -> fbb.readUtf());
             return new FluidOutput(fluid, keepProperties, properties);
         }
-//?}
+//? endif
     }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     private static final StreamCodec<FriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
     private static final StreamCodec<FriendlyByteBuf, FluidInput> FLUID_INPUT_STREAM_CODEC = createFluidInputStreamCodec();
     private static final StreamCodec<FriendlyByteBuf, BlockOutput> BLOCK_OUTPUT_STREAM_CODEC = createBlockOutputStreamCodec();
@@ -385,10 +385,8 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 FluidOutput::properties,
                 FluidOutput::new);
     }
-//?}
-
-//? >=1.21.5 {
-    /*private static final StreamCodec<RegistryFriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
+//? else {
+    private static final StreamCodec<RegistryFriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, FluidInput> FLUID_INPUT_STREAM_CODEC = createFluidInputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, BlockOutput> BLOCK_OUTPUT_STREAM_CODEC = createBlockOutputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, FluidOutput> FLUID_OUTPUT_STREAM_CODEC = createFluidOutputStreamCodec();
@@ -469,5 +467,5 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 FluidOutput::properties,
                 FluidOutput::new);
     }
-*///?}
+//? endif
 }

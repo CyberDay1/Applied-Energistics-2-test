@@ -4,12 +4,11 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
-*///?}
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
+//? endif
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -38,13 +37,13 @@ public class AddItemUpgradeRecipe extends CustomRecipe {
 
     public static final MapCodec<AddItemUpgradeRecipe> CODEC = MapCodec.unit(INSTANCE);
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     // TODO(stonecutter): Confirm FriendlyByteBuf stream behavior once <= 1.21.4 recipes are exercised in CI.
     public static final StreamCodec<FriendlyByteBuf, AddItemUpgradeRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
-//?} else {
-    /*public static final StreamCodec<RegistryFriendlyByteBuf, AddItemUpgradeRecipe> STREAM_CODEC = StreamCodec
+//? else {
+    public static final StreamCodec<RegistryFriendlyByteBuf, AddItemUpgradeRecipe> STREAM_CODEC = StreamCodec
             .unit(INSTANCE);
-*///?}
+//? endif
 
     @Override
     public NonNullList<Ingredient> getIngredients() {

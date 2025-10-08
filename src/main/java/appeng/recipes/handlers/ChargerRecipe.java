@@ -5,12 +5,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
-*///?}
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
+//? endif
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -26,13 +25,13 @@ import appeng.registry.AE2RecipeSerializers;
 import appeng.registry.AE2RecipeTypes;
 
 public class ChargerRecipe implements Recipe<RecipeInput> {
-//? <=1.21.1 {
-    /*@Deprecated(forRemoval = true, since = "1.21.1")
+//? if (<=1.21.1) {
+    @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("charger");
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<ChargerRecipe> TYPE = new RecipeType<>() {
     };
-*///?}
+//? endif
 
     public final Ingredient ingredient;
     public final NonNullList<Ingredient> ingredients;
@@ -45,7 +44,7 @@ public class ChargerRecipe implements Recipe<RecipeInput> {
                             ItemStack.CODEC.fieldOf("result").forGetter(cr -> cr.result))
                     .apply(builder, ChargerRecipe::new));
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     // TODO(stonecutter): Validate FriendlyByteBuf serialization for <= 1.21.4 once automated tests cover the legacy path.
     public static final StreamCodec<FriendlyByteBuf, ChargerRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC,
@@ -53,14 +52,14 @@ public class ChargerRecipe implements Recipe<RecipeInput> {
             ItemStack.STREAM_CODEC,
             ChargerRecipe::getResultItem,
             ChargerRecipe::new);
-//?} else {
-    /*public static final StreamCodec<RegistryFriendlyByteBuf, ChargerRecipe> STREAM_CODEC = StreamCodec.composite(
+//? else {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ChargerRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC,
             ChargerRecipe::getIngredient,
             ItemStack.STREAM_CODEC,
             ChargerRecipe::getResultItem,
             ChargerRecipe::new);
-*///?}
+//? endif
 
     public ChargerRecipe(Ingredient ingredient, ItemStack result) {
         this.ingredient = ingredient;

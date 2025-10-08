@@ -22,12 +22,12 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.capabilities.BlockCapability;
-//? >=1.21.4 {
+//? if (>=1.21.4) {
 import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.CapabilityToken;
-//?} else {
-/*import net.minecraftforge.common.capabilities.Capability;
-*///?}
+//? else {
+import net.minecraftforge.common.capabilities.Capability;
+//? endif
 
 import appeng.api.behaviors.GenericInternalInventory;
 import appeng.api.implementations.blockentities.ICraftingMachine;
@@ -74,7 +74,7 @@ public final class AECapabilities {
 
     public static final Capability<ICrankable> CRANKABLE_ENTITY = AE2Capabilities.CRANKABLE;
 
-    //? >=1.21.4 {
+    //? if (>=1.21.4) {
     public static final CapabilityToken<MEStorage> ME_STORAGE_ENTITY_TOKEN = AE2Capabilities.ME_STORAGE_TOKEN;
     public static final CapabilityToken<ICraftingMachine> CRAFTING_MACHINE_ENTITY_TOKEN =
             AE2Capabilities.CRAFTING_MACHINE_TOKEN;
@@ -83,6 +83,6 @@ public final class AECapabilities {
     public static final CapabilityToken<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST_ENTITY_TOKEN =
             AE2Capabilities.IN_WORLD_GRID_NODE_HOST_TOKEN;
     public static final CapabilityToken<ICrankable> CRANKABLE_ENTITY_TOKEN = AE2Capabilities.CRANKABLE_TOKEN;
-    //?}
+    //? endif
 
 }

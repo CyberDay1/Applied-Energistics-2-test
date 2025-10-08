@@ -20,14 +20,13 @@ package appeng.recipes.entropy;
 
 import com.mojang.serialization.MapCodec;
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-*///?}
+//? endif
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class EntropyRecipeSerializer implements RecipeSerializer<EntropyRecipe> {
@@ -37,7 +36,7 @@ public class EntropyRecipeSerializer implements RecipeSerializer<EntropyRecipe> 
         return EntropyRecipe.CODEC;
     }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     @Override
     public EntropyRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
         return EntropyRecipe.STREAM_CODEC.decode(buffer);
@@ -47,10 +46,10 @@ public class EntropyRecipeSerializer implements RecipeSerializer<EntropyRecipe> 
     public void toNetwork(FriendlyByteBuf buffer, EntropyRecipe recipe) {
         EntropyRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//?} else {
-    /*@Override
+//? else {
+    @Override
     public StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> streamCodec() {
         return EntropyRecipe.STREAM_CODEC;
     }
-*///?}
+//? endif
 }

@@ -2,14 +2,13 @@ package appeng.recipes.game;
 
 import com.mojang.serialization.MapCodec;
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-*///?}
+//? endif
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class StorageCellUpgradeRecipeSerializer implements RecipeSerializer<StorageCellUpgradeRecipe> {
@@ -19,7 +18,7 @@ public class StorageCellUpgradeRecipeSerializer implements RecipeSerializer<Stor
         return StorageCellUpgradeRecipe.CODEC;
     }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     // TODO(stonecutter): Confirm storage cell upgrade FriendlyByteBuf codec matches >=1.21.5 runtime.
     @Override
     public StorageCellUpgradeRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
@@ -30,10 +29,10 @@ public class StorageCellUpgradeRecipeSerializer implements RecipeSerializer<Stor
     public void toNetwork(FriendlyByteBuf buffer, StorageCellUpgradeRecipe recipe) {
         StorageCellUpgradeRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//?} else {
-    /*@Override
+//? else {
+    @Override
     public StreamCodec<RegistryFriendlyByteBuf, StorageCellUpgradeRecipe> streamCodec() {
         return StorageCellUpgradeRecipe.STREAM_CODEC;
     }
-*///?}
+//? endif
 }

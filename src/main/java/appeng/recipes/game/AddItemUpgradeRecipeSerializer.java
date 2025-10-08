@@ -2,14 +2,13 @@ package appeng.recipes.game;
 
 import com.mojang.serialization.MapCodec;
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-*///?}
+//? endif
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class AddItemUpgradeRecipeSerializer implements RecipeSerializer<AddItemUpgradeRecipe> {
@@ -19,7 +18,7 @@ public class AddItemUpgradeRecipeSerializer implements RecipeSerializer<AddItemU
         return AddItemUpgradeRecipe.CODEC;
     }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     // TODO(stonecutter): Verify FriendlyByteBuf serializer once <= 1.21.4 recipes are runnable.
     @Override
     public AddItemUpgradeRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
@@ -30,10 +29,10 @@ public class AddItemUpgradeRecipeSerializer implements RecipeSerializer<AddItemU
     public void toNetwork(FriendlyByteBuf buffer, AddItemUpgradeRecipe recipe) {
         AddItemUpgradeRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//?} else {
-    /*@Override
+//? else {
+    @Override
     public StreamCodec<RegistryFriendlyByteBuf, AddItemUpgradeRecipe> streamCodec() {
         return AddItemUpgradeRecipe.STREAM_CODEC;
     }
-*///?}
+//? endif
 }

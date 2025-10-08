@@ -20,14 +20,13 @@ package appeng.recipes.handlers;
 
 import com.mojang.serialization.MapCodec;
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//?}
-//? >=1.21.5 {
-/*import net.minecraft.network.RegistryFriendlyByteBuf;
+//? else {
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-*///?}
+//? endif
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class InscriberRecipeSerializer implements RecipeSerializer<InscriberRecipe> {
@@ -37,7 +36,7 @@ public class InscriberRecipeSerializer implements RecipeSerializer<InscriberReci
         return InscriberRecipe.CODEC;
     }
 
-//? <=1.21.4 {
+//? if (<=1.21.4) {
     // TODO(stonecutter): Confirm FriendlyByteBuf encoder for <= 1.21.4 once regression tests are available.
     @Override
     public InscriberRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
@@ -48,10 +47,10 @@ public class InscriberRecipeSerializer implements RecipeSerializer<InscriberReci
     public void toNetwork(FriendlyByteBuf buffer, InscriberRecipe recipe) {
         InscriberRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//?} else {
-    /*@Override
+//? else {
+    @Override
     public StreamCodec<RegistryFriendlyByteBuf, InscriberRecipe> streamCodec() {
         return InscriberRecipe.STREAM_CODEC;
     }
-*///?}
+//? endif
 }
