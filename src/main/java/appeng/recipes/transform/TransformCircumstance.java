@@ -15,9 +15,9 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
-//? if eval(current.version, ">=1.21.5") {
+//? >=1.21.5 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? }
+//?}
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -40,16 +40,16 @@ public class TransformCircumstance {
         default -> throw new IllegalStateException("Invalid type: " + type);
     });
 
-//? if eval(current.version, "<=1.21.4") {
+//? <=1.21.4 {
     // TODO(stonecutter): Swap to FriendlyByteBuf-aware StreamCodec helper for <= 1.21.4 once shared utility exists.
     public static final StreamCodec<FriendlyByteBuf, TransformCircumstance> STREAM_CODEC = StreamCodec.ofMember(
             TransformCircumstance::toNetwork,
             TransformCircumstance::fromNetwork);
-//? } else {
+//?} else {
     public static final StreamCodec<RegistryFriendlyByteBuf, TransformCircumstance> STREAM_CODEC = StreamCodec.ofMember(
             TransformCircumstance::toNetwork,
             TransformCircumstance::fromNetwork);
-//? }
+//?}
 
     private final String type;
 

@@ -5,12 +5,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-//? if eval(current.version, "<=1.21.4") {
+//? <=1.21.4 {
 import net.minecraft.network.FriendlyByteBuf;
-//? }
-//? if eval(current.version, ">=1.21.5") {
+//?}
+//? >=1.21.5 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? }
+//?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
@@ -30,11 +30,11 @@ import appeng.registry.AE2RecipeTypes;
  * Used to handle upgrading and removal of upgrades for crafting units (in-world).
  */
 public class CraftingUnitTransformRecipe extends CustomRecipe {
-//? if eval(current.version, "<=1.21.1") {
+//? <=1.21.1 {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<CraftingUnitTransformRecipe> TYPE = new RecipeType<>() {
     };
-//? }
+//?}
     public static final MapCodec<CraftingUnitTransformRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder
             .group(
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("upgraded_block")
@@ -43,7 +43,7 @@ public class CraftingUnitTransformRecipe extends CustomRecipe {
                             .forGetter(CraftingUnitTransformRecipe::getUpgradeItem))
             .apply(builder, CraftingUnitTransformRecipe::new));
 
-//? if eval(current.version, "<=1.21.4") {
+//? <=1.21.4 {
     // TODO(stonecutter): Confirm registry codec fallback with FriendlyByteBuf for <= 1.21.4.
     public static final StreamCodec<FriendlyByteBuf, CraftingUnitTransformRecipe> STREAM_CODEC = StreamCodec
             .composite(
@@ -52,7 +52,7 @@ public class CraftingUnitTransformRecipe extends CustomRecipe {
                     ByteBufCodecs.registry(BuiltInRegistries.ITEM.key()),
                     CraftingUnitTransformRecipe::getUpgradeItem,
                     CraftingUnitTransformRecipe::new);
-//? } else {
+//?} else {
     public static final StreamCodec<RegistryFriendlyByteBuf, CraftingUnitTransformRecipe> STREAM_CODEC = StreamCodec
             .composite(
                     ByteBufCodecs.registry(BuiltInRegistries.BLOCK.key()),
@@ -60,7 +60,7 @@ public class CraftingUnitTransformRecipe extends CustomRecipe {
                     ByteBufCodecs.registry(BuiltInRegistries.ITEM.key()),
                     CraftingUnitTransformRecipe::getUpgradeItem,
                     CraftingUnitTransformRecipe::new);
-//? }
+//?}
 
     private final Block upgradedBlock;
     private final Item upgradeItem;

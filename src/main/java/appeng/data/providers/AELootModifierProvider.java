@@ -1,4 +1,4 @@
-//? if eval(current.version, ">=1.21.4") {
+//? >=1.21.4 {
 package appeng.data.providers;
 
 import java.util.concurrent.CompletableFuture;
@@ -27,4 +27,4 @@ public final class AELootModifierProvider extends GlobalLootModifierProvider {
                 LootItemRandomChanceCondition.randomChance(0.35f).build() }));
     }
 }
-//? }
+//?}

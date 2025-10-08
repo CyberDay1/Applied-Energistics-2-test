@@ -1,10 +1,10 @@
 package appeng.client;
 
-//? if eval(current.version, ">=1.21.4") {
+//? >=1.21.4 {
 import net.neoforged.neoforge.client.gui.ScreenManager;
-//? } else {
+//?} else {
 import net.minecraft.client.gui.screens.MenuScreens;
-//? }
+//?}
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -30,15 +30,15 @@ public final class AE2ClientSetup {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        //? if eval(current.version, ">=1.21.4") {
+        //? >=1.21.4 {
         registerScreens();
-        //? } else {
+        //?} else {
         event.enqueueWork(AE2ClientSetup::registerScreens);
-        //? }
+        //?}
     }
 
     private static void registerScreens() {
-        //? if eval(current.version, ">=1.21.4") {
+        //? >=1.21.4 {
         ScreenManager.registerFactory(AE2Menus.INSCRIBER_MENU, InscriberScreen::new);
         ScreenManager.registerFactory(AE2Menus.CHARGER_MENU, ChargerScreen::new);
         ScreenManager.registerFactory(AE2Menus.CRAFTING_TERMINAL_MENU, CraftingTerminalScreen::new);
@@ -47,7 +47,7 @@ public final class AE2ClientSetup {
         ScreenManager.registerFactory(() -> TerminalMenu.TYPE, TerminalScreen::new);
         ScreenManager.registerFactory(() -> SimpleDriveMenu.TYPE, SimpleDriveScreen::new);
         ScreenManager.registerFactory(() -> SpatialIOPortMenu.TYPE, SpatialIOPortScreen::new);
-        //? } else {
+        //?} else {
         MenuScreens.register(AE2Menus.INSCRIBER_MENU.get(), InscriberScreen::new);
         MenuScreens.register(AE2Menus.CHARGER_MENU.get(), ChargerScreen::new);
         MenuScreens.register(AE2Menus.CRAFTING_TERMINAL_MENU.get(), CraftingTerminalScreen::new);
@@ -56,6 +56,6 @@ public final class AE2ClientSetup {
         MenuScreens.register(TerminalMenu.TYPE, TerminalScreen::new);
         MenuScreens.register(SimpleDriveMenu.TYPE, SimpleDriveScreen::new);
         MenuScreens.register(SpatialIOPortMenu.TYPE, SpatialIOPortScreen::new);
-        //? }
+        //?}
     }
 }
