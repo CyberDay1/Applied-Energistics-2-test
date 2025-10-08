@@ -15,7 +15,7 @@ public class SimpleDriveScreen extends AbstractContainerScreen<SimpleDriveMenu> 
     private Button redstoneButton;
 
     public SimpleDriveScreen(SimpleDriveMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, Component.translatable("block.ae2.drive"));
+        super(menu, inventory, title);
         this.imageWidth = 176;
         this.imageHeight = 166;
     }
