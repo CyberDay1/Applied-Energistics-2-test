@@ -8,6 +8,10 @@ stonecutter.registerChiseled(tasks.register("chiseledBuild", stonecutter.chisele
     ofTask("build")
 })
 
+stonecutter.registerChiseled(tasks.register("ciBuild", stonecutter.chiseled) {
+    ofTask("build")
+})
+
 parameters {
     consts["MC"] = stonecutter.current.version
     consts["NEOFORGE"] = stonecutter.current.data["NEOFORGE"]?.toString() ?: ""

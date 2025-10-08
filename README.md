@@ -16,6 +16,7 @@
 * [Issues](#issues)
 * [API](#applied-energistics-2-api)
 * [Building](#building)
+* [Stonecutter Multi-Version Workflow](#stonecutter-multi-version-workflow)
 * [Contribution](#contribution)
 * [Localization](#applied-energistics-2-localization)
 * [Credits](#credits)
@@ -106,11 +107,25 @@ An example string would be `org.appliedenergistics:appliedenergistics2:12.9.5:ap
 
 ## Building
 
-1. Clone this repository via 
-  - SSH `git clone git@github.com:AppliedEnergistics/Applied-Energistics-2.git` or 
+1. Clone this repository via
+  - SSH `git clone git@github.com:AppliedEnergistics/Applied-Energistics-2.git` or
   - HTTPS `git clone https://github.com/AppliedEnergistics/Applied-Energistics-2.git`
 2. Build using the `gradlew runData build` command. Jar will be in `build/libs`
 3. For core developer: Load the Gradle project in your IDE
+
+## Stonecutter Multi-Version Workflow
+
+AE2 now relies on [Stonecutter](https://github.com/Kikugie/stonecutter) to swap between supported NeoForge versions during development and CI.
+
+* Select a version locally with:
+
+  ```bash
+  ./gradlew sc:useVersion -Psc.version=1.21.x
+  ```
+
+* Lint-only checks run by default through `./gradlew spotlessCheck`. Full builds require a guarded CI dispatch with the `Run build` input enabled.
+* Supported NeoForge versions: `1.21.1` → `1.21.10` (the guarded workflow currently validates `1.21.4` and `1.21.9`).
+* The `runData` and `build` tasks may fail until the multi-version configuration is finalized.
 
 ## Contribution
 
