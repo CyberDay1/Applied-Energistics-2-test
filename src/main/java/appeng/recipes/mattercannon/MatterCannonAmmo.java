@@ -28,7 +28,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeOutput;
+//? if eval(current.version, "<=1.21.4") {
 import net.minecraft.network.FriendlyByteBuf;
+//? }
 //? if eval(current.version, ">=1.21.5") {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 //? }

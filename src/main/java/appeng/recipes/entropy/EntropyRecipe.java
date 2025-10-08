@@ -33,7 +33,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+//? if eval(current.version, "<=1.21.4") {
 import net.minecraft.network.FriendlyByteBuf;
+//? }
 //? if eval(current.version, ">=1.21.5") {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 //? }
@@ -71,24 +73,10 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             Output.CODEC.fieldOf("output").forGetter(EntropyRecipe::getOutput)).apply(builder, EntropyRecipe::new));
 
 //? if eval(current.version, "<=1.21.4") {
-    // TODO(stonecutter): Confirm FriendlyByteBuf composite works once 1.21.4 backporting starts.
-    public static final StreamCodec<FriendlyByteBuf, EntropyRecipe> STREAM_CODEC = StreamCodec.composite(
-            NeoForgeStreamCodecs.enumCodec(EntropyMode.class),
-            EntropyRecipe::getMode,
-            Input.STREAM_CODEC,
-            EntropyRecipe::getInput,
-            Output.STREAM_CODEC,
-            EntropyRecipe::getOutput,
-            EntropyRecipe::new);
-//? } else {
-    public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = StreamCodec.composite(
-            NeoForgeStreamCodecs.enumCodec(EntropyMode.class),
-            EntropyRecipe::getMode,
-            Input.STREAM_CODEC,
-            EntropyRecipe::getInput,
-            Output.STREAM_CODEC,
-            EntropyRecipe::getOutput,
-            EntropyRecipe::new);
+    public static final StreamCodec<FriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
+//? }
+//? if eval(current.version, ">=1.21.5") {
+    public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
 //? }
 
 //? if eval(current.version, "<=1.21.1") {
@@ -196,13 +184,6 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 BlockInput.CODEC.optionalFieldOf("block").forGetter(Input::block),
                 FluidInput.CODEC.optionalFieldOf("fluid").forGetter(Input::fluid)).apply(builder, Input::new));
 
-        public static StreamCodec<RegistryFriendlyByteBuf, Input> STREAM_CODEC = StreamCodec.composite(
-                BlockInput.STREAM_CODEC.apply(ByteBufCodecs::optional),
-                Input::block,
-                FluidInput.STREAM_CODEC.apply(ByteBufCodecs::optional),
-                Input::fluid,
-                Input::new);
-
         public boolean matches(BlockState blockState, FluidState fluidState) {
             if (block.isPresent()) {
                 var inputBlock = block.get().block();
@@ -238,13 +219,6 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                         .forGetter(BlockInput::properties))
                 .apply(builder, BlockInput::new));
 
-        public static StreamCodec<RegistryFriendlyByteBuf, BlockInput> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.registry(Registries.BLOCK),
-                BlockInput::block,
-                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
-                        PropertyValueMatcher.STREAM_CODEC),
-                BlockInput::properties,
-                BlockInput::new);
     }
 
     public record FluidInput(Fluid fluid, Map<String, PropertyValueMatcher> properties) {
@@ -253,14 +227,6 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 PropertyValueMatcher.MAP_CODEC.optionalFieldOf("properties", Map.of())
                         .forGetter(FluidInput::properties))
                 .apply(builder, FluidInput::new));
-
-        public static StreamCodec<RegistryFriendlyByteBuf, FluidInput> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.registry(Registries.FLUID),
-                FluidInput::fluid,
-                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
-                        PropertyValueMatcher.STREAM_CODEC),
-                FluidInput::properties,
-                FluidInput::new);
     }
 
     public record Output(Optional<BlockOutput> block, Optional<FluidOutput> fluid, List<ItemStack> drops) {
@@ -270,15 +236,6 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 FluidOutput.CODEC.optionalFieldOf("fluid").forGetter(Output::fluid),
                 ItemStack.CODEC.listOf().optionalFieldOf("drops", List.of()).forGetter(Output::drops))
                 .apply(builder, Output::new));
-
-        public static StreamCodec<RegistryFriendlyByteBuf, Output> STREAM_CODEC = StreamCodec.composite(
-                BlockOutput.STREAM_CODEC.apply(ByteBufCodecs::optional),
-                Output::block,
-                FluidOutput.STREAM_CODEC.apply(ByteBufCodecs::optional),
-                Output::fluid,
-                ItemStack.LIST_STREAM_CODEC,
-                Output::drops,
-                Output::new);
     }
 
     public record BlockOutput(Block block, boolean keepProperties, Map<String, String> properties) {
@@ -289,16 +246,6 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 Codec.unboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("properties", Map.of())
                         .forGetter(BlockOutput::properties))
                 .apply(builder, BlockOutput::new));
-
-        public static StreamCodec<RegistryFriendlyByteBuf, BlockOutput> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.registry(Registries.BLOCK),
-                BlockOutput::block,
-                ByteBufCodecs.BOOL,
-                BlockOutput::keepProperties,
-                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
-                        ByteBufCodecs.STRING_UTF8),
-                BlockOutput::properties,
-                BlockOutput::new);
 
         public BlockState apply(BlockState originalBlockState) {
             BlockState state = block.defaultBlockState();
@@ -325,16 +272,6 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                         .forGetter(FluidOutput::properties))
                 .apply(builder, FluidOutput::new));
 
-        public static StreamCodec<RegistryFriendlyByteBuf, FluidOutput> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.registry(Registries.FLUID),
-                FluidOutput::fluid,
-                ByteBufCodecs.BOOL,
-                FluidOutput::keepProperties,
-                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
-                        ByteBufCodecs.STRING_UTF8),
-                FluidOutput::properties,
-                FluidOutput::new);
-
         public FluidState apply(FluidState originalFluidState) {
             FluidState state = fluid.defaultFluidState();
 
@@ -350,6 +287,7 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             return state;
         }
 
+//? if eval(current.version, "<=1.21.4") {
         public static void toNetwork(FriendlyByteBuf buffer, FluidOutput output) {
             buffer.writeById(BuiltInRegistries.FLUID::getId, output.fluid);
             buffer.writeBoolean(output.keepProperties);
@@ -362,6 +300,174 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             var properties = buffer.readMap(FriendlyByteBuf::readUtf, fbb -> fbb.readUtf());
             return new FluidOutput(fluid, keepProperties, properties);
         }
+//? }
     }
 
+//? if eval(current.version, "<=1.21.4") {
+    private static final StreamCodec<FriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
+    private static final StreamCodec<FriendlyByteBuf, FluidInput> FLUID_INPUT_STREAM_CODEC = createFluidInputStreamCodec();
+    private static final StreamCodec<FriendlyByteBuf, BlockOutput> BLOCK_OUTPUT_STREAM_CODEC = createBlockOutputStreamCodec();
+    private static final StreamCodec<FriendlyByteBuf, FluidOutput> FLUID_OUTPUT_STREAM_CODEC = createFluidOutputStreamCodec();
+    private static final StreamCodec<FriendlyByteBuf, Input> INPUT_STREAM_CODEC = createInputStreamCodec();
+    private static final StreamCodec<FriendlyByteBuf, Output> OUTPUT_STREAM_CODEC = createOutputStreamCodec();
+
+    private static StreamCodec<FriendlyByteBuf, EntropyRecipe> createEntropyStreamCodec() {
+        return StreamCodec.composite(
+                NeoForgeStreamCodecs.enumCodec(EntropyMode.class),
+                EntropyRecipe::getMode,
+                INPUT_STREAM_CODEC,
+                EntropyRecipe::getInput,
+                OUTPUT_STREAM_CODEC,
+                EntropyRecipe::getOutput,
+                EntropyRecipe::new);
+    }
+
+    private static StreamCodec<FriendlyByteBuf, Input> createInputStreamCodec() {
+        return StreamCodec.composite(
+                BLOCK_INPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Input::block,
+                FLUID_INPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Input::fluid,
+                Input::new);
+    }
+
+    private static StreamCodec<FriendlyByteBuf, BlockInput> createBlockInputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.BLOCK),
+                BlockInput::block,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        PropertyValueMatcher.STREAM_CODEC),
+                BlockInput::properties,
+                BlockInput::new);
+    }
+
+    private static StreamCodec<FriendlyByteBuf, FluidInput> createFluidInputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.FLUID),
+                FluidInput::fluid,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        PropertyValueMatcher.STREAM_CODEC),
+                FluidInput::properties,
+                FluidInput::new);
+    }
+
+    private static StreamCodec<FriendlyByteBuf, Output> createOutputStreamCodec() {
+        return StreamCodec.composite(
+                BLOCK_OUTPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Output::block,
+                FLUID_OUTPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Output::fluid,
+                ItemStack.LIST_STREAM_CODEC,
+                Output::drops,
+                Output::new);
+    }
+
+    private static StreamCodec<FriendlyByteBuf, BlockOutput> createBlockOutputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.BLOCK),
+                BlockOutput::block,
+                ByteBufCodecs.BOOL,
+                BlockOutput::keepProperties,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        ByteBufCodecs.STRING_UTF8),
+                BlockOutput::properties,
+                BlockOutput::new);
+    }
+
+    private static StreamCodec<FriendlyByteBuf, FluidOutput> createFluidOutputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.FLUID),
+                FluidOutput::fluid,
+                ByteBufCodecs.BOOL,
+                FluidOutput::keepProperties,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        ByteBufCodecs.STRING_UTF8),
+                FluidOutput::properties,
+                FluidOutput::new);
+    }
+//? }
+
+//? if eval(current.version, ">=1.21.5") {
+    private static final StreamCodec<RegistryFriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
+    private static final StreamCodec<RegistryFriendlyByteBuf, FluidInput> FLUID_INPUT_STREAM_CODEC = createFluidInputStreamCodec();
+    private static final StreamCodec<RegistryFriendlyByteBuf, BlockOutput> BLOCK_OUTPUT_STREAM_CODEC = createBlockOutputStreamCodec();
+    private static final StreamCodec<RegistryFriendlyByteBuf, FluidOutput> FLUID_OUTPUT_STREAM_CODEC = createFluidOutputStreamCodec();
+    private static final StreamCodec<RegistryFriendlyByteBuf, Input> INPUT_STREAM_CODEC = createInputStreamCodec();
+    private static final StreamCodec<RegistryFriendlyByteBuf, Output> OUTPUT_STREAM_CODEC = createOutputStreamCodec();
+
+    private static StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> createEntropyStreamCodec() {
+        return StreamCodec.composite(
+                NeoForgeStreamCodecs.enumCodec(EntropyMode.class),
+                EntropyRecipe::getMode,
+                INPUT_STREAM_CODEC,
+                EntropyRecipe::getInput,
+                OUTPUT_STREAM_CODEC,
+                EntropyRecipe::getOutput,
+                EntropyRecipe::new);
+    }
+
+    private static StreamCodec<RegistryFriendlyByteBuf, Input> createInputStreamCodec() {
+        return StreamCodec.composite(
+                BLOCK_INPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Input::block,
+                FLUID_INPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Input::fluid,
+                Input::new);
+    }
+
+    private static StreamCodec<RegistryFriendlyByteBuf, BlockInput> createBlockInputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.BLOCK),
+                BlockInput::block,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        PropertyValueMatcher.STREAM_CODEC),
+                BlockInput::properties,
+                BlockInput::new);
+    }
+
+    private static StreamCodec<RegistryFriendlyByteBuf, FluidInput> createFluidInputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.FLUID),
+                FluidInput::fluid,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        PropertyValueMatcher.STREAM_CODEC),
+                FluidInput::properties,
+                FluidInput::new);
+    }
+
+    private static StreamCodec<RegistryFriendlyByteBuf, Output> createOutputStreamCodec() {
+        return StreamCodec.composite(
+                BLOCK_OUTPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Output::block,
+                FLUID_OUTPUT_STREAM_CODEC.apply(ByteBufCodecs::optional),
+                Output::fluid,
+                ItemStack.LIST_STREAM_CODEC,
+                Output::drops,
+                Output::new);
+    }
+
+    private static StreamCodec<RegistryFriendlyByteBuf, BlockOutput> createBlockOutputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.BLOCK),
+                BlockOutput::block,
+                ByteBufCodecs.BOOL,
+                BlockOutput::keepProperties,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        ByteBufCodecs.STRING_UTF8),
+                BlockOutput::properties,
+                BlockOutput::new);
+    }
+
+    private static StreamCodec<RegistryFriendlyByteBuf, FluidOutput> createFluidOutputStreamCodec() {
+        return StreamCodec.composite(
+                ByteBufCodecs.registry(Registries.FLUID),
+                FluidOutput::fluid,
+                ByteBufCodecs.BOOL,
+                FluidOutput::keepProperties,
+                ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8,
+                        ByteBufCodecs.STRING_UTF8),
+                FluidOutput::properties,
+                FluidOutput::new);
+    }
+//? }
 }

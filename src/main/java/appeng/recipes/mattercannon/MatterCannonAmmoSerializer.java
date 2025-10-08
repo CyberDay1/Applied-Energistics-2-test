@@ -20,8 +20,14 @@ package appeng.recipes.mattercannon;
 
 import com.mojang.serialization.MapCodec;
 
+//? if eval(current.version, "<=1.21.4") {
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+//? }
+//? if eval(current.version, ">=1.21.5") {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+//? }
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class MatterCannonAmmoSerializer implements RecipeSerializer<MatterCannonAmmo> {
@@ -31,8 +37,20 @@ public class MatterCannonAmmoSerializer implements RecipeSerializer<MatterCannon
         return MatterCannonAmmo.CODEC;
     }
 
+//? if eval(current.version, "<=1.21.4") {
+    @Override
+    public MatterCannonAmmo fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
+        return MatterCannonAmmo.STREAM_CODEC.decode(buffer);
+    }
+
+    @Override
+    public void toNetwork(FriendlyByteBuf buffer, MatterCannonAmmo recipe) {
+        MatterCannonAmmo.STREAM_CODEC.encode(buffer, recipe);
+    }
+//? } else {
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, MatterCannonAmmo> streamCodec() {
         return MatterCannonAmmo.STREAM_CODEC;
     }
+//? }
 }

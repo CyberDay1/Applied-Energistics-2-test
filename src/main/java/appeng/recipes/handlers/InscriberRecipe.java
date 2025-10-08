@@ -71,16 +71,17 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
 //? if eval(current.version, "<=1.21.4") {
     // TODO(stonecutter): Validate FriendlyByteBuf variant against live 1.21.4 runtime once available.
     public static final StreamCodec<FriendlyByteBuf, InscriberRecipe> STREAM_CODEC = StreamCodec.composite(
-            Ingredients.STREAM_CODEC,
+            INGREDIENTS_STREAM_CODEC,
             InscriberRecipe::getSerializedIngredients,
             ItemStack.STREAM_CODEC,
             InscriberRecipe::getResultItem,
             NeoForgeStreamCodecs.enumCodec(InscriberProcessType.class),
             InscriberRecipe::getProcessType,
             InscriberRecipe::new);
-//? } else {
+//? }
+//? if eval(current.version, ">=1.21.5") {
     public static final StreamCodec<RegistryFriendlyByteBuf, InscriberRecipe> STREAM_CODEC = StreamCodec.composite(
-            Ingredients.STREAM_CODEC,
+            INGREDIENTS_STREAM_CODEC,
             InscriberRecipe::getSerializedIngredients,
             ItemStack.STREAM_CODEC,
             InscriberRecipe::getResultItem,
@@ -201,7 +202,13 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
                         .forGetter(Ingredients::bottom))
                 .apply(builder, Ingredients::new));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, Ingredients> STREAM_CODEC = StreamCodec.composite(
+    }
+
+//? if eval(current.version, "<=1.21.4") {
+    private static final StreamCodec<FriendlyByteBuf, Ingredients> INGREDIENTS_STREAM_CODEC = createIngredientsStreamCodec();
+
+    private static StreamCodec<FriendlyByteBuf, Ingredients> createIngredientsStreamCodec() {
+        return StreamCodec.composite(
                 Ingredient.CONTENTS_STREAM_CODEC,
                 Ingredients::top,
                 Ingredient.CONTENTS_STREAM_CODEC,
@@ -210,5 +217,20 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
                 Ingredients::bottom,
                 Ingredients::new);
     }
+//? }
+//? if eval(current.version, ">=1.21.5") {
+    private static final StreamCodec<RegistryFriendlyByteBuf, Ingredients> INGREDIENTS_STREAM_CODEC = createIngredientsStreamCodec();
+
+    private static StreamCodec<RegistryFriendlyByteBuf, Ingredients> createIngredientsStreamCodec() {
+        return StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC,
+                Ingredients::top,
+                Ingredient.CONTENTS_STREAM_CODEC,
+                Ingredients::middle,
+                Ingredient.CONTENTS_STREAM_CODEC,
+                Ingredients::bottom,
+                Ingredients::new);
+    }
+//? }
 
 }
