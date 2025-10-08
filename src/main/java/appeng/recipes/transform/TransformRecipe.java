@@ -6,12 +6,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-//? if eval(current.version, "<=1.21.4") {
+//? <=1.21.4 {
 import net.minecraft.network.FriendlyByteBuf;
-//? }
-//? if eval(current.version, ">=1.21.5") {
+//?}
+//? >=1.21.5 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? }
+//?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -30,13 +30,13 @@ import appeng.registry.AE2RecipeSerializers;
 import appeng.registry.AE2RecipeTypes;
 
 public final class TransformRecipe implements Recipe<TransformRecipeInput> {
-//? if eval(current.version, "<=1.21.1") {
+//? <=1.21.1 {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("transform");
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<TransformRecipe> TYPE = new RecipeType<>() {
     };
-//? }
+//?}
 
     public static final MapCodec<TransformRecipe> CODEC = RecordCodecBuilder.mapCodec(builder -> {
         return builder.group(
@@ -55,7 +55,7 @@ public final class TransformRecipe implements Recipe<TransformRecipeInput> {
                 .apply(builder, TransformRecipe::new);
     });
 
-//? if eval(current.version, "<=1.21.4") {
+//? <=1.21.4 {
     // TODO(stonecutter): Confirm TransformRecipe FriendlyByteBuf support for <= 1.21.4 with integration tests.
     public static final StreamCodec<FriendlyByteBuf, TransformRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.collection(NonNullList::createWithCapacity)),
@@ -65,7 +65,7 @@ public final class TransformRecipe implements Recipe<TransformRecipeInput> {
             TransformCircumstance.STREAM_CODEC,
             TransformRecipe::getCircumstance,
             TransformRecipe::new);
-//? } else {
+//?} else {
     public static final StreamCodec<RegistryFriendlyByteBuf, TransformRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.collection(NonNullList::createWithCapacity)),
             TransformRecipe::getIngredients,
@@ -74,7 +74,7 @@ public final class TransformRecipe implements Recipe<TransformRecipeInput> {
             TransformCircumstance.STREAM_CODEC,
             TransformRecipe::getCircumstance,
             TransformRecipe::new);
-//? }
+//?}
 
     public final NonNullList<Ingredient> ingredients;
     public final ItemStack output;

@@ -452,7 +452,7 @@ public abstract class AEBaseMenu extends AbstractContainerMenu {
                         break; // Item is already in the filter
                     } else if (destination.isEmpty()) {
                         cs.set(stackToMove.copy());
-                        // ???
+                        // TODO(stonecutter): Verify this behavior
                         this.broadcastChanges();
                         break;
                     }

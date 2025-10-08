@@ -7,12 +7,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-//? if eval(current.version, "<=1.21.4") {
+//? <=1.21.4 {
 import net.minecraft.network.FriendlyByteBuf;
-//? }
-//? if eval(current.version, ">=1.21.5") {
+//?}
+//? >=1.21.5 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? }
+//?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +58,7 @@ public class StorageCellUpgradeRecipe extends CustomRecipe {
                     .forGetter(StorageCellUpgradeRecipe::getResultComponent))
             .apply(builder, StorageCellUpgradeRecipe::new));
 
-//? if eval(current.version, "<=1.21.4") {
+//? <=1.21.4 {
     // TODO(stonecutter): Ensure FriendlyByteBuf registry codecs align with >=1.21.5 semantics.
     public static final StreamCodec<FriendlyByteBuf, StorageCellUpgradeRecipe> STREAM_CODEC = StreamCodec
             .composite(
@@ -67,7 +67,7 @@ public class StorageCellUpgradeRecipe extends CustomRecipe {
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getResultCell,
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getResultComponent,
                     StorageCellUpgradeRecipe::new);
-//? } else {
+//?} else {
     public static final StreamCodec<RegistryFriendlyByteBuf, StorageCellUpgradeRecipe> STREAM_CODEC = StreamCodec
             .composite(
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getInputCell,
@@ -75,7 +75,7 @@ public class StorageCellUpgradeRecipe extends CustomRecipe {
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getResultCell,
                     ByteBufCodecs.registry(Registries.ITEM), StorageCellUpgradeRecipe::getResultComponent,
                     StorageCellUpgradeRecipe::new);
-//? }
+//?}
 
     public Item getInputCell() {
         return inputCell;

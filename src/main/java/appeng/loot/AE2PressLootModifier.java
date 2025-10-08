@@ -1,4 +1,4 @@
-//? if eval(current.version, ">=1.21.4") {
+//? >=1.21.4 {
 package appeng.loot;
 
 import java.util.List;
@@ -73,4 +73,4 @@ public class AE2PressLootModifier extends LootModifier {
         generatedLoot.add(press);
     }
 }
-//? }
+//?}
