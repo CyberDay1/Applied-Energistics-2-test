@@ -1,3 +1,4 @@
+//? if eval(current.version, ">=1.21.4") {
 package appeng.loot;
 
 import java.util.Set;
@@ -53,3 +54,4 @@ public class AE2CertusLootModifier extends LootModifier {
         return generatedLoot;
     }
 }
+//? }
