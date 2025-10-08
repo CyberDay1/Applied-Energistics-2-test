@@ -7,9 +7,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-//?}
+*///?}
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class AddItemUpgradeRecipeSerializer implements RecipeSerializer<AddItemUpgradeRecipe> {
@@ -31,9 +31,9 @@ public class AddItemUpgradeRecipeSerializer implements RecipeSerializer<AddItemU
         AddItemUpgradeRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
 //?} else {
-    @Override
+    /*@Override
     public StreamCodec<RegistryFriendlyByteBuf, AddItemUpgradeRecipe> streamCodec() {
         return AddItemUpgradeRecipe.STREAM_CODEC;
     }
-//?}
+*///?}
 }

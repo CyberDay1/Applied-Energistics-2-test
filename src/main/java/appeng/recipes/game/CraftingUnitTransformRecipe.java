@@ -9,8 +9,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
-//?}
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
+*///?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
@@ -31,10 +31,10 @@ import appeng.registry.AE2RecipeTypes;
  */
 public class CraftingUnitTransformRecipe extends CustomRecipe {
 //? <=1.21.1 {
-    @Deprecated(forRemoval = true, since = "1.21.1")
+    /*@Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<CraftingUnitTransformRecipe> TYPE = new RecipeType<>() {
     };
-//?}
+*///?}
     public static final MapCodec<CraftingUnitTransformRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder
             .group(
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("upgraded_block")
@@ -53,14 +53,14 @@ public class CraftingUnitTransformRecipe extends CustomRecipe {
                     CraftingUnitTransformRecipe::getUpgradeItem,
                     CraftingUnitTransformRecipe::new);
 //?} else {
-    public static final StreamCodec<RegistryFriendlyByteBuf, CraftingUnitTransformRecipe> STREAM_CODEC = StreamCodec
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, CraftingUnitTransformRecipe> STREAM_CODEC = StreamCodec
             .composite(
                     ByteBufCodecs.registry(BuiltInRegistries.BLOCK.key()),
                     CraftingUnitTransformRecipe::getUpgradedBlock,
                     ByteBufCodecs.registry(BuiltInRegistries.ITEM.key()),
                     CraftingUnitTransformRecipe::getUpgradeItem,
                     CraftingUnitTransformRecipe::new);
-//?}
+*///?}
 
     private final Block upgradedBlock;
     private final Item upgradeItem;

@@ -30,8 +30,8 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
-//?}
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
+*///?}
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -80,7 +80,7 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
             InscriberRecipe::new);
 //?}
 //? >=1.21.5 {
-    public static final StreamCodec<RegistryFriendlyByteBuf, InscriberRecipe> STREAM_CODEC = StreamCodec.composite(
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, InscriberRecipe> STREAM_CODEC = StreamCodec.composite(
             INGREDIENTS_STREAM_CODEC,
             InscriberRecipe::getSerializedIngredients,
             ItemStack.STREAM_CODEC,
@@ -88,16 +88,16 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
             NeoForgeStreamCodecs.enumCodec(InscriberProcessType.class),
             InscriberRecipe::getProcessType,
             InscriberRecipe::new);
-//?}
+*///?}
 
 //? <=1.21.1 {
-    @Deprecated(forRemoval = true, since = "1.21.1")
+    /*@Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("inscriber");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<InscriberRecipe> TYPE = new RecipeType<>() {
     };
-//?}
+*///?}
 
     private final Ingredient middleInput;
     private final Ingredient topOptional;
@@ -219,7 +219,7 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
     }
 //?}
 //? >=1.21.5 {
-    private static final StreamCodec<RegistryFriendlyByteBuf, Ingredients> INGREDIENTS_STREAM_CODEC = createIngredientsStreamCodec();
+    /*private static final StreamCodec<RegistryFriendlyByteBuf, Ingredients> INGREDIENTS_STREAM_CODEC = createIngredientsStreamCodec();
 
     private static StreamCodec<RegistryFriendlyByteBuf, Ingredients> createIngredientsStreamCodec() {
         return StreamCodec.composite(
@@ -231,6 +231,6 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
                 Ingredients::bottom,
                 Ingredients::new);
     }
-//?}
+*///?}
 
 }

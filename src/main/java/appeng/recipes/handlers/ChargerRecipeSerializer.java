@@ -7,9 +7,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-//?}
+*///?}
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class ChargerRecipeSerializer implements RecipeSerializer<ChargerRecipe> {
@@ -30,9 +30,9 @@ public class ChargerRecipeSerializer implements RecipeSerializer<ChargerRecipe> 
         ChargerRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
 //?} else {
-    @Override
+    /*@Override
     public StreamCodec<RegistryFriendlyByteBuf, ChargerRecipe> streamCodec() {
         return ChargerRecipe.STREAM_CODEC;
     }
-//?}
+*///?}
 }

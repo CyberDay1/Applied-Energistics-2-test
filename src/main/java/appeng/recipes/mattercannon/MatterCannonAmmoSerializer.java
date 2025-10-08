@@ -25,9 +25,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-//?}
+*///?}
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class MatterCannonAmmoSerializer implements RecipeSerializer<MatterCannonAmmo> {
@@ -48,9 +48,9 @@ public class MatterCannonAmmoSerializer implements RecipeSerializer<MatterCannon
         MatterCannonAmmo.STREAM_CODEC.encode(buffer, recipe);
     }
 //?} else {
-    @Override
+    /*@Override
     public StreamCodec<RegistryFriendlyByteBuf, MatterCannonAmmo> streamCodec() {
         return MatterCannonAmmo.STREAM_CODEC;
     }
-//?}
+*///?}
 }

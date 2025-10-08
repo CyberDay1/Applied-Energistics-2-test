@@ -37,8 +37,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 //?}
 //? >=1.21.5 {
-import net.minecraft.network.RegistryFriendlyByteBuf;
-//?}
+/*import net.minecraft.network.RegistryFriendlyByteBuf;
+*///?}
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -76,17 +76,17 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
     public static final StreamCodec<FriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
 //?}
 //? >=1.21.5 {
-    public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
-//?}
+    /*public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
+*///?}
 
 //? <=1.21.1 {
-    @Deprecated(forRemoval = true, since = "1.21.1")
+    /*@Deprecated(forRemoval = true, since = "1.21.1")
     public static final ResourceLocation TYPE_ID = AppEng.makeId("entropy");
 
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<EntropyRecipe> TYPE = new RecipeType<>() {
     };
-//?}
+*///?}
 
     private final EntropyMode mode;
     private final Input input;
@@ -388,7 +388,7 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
 //?}
 
 //? >=1.21.5 {
-    private static final StreamCodec<RegistryFriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
+    /*private static final StreamCodec<RegistryFriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, FluidInput> FLUID_INPUT_STREAM_CODEC = createFluidInputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, BlockOutput> BLOCK_OUTPUT_STREAM_CODEC = createBlockOutputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, FluidOutput> FLUID_OUTPUT_STREAM_CODEC = createFluidOutputStreamCodec();
@@ -469,5 +469,5 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 FluidOutput::properties,
                 FluidOutput::new);
     }
-//?}
+*///?}
 }
