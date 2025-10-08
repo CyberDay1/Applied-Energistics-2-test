@@ -7,7 +7,9 @@ plugins {
     id("dev.kikugie.stonecutter")
 }
 
-stonecutter active "1.21.4"
+val activeVersion = providers.gradleProperty("sc.version").getOrElse("1.21.4")
+
+stonecutter active activeVersion
 
 abstract class StonecutterChiseledTask : DefaultTask() {
     fun ofTask(name: String) {

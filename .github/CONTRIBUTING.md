@@ -42,7 +42,7 @@ Please note that we might close any issue not matching these requirements.
 * Configure your local workspace with Stonecutter before making changes. For example:
 
   ```bash
-  ./gradlew sc:useVersion -Psc.version=1.21.4
+  ./gradlew -Psc.version=1.21.4 ciBuild
   ```
 
 * Use Stonecutter conditional comments (such as `//? if <condition>`) to guard version-specific code paths.

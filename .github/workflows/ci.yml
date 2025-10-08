@@ -34,7 +34,5 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Switch Stonecutter Version
-        run: ./gradlew sc:useVersion -Psc.version=${{ matrix.mc }}
       - name: Chiseled Build
-        run: ./gradlew ciBuild --no-daemon --stacktrace --console=plain
+        run: ./gradlew -Psc.version=${{ matrix.mc }} ciBuild --no-daemon --stacktrace --console=plain
