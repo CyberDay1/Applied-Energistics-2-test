@@ -22,6 +22,13 @@ dependencies {
     implementation "net.neoforged:neoforge:${NEOFORGE}"
 }
 
+def accessTransformerFile = file("accesstransformer.cfg")
+if (accessTransformerFile.exists() && accessTransformerFile.length() > 0) {
+    minecraft {
+        accessTransformer = accessTransformerFile
+    }
+}
+
 tasks.register("runData", JavaExec) {
     group = "datagen"
     classpath = sourceSets.main.runtimeClasspath
