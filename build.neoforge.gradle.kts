@@ -40,6 +40,7 @@ repositories {
             includeGroup("mezz.jei")
         }
     }
+    maven("https://libraries.minecraft.net/")
     mavenLocal()
     mavenCentral()
 }
@@ -53,7 +54,7 @@ dependencies {
     if (neoForgeVersion.contains('x')) {
         logger.lifecycle("[stonecutter] TODO: define NeoForge artifact for version $neoForgeVersion before enabling full builds.")
     } else {
-        add("minecraft", "net.neoforged:forge:$neoForgeVersion")
+        add("minecraft", "net.neoforged:neoforge:$neoForgeVersion")
     }
 }
 
