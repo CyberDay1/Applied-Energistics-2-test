@@ -1,4 +1,4 @@
-//? >=1.21.4 {
+//? if (>=1.21.4) {
 package appeng.registry;
 
 import com.mojang.serialization.Codec;
@@ -23,4 +23,4 @@ public final class AE2LootModifiers {
         // Intentionally empty to force the class to load and register modifiers.
     }
 }
-//?}
+//? endif

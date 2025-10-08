@@ -1,4 +1,4 @@
-//? >=1.21.4 {
+//? if (>=1.21.4) {
 package appeng.loot;
 
 import java.util.Set;
@@ -54,4 +54,4 @@ public class AE2CertusLootModifier extends LootModifier {
         return generatedLoot;
     }
 }
-//?}
+//? endif

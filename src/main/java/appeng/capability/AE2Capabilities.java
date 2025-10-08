@@ -1,14 +1,14 @@
 package appeng.capability;
 
-//? >=1.21.4 {
+//? if (>=1.21.4) {
 import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.CapabilityManager;
 import net.neoforged.neoforge.capabilities.CapabilityToken;
-//?} else {
-/*import net.minecraftforge.common.capabilities.Capability;
+//? else {
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
-*///?}
+//? endif
 
 import appeng.api.behaviors.GenericInternalInventory;
 import appeng.api.implementations.blockentities.ICraftingMachine;
@@ -23,7 +23,7 @@ public final class AE2Capabilities {
     private AE2Capabilities() {
     }
 
-    //? >=1.21.4 {
+    //? if (>=1.21.4) {
     public static final CapabilityToken<MEStorage> ME_STORAGE_TOKEN = new CapabilityToken<>() {};
     public static final CapabilityToken<ICraftingMachine> CRAFTING_MACHINE_TOKEN = new CapabilityToken<>() {};
     public static final CapabilityToken<GenericInternalInventory> GENERIC_INTERNAL_INV_TOKEN =
@@ -40,8 +40,8 @@ public final class AE2Capabilities {
     public static final Capability<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST =
             CapabilityManager.get(IN_WORLD_GRID_NODE_HOST_TOKEN);
     public static final Capability<ICrankable> CRANKABLE = CapabilityManager.get(CRANKABLE_TOKEN);
-    //?} else {
-    /*public static final Capability<MEStorage> ME_STORAGE =
+    //? else {
+    public static final Capability<MEStorage> ME_STORAGE =
             CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<ICraftingMachine> CRAFTING_MACHINE =
             CapabilityManager.get(new CapabilityToken<>() {});
@@ -51,5 +51,5 @@ public final class AE2Capabilities {
             CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<ICrankable> CRANKABLE =
             CapabilityManager.get(new CapabilityToken<>() {});
-    *///?}
+    //? endif
 }

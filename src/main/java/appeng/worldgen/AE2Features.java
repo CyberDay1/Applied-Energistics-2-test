@@ -9,7 +9,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import appeng.core.AppEng;
 
 public final class AE2Features {
-    //? >=1.21.4 {
+    //? if (>=1.21.4) {
     public static final ResourceKey<ConfiguredFeature<?, ?>> CERTUS_QUARTZ_ORE = ResourceKey.create(
             Registries.CONFIGURED_FEATURE, new ResourceLocation(AppEng.MOD_ID, "certus_quartz_ore"));
 
@@ -21,8 +21,8 @@ public final class AE2Features {
 
     public static final ResourceKey<PlacedFeature> METEORITE_PLACED = ResourceKey.create(
             Registries.PLACED_FEATURE, new ResourceLocation(AppEng.MOD_ID, "meteorite"));
-    //?} else {
-    /*public static final ResourceKey<ConfiguredFeature<?, ?>> CERTUS_QUARTZ_ORE = ResourceKey.create(
+    //? else {
+    public static final ResourceKey<ConfiguredFeature<?, ?>> CERTUS_QUARTZ_ORE = ResourceKey.create(
             Registries.CONFIGURED_FEATURE, new ResourceLocation(AppEng.MOD_ID, "certus_quartz_ore"));
 
     public static final ResourceKey<PlacedFeature> CERTUS_QUARTZ_ORE_PLACED = ResourceKey.create(
@@ -33,7 +33,7 @@ public final class AE2Features {
 
     public static final ResourceKey<PlacedFeature> METEORITE_PLACED = ResourceKey.create(
             Registries.PLACED_FEATURE, new ResourceLocation(AppEng.MOD_ID, "meteorite"));
-    *///?}
+    //? endif
 
     private AE2Features() {}
 }
