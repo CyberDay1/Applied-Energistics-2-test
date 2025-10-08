@@ -10,6 +10,7 @@
 !settings.gradle
 !gradle.properties
 !stonecutter.json
+!stonecutter.gradle.kts
 !crowdin.yml
 
 # Scripts

@@ -152,9 +152,15 @@ dependencyResolutionManagement {
 }
 
 stonecutter {
+    kotlinController = true
+    centralScript = true
+    vcsVersion = "1.21.1"
+
+    versions("1.21.1")
+
     shared {
-        set("MC", "1.21.4")
-        set("NEOFORGE", "21.4.154")
+        set("MC", "1.21.1")
+        set("NEOFORGE", "21.1.xxx")
     }
 }
 
