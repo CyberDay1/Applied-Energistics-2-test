@@ -20,8 +20,6 @@ private val StonecutterControllerExtension.chiseled: Class<out StonecutterChisel
     get() = StonecutterChiseledTask::class.java
 
 tasks.register("ciBuild", stonecutter.chiseled) {
-    group = "verification"
-    description = "Run the aggregated Stonecutter build for CI."
     ofTask("build")
 }
 
