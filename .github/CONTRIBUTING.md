@@ -36,13 +36,21 @@ Please note that we might close any issue not matching these requirements.
   * To quickly create a topic branch based on the development branch; `git
     checkout -b my_contribution_branch`. Please avoid working
     directly on the `master` branch.
-* Configure your local workspace with Stonecutter before making changes:
-  * `./gradlew sc:useVersion -Psc.version=1.21.4`
+* Always commit atomic edits so each change set stays reviewable.
+* Configure your local workspace with Stonecutter before making changes. For example:
+
+  ```bash
+  ./gradlew sc:useVersion -Psc.version=1.21.4
+  ```
+
+* Use Stonecutter conditional comments (such as `//? if <condition>`) to guard version-specific code paths.
 * Never force Gradle builds inside PRs. If validation is required, request a run
-  of the guarded CI workflow instead of pushing build artifacts.
+  of the guarded CI workflow instead of pushing build artifacts, and do not run
+  `./gradlew build` locally unless CI has requested it.
 * If you are at risk of missing a deadline or experiencing local timeouts,
-  commit your progress and open a pull request with a clear TODO list so the
-  work stays unblocked.
+  commit your progress to a dedicated work-in-progress branch (for example,
+  `phase2/wip/pr-49-hud-overlay-runtime`) and open a pull request with a clear
+  TODO list so the work stays unblocked.
 * Make commits of logical units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
 * Make sure your commit messages are in the proper format.

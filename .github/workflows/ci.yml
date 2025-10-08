@@ -22,10 +22,11 @@ jobs:
         run: ./gradlew spotlessCheck --console=plain
 
   build:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_build == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        # TODO: Expand to cover 1.21.1 -> 1.21.10 once the guarded validation succeeds.
         mc: [ '1.21.4', '1.21.9' ]
     steps:
       - uses: actions/checkout@v4
@@ -36,4 +37,4 @@ jobs:
       - name: Select Stonecutter target
         run: ./gradlew sc:useVersion -Psc.version=${{ matrix.mc }}
       - name: Build
-        run: ./gradlew clean build --no-daemon --stacktrace --console=plain
+        run: ./gradlew clean ciBuild --no-daemon --stacktrace --console=plain
