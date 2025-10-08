@@ -28,8 +28,11 @@ public final class StorageApi {
         if (blockEntity == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(level.getCapability(AECapabilities.ME_STORAGE, pos,
-                blockEntity.getBlockState(), blockEntity, side));
+        var optionalStorage = Optional
+                .ofNullable(level.getCapability(AECapabilities.ME_STORAGE, pos,
+                        blockEntity.getBlockState(), blockEntity, side));
+        // TODO: review Optional migration
+        return optionalStorage;
     }
 
     public Optional<MEStorage> findStorage(BlockEntity blockEntity, @Nullable Direction side) {
@@ -37,7 +40,10 @@ public final class StorageApi {
             return Optional.empty();
         }
         var level = blockEntity.getLevel();
-        return Optional.ofNullable(level.getCapability(AECapabilities.ME_STORAGE, blockEntity.getBlockPos(),
-                blockEntity.getBlockState(), blockEntity, side));
+        var optionalStorage = Optional
+                .ofNullable(level.getCapability(AECapabilities.ME_STORAGE, blockEntity.getBlockPos(),
+                        blockEntity.getBlockState(), blockEntity, side));
+        // TODO: review Optional migration
+        return optionalStorage;
     }
 }
