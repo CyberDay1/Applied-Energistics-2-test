@@ -21,7 +21,7 @@ jobs:
       - name: Spotless check
         run: ./gradlew spotlessCheck --console=plain
 
-  build:
+  ciBuild:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_build == 'true' }}
     runs-on: ubuntu-latest
     strategy:
@@ -34,7 +34,5 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Select Stonecutter target
-        run: ./gradlew sc:useVersion -Psc.version=${{ matrix.mc }}
       - name: Build
-        run: ./gradlew clean ciBuild --no-daemon --stacktrace --console=plain
+        run: ./gradlew ciBuild -Psc.version=${{ matrix.mc }} --no-daemon --stacktrace --console=plain

@@ -1,3 +1,4 @@
+import dev.kikugie.stonecutter.data.StonecutterProject
 import groovy.json.JsonSlurper
 import org.gradle.api.initialization.resolve.RepositoriesMode
 import org.gradle.api.initialization.resolve.RulesMode
@@ -23,6 +24,21 @@ plugins {
 
 def stonecutterConfigFile = file("stonecutter.json")
 def stonecutterConfig = new JsonSlurper().parse(stonecutterConfigFile)
+
+def stonecutterVersions = (stonecutterConfig.versions ?: []) as List<String>
+def stonecutterProjects = stonecutterVersions.collect { version ->
+    new StonecutterProject(version, version)
+}
+
+stonecutter.shared {
+    versions(stonecutterProjects)
+    vcsVersion = "1.21.4"
+    kotlinController = true
+    centralScript = 'stonecutter.gradle.kts'
+    mapBuilds { target, project ->
+        "build.neoforge.gradle.kts"
+    }
+}
 
 stonecutter.create(rootProject, stonecutterConfigFile)
 
