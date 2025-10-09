@@ -1,23 +1,14 @@
-import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.GradleException
 
 plugins {
     id 'java'
     id 'net.neoforged.moddev'
+    id 'net.neoforged.moddev.repositories'
     id 'dev.kikugie.stonecutter'
     id 'com.diffplug.spotless'
 }
 
 group = 'appeng'
-
-def minecraftConfiguration = configurations.maybeCreate('minecraft')
-
-configurations.named(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME) {
-    extendsFrom minecraftConfiguration
-}
-
-configurations.named(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) {
-    extendsFrom minecraftConfiguration
-}
 
 java {
     toolchain {
@@ -25,37 +16,41 @@ java {
     }
 }
 
-neoForge {
-    version = project.property('NEOFORGE') as String
+def neoForgeVersion = project.findProperty('NEOFORGE')?.toString()
+if (!neoForgeVersion) {
+    throw new GradleException('Missing NEOFORGE version property')
+}
+def modId = project.findProperty('modid')?.toString()
+if (!modId) {
+    throw new GradleException('Missing modid property')
+}
+def accessTransformerFile = rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+def hasAccessTransformers = accessTransformerFile.exists() && accessTransformerFile.readLines().any { line ->
+    def trimmed = line.trim()
+    trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('//')
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        name = 'NeoForged'
-        url = uri('https://maven.neoforged.net/releases')
+neoForge {
+    version = neoForgeVersion
+    runs {
+        client {
+            workingDirectory = project.file('run/client')
+        }
+        server {
+            workingDirectory = project.file('run/server')
+        }
+        data {
+            workingDirectory = project.file('run/data')
+            programArguments.addAll('--mod', modId, '--all')
+        }
     }
-    maven {
-        name = 'Minecraft Libraries'
-        url = uri('https://libraries.minecraft.net')
+    if (hasAccessTransformers) {
+        accessTransformers.from(accessTransformerFile)
     }
 }
 
 dependencies {
-    def neoForgeVersion = project.property('NEOFORGE') as String
-    if (neoForgeVersion.contains('x')) {
-        logger.lifecycle("[stonecutter] TODO: define NeoForge artifact for version ${neoForgeVersion} before enabling full builds.")
-    } else {
-        minecraft "net.neoforged:neoforge:${neoForgeVersion}"
-    }
-}
-
-def accessTransformerFile = file('accesstransformer.cfg')
-if (accessTransformerFile.exists() && accessTransformerFile.length() > 0) {
-    neoForge {
-        accessTransformers.add(accessTransformerFile)
-    }
+    implementation "net.neoforged:neoforge:${neoForgeVersion}"
 }
 
 tasks.register('runData', JavaExec) {

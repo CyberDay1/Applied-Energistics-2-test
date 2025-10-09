@@ -1,19 +1,8 @@
-import org.gradle.api.plugins.JavaPlugin
-
 plugins {
     id("net.neoforged.moddev")
+    id("net.neoforged.moddev.repositories")
     id("dev.kikugie.stonecutter")
     id("com.diffplug.spotless")
-}
-
-val minecraftConfiguration = configurations.maybeCreate("minecraft")
-
-configurations.named(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME) {
-    extendsFrom(minecraftConfiguration)
-}
-
-configurations.named(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) {
-    extendsFrom(minecraftConfiguration)
 }
 
 java {
@@ -22,40 +11,40 @@ java {
     }
 }
 
-repositories {
-    maven("https://maven.neoforged.net/releases")
-    maven("https://maven.shedaniel.me/") {
-        content {
-            includeGroup("me.shedaniel")
-            includeGroup("me.shedaniel.cloth")
-        }
+val neoForgeVersion = project.findProperty("NEOFORGE")?.toString()
+    ?: error("Missing NEOFORGE version")
+val modId = project.findProperty("modid")?.toString() ?: error("Missing modid property")
+val accessTransformerFile = rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")
+val hasAccessTransformers = accessTransformerFile.exists() &&
+    accessTransformerFile.readLines().any { line ->
+        val trimmed = line.trim()
+        trimmed.isNotEmpty() && !trimmed.startsWith("#") && !trimmed.startsWith("//")
     }
-    maven("https://www.cursemaven.com") {
-        content {
-            includeGroup("curse.maven")
-        }
-    }
-    maven("https://maven.blamejared.com/") {
-        content {
-            includeGroup("mezz.jei")
-        }
-    }
-    maven("https://libraries.minecraft.net/")
-    mavenLocal()
-    mavenCentral()
-}
 
 neoForge {
-    version = property("NEOFORGE") as String
+    version = neoForgeVersion
+    runs {
+        register("client") {
+            client()
+            gameDirectory.set(project.file("run/client"))
+        }
+        register("server") {
+            server()
+            gameDirectory.set(project.file("run/server"))
+        }
+        register("data") {
+            data()
+            gameDirectory.set(project.file("run/data"))
+            programArguments.addAll(listOf("--mod", modId, "--all"))
+        }
+    }
+    if (hasAccessTransformers) {
+        accessTransformers.from(accessTransformerFile)
+    }
 }
 
 dependencies {
-    val neoForgeVersion = property("NEOFORGE") as String
-    if (neoForgeVersion.contains('x')) {
-        logger.lifecycle("[stonecutter] TODO: define NeoForge artifact for version $neoForgeVersion before enabling full builds.")
-    } else {
-        add("minecraft", "net.neoforged:neoforge:$neoForgeVersion")
-    }
+    implementation("net.neoforged:neoforge:$neoForgeVersion")
 }
 
 spotless {
