@@ -36,11 +36,15 @@ if (rawStonecutterVersions instanceof Map) {
     }
     stonecutterTargets = versionsMap.collectEntries { version, dataObj ->
         Map<?, ?> data = dataObj instanceof Map ? (Map<?, ?>) dataObj : [:]
+        Map<?, ?> vars = data.vars instanceof Map ? (Map<?, ?>) data.vars : [:]
+        def mcValue = (data.mcVersion ?: data.MC ?: version)?.toString()
+        def neoForgeValue = (vars.NEOFORGE ?: data.NEOFORGE)?.toString()
+        def packFormatValue = (vars.PACK_FORMAT ?: data.PACK_FORMAT)?.toString()
         [
                 (version): [
-                        MC         : (data.MC ?: version)?.toString(),
-                        NEOFORGE   : data.NEOFORGE?.toString(),
-                        PACK_FORMAT: data.PACK_FORMAT?.toString()
+                        MC         : mcValue,
+                        NEOFORGE   : neoForgeValue,
+                        PACK_FORMAT: packFormatValue
                 ]
         ]
     }
@@ -66,7 +70,7 @@ stonecutterTargets = stonecutterTargets ?: [:]
 
 stonecutter.shared {
     versions(stonecutterProjects)
-    vcsVersion = "1.21.4"
+    vcsVersion = "1.21.4-neoforge"
     kotlinController = true
     centralScript = 'stonecutter.gradle.kts'
     mapBuilds { target, project ->
@@ -84,7 +88,7 @@ stonecutter {
 gradle.rootProject { root ->
     root.extensions.extraProperties.set("stonecutterVersionMatrix", stonecutterTargets)
 
-    def defaultVersion = (stonecutterConfig.default ?: stonecutterConfig.vcs ?: '1.21.4') as String
+    def defaultVersion = (stonecutterConfig.default ?: stonecutterConfig.vcs ?: '1.21.4-neoforge') as String
     def defaults = stonecutterTargets[defaultVersion] ?: [:]
 
     def mcVersion = providers.gradleProperty("MC").getOrElse(defaults.MC ?: defaultVersion)
