@@ -31,8 +31,15 @@ neoForge {
 
 repositories {
     mavenLocal()
-    maven { url = 'https://maven.neoforged.net/releases' }
     mavenCentral()
+    maven {
+        name = 'NeoForged'
+        url = uri('https://maven.neoforged.net/releases')
+    }
+    maven {
+        name = 'Minecraft Libraries'
+        url = uri('https://libraries.minecraft.net')
+    }
 }
 
 dependencies {
@@ -40,7 +47,7 @@ dependencies {
     if (neoForgeVersion.contains('x')) {
         logger.lifecycle("[stonecutter] TODO: define NeoForge artifact for version ${neoForgeVersion} before enabling full builds.")
     } else {
-        minecraft "net.neoforged:forge:${neoForgeVersion}"
+        minecraft "net.neoforged:neoforge:${neoForgeVersion}"
     }
 }
 
