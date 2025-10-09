@@ -11,7 +11,10 @@ java {
     }
 }
 
-val neoForgeVersion = project.findProperty("NEOFORGE")?.toString()
+val neoForgeVersionProvider = providers.gradleProperty("NEOFORGE").orElse(
+    providers.provider { project.findProperty("NEOFORGE")?.toString().orEmpty() }
+)
+val neoForgeVersion = neoForgeVersionProvider.orNull?.takeUnless { it.isEmpty() }
     ?: error("Missing NEOFORGE version")
 val modId = project.findProperty("modid")?.toString() ?: error("Missing modid property")
 val accessTransformerFile = rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")
