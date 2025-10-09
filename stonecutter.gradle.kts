@@ -53,9 +53,14 @@ stonecutter.parameters {
         ?: error("Missing NEOFORGE version for ${current.version}")
     consts["NEOFORGE"] = neoForge
 
+    val packFormat = current.data["PACK_FORMAT"]
+        ?: error("Missing PACK_FORMAT for ${current.version}")
+    consts["PACK_FORMAT"] = packFormat
+
     node.project.extensions.extraProperties.set("MC", current.version)
     node.project.extensions.extraProperties.set("minecraft_version", current.version)
     node.project.extensions.extraProperties.set("NEOFORGE", neoForge)
     node.project.extensions.extraProperties.set("neoforge_version", neoForge)
     node.project.extensions.extraProperties.set("neoforge_version_range", "[${neoForge},)")
+    node.project.extensions.extraProperties.set("PACK_FORMAT", packFormat)
 }

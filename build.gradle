@@ -16,7 +16,9 @@ java {
     }
 }
 
-def neoForgeVersion = project.findProperty('NEOFORGE')?.toString()
+def neoForgeVersionProvider = providers.gradleProperty('NEOFORGE').orElse(
+        providers.provider { project.findProperty('NEOFORGE')?.toString() ?: '' })
+def neoForgeVersion = neoForgeVersionProvider.orNull
 if (!neoForgeVersion) {
     throw new GradleException('Missing NEOFORGE version property')
 }
