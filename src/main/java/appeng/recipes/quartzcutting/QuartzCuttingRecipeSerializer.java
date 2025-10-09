@@ -5,10 +5,10 @@ import com.mojang.serialization.MapCodec;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-//? endif
+//? }
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class QuartzCuttingRecipeSerializer implements RecipeSerializer<QuartzCuttingRecipe> {
@@ -28,10 +28,10 @@ public class QuartzCuttingRecipeSerializer implements RecipeSerializer<QuartzCut
     public void toNetwork(FriendlyByteBuf buffer, QuartzCuttingRecipe recipe) {
         QuartzCuttingRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//? else {
+//? } else {
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, QuartzCuttingRecipe> streamCodec() {
         return QuartzCuttingRecipe.STREAM_CODEC;
     }
-//? endif
+//? }
 }

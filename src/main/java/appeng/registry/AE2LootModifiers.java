@@ -23,4 +23,4 @@ public final class AE2LootModifiers {
         // Intentionally empty to force the class to load and register modifiers.
     }
 }
-//? endif
+//? }

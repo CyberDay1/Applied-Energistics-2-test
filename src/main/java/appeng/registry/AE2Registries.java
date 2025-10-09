@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 //? if (>=1.21.5) {
 import net.minecraft.core.RegistrySetBuilder;
-//? endif
+//? }
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -50,7 +50,7 @@ public final class AE2Registries {
     public static RegistrySetBuilder bootstrapBuilder() {
         return BOOTSTRAP;
     }
-    //? endif
+    //? }
 
     public static void register(IEventBus modEventBus) {
         //? if (>=1.21.5) {
@@ -65,7 +65,7 @@ public final class AE2Registries {
         CONDITIONS.register(modEventBus);
         // The builder is returned for data generation / bootstrap chaining if needed by consumers.
         bootstrapBuilder();
-        //? else {
+        //? } else {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
@@ -75,6 +75,6 @@ public final class AE2Registries {
         SOUNDS.register(modEventBus);
         LOOT_MODIFIERS.register(modEventBus);
         CONDITIONS.register(modEventBus);
-        //? endif
+        //? }
     }
 }

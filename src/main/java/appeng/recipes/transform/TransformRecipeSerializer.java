@@ -23,10 +23,10 @@ import com.mojang.serialization.MapCodec;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-//? endif
+//? }
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class TransformRecipeSerializer implements RecipeSerializer<TransformRecipe> {
@@ -47,11 +47,11 @@ public class TransformRecipeSerializer implements RecipeSerializer<TransformReci
     public void toNetwork(FriendlyByteBuf buffer, TransformRecipe recipe) {
         TransformRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//? else {
+//? } else {
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, TransformRecipe> streamCodec() {
         return TransformRecipe.STREAM_CODEC;
     }
-//? endif
+//? }
 
 }

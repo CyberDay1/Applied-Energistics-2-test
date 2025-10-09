@@ -7,9 +7,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? endif
+//? }
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +31,7 @@ public class ChargerRecipe implements Recipe<RecipeInput> {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<ChargerRecipe> TYPE = new RecipeType<>() {
     };
-//? endif
+//? }
 
     public final Ingredient ingredient;
     public final NonNullList<Ingredient> ingredients;
@@ -52,14 +52,14 @@ public class ChargerRecipe implements Recipe<RecipeInput> {
             ItemStack.STREAM_CODEC,
             ChargerRecipe::getResultItem,
             ChargerRecipe::new);
-//? else {
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, ChargerRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC,
             ChargerRecipe::getIngredient,
             ItemStack.STREAM_CODEC,
             ChargerRecipe::getResultItem,
             ChargerRecipe::new);
-//? endif
+//? }
 
     public ChargerRecipe(Ingredient ingredient, ItemStack result) {
         this.ingredient = ingredient;

@@ -8,9 +8,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? endif
+//? }
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -35,7 +35,7 @@ public final class TransformRecipe implements Recipe<TransformRecipeInput> {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<TransformRecipe> TYPE = new RecipeType<>() {
     };
-//? endif
+//? }
 
     public static final MapCodec<TransformRecipe> CODEC = RecordCodecBuilder.mapCodec(builder -> {
         return builder.group(
@@ -64,7 +64,7 @@ public final class TransformRecipe implements Recipe<TransformRecipeInput> {
             TransformCircumstance.STREAM_CODEC,
             TransformRecipe::getCircumstance,
             TransformRecipe::new);
-//? else {
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, TransformRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.collection(NonNullList::createWithCapacity)),
             TransformRecipe::getIngredients,
@@ -73,7 +73,7 @@ public final class TransformRecipe implements Recipe<TransformRecipeInput> {
             TransformCircumstance.STREAM_CODEC,
             TransformRecipe::getCircumstance,
             TransformRecipe::new);
-//? endif
+//? }
 
     public final NonNullList<Ingredient> ingredients;
     public final ItemStack output;

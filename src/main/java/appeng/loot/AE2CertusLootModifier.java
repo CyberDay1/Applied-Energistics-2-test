@@ -54,4 +54,4 @@ public class AE2CertusLootModifier extends LootModifier {
         return generatedLoot;
     }
 }
-//? endif
+//? }

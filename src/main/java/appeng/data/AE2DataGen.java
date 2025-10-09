@@ -20,7 +20,7 @@ import appeng.datagen.AE2RecipeProvider;
 //? if (>=1.21.4) {
 import appeng.datagen.AE2WorldgenProvider;
 import appeng.datagen.AE2BiomeModifierProvider;
-//? endif
+//? }
 import appeng.datagen.AELangProvider;
 import appeng.datagen.ChargerRecipeProvider;
 import appeng.datagen.InscriberRecipeProvider;
@@ -50,7 +50,7 @@ public final class AE2DataGen {
             //? if (>=1.21.4) {
             generator.addProvider(true, new AE2WorldgenProvider(packOutput, lookup));
             generator.addProvider(true, new AE2BiomeModifierProvider(packOutput, lookup));
-            //? endif
+            //? }
 
             generator.addProvider(true, new AE2RecipeProvider(packOutput));
             generator.addProvider(true, new ChargerRecipeProvider(packOutput));

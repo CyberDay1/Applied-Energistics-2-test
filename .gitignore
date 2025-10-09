@@ -26,6 +26,8 @@
 # include markdowns
 !*.md
 !REPORTS/
+!reports/
+!reports/conditionals_raw.txt
 !.gitkeep
 !LICENSE
 

@@ -23,10 +23,10 @@ import com.mojang.serialization.MapCodec;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-//? endif
+//? }
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class MatterCannonAmmoSerializer implements RecipeSerializer<MatterCannonAmmo> {
@@ -46,10 +46,10 @@ public class MatterCannonAmmoSerializer implements RecipeSerializer<MatterCannon
     public void toNetwork(FriendlyByteBuf buffer, MatterCannonAmmo recipe) {
         MatterCannonAmmo.STREAM_CODEC.encode(buffer, recipe);
     }
-//? else {
+//? } else {
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, MatterCannonAmmo> streamCodec() {
         return MatterCannonAmmo.STREAM_CODEC;
     }
-//? endif
+//? }
 }

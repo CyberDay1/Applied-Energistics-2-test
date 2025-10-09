@@ -17,7 +17,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 //? if (>=1.21.5) {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? endif
+//? }
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -45,11 +45,11 @@ public class TransformCircumstance {
     public static final StreamCodec<FriendlyByteBuf, TransformCircumstance> STREAM_CODEC = StreamCodec.ofMember(
             TransformCircumstance::toNetwork,
             TransformCircumstance::fromNetwork);
-//? else {
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, TransformCircumstance> STREAM_CODEC = StreamCodec.ofMember(
             TransformCircumstance::toNetwork,
             TransformCircumstance::fromNetwork);
-//? endif
+//? }
 
     private final String type;
 

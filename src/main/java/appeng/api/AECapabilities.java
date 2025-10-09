@@ -25,9 +25,9 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 //? if (>=1.21.4) {
 import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.CapabilityToken;
-//? else {
+//? } else {
 import net.minecraftforge.common.capabilities.Capability;
-//? endif
+//? }
 
 import appeng.api.behaviors.GenericInternalInventory;
 import appeng.api.implementations.blockentities.ICraftingMachine;
@@ -83,6 +83,6 @@ public final class AECapabilities {
     public static final CapabilityToken<IInWorldGridNodeHost> IN_WORLD_GRID_NODE_HOST_ENTITY_TOKEN =
             AE2Capabilities.IN_WORLD_GRID_NODE_HOST_TOKEN;
     public static final CapabilityToken<ICrankable> CRANKABLE_ENTITY_TOKEN = AE2Capabilities.CRANKABLE_TOKEN;
-    //? endif
+    //? }
 
 }

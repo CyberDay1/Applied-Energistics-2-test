@@ -1,0 +1,225 @@
+src/main/java/appeng/registry/AE2LootModifiers.java:1://? if (>=1.21.4) {
+src/main/java/appeng/registry/AE2LootModifiers.java:26://? }
+src/main/java/appeng/registry/AE2Registries.java:15://? if (>=1.21.5) {
+src/main/java/appeng/registry/AE2Registries.java:17://? }
+src/main/java/appeng/registry/AE2Registries.java:47:    //? if (>=1.21.5) {
+src/main/java/appeng/registry/AE2Registries.java:53:    //? }
+src/main/java/appeng/registry/AE2Registries.java:56:        //? if (>=1.21.5) {
+src/main/java/appeng/registry/AE2Registries.java:68:        //? } else {
+src/main/java/appeng/registry/AE2Registries.java:78:        //? }
+src/main/java/appeng/api/AECapabilities.java:25://? if (>=1.21.4) {
+src/main/java/appeng/api/AECapabilities.java:28://? } else {
+src/main/java/appeng/api/AECapabilities.java:30://? }
+src/main/java/appeng/api/AECapabilities.java:77:    //? if (>=1.21.4) {
+src/main/java/appeng/api/AECapabilities.java:86:    //? }
+src/main/java/appeng/AE2Capabilities.java:3://? if (>=1.21.4) {
+src/main/java/appeng/AE2Capabilities.java:7://? } else {
+src/main/java/appeng/AE2Capabilities.java:11://? }
+src/main/java/appeng/AE2Capabilities.java:17:    //? if (>=1.21.4) {
+src/main/java/appeng/AE2Capabilities.java:23:    //? } else {
+src/main/java/appeng/AE2Capabilities.java:28:    //? }
+src/main/java/appeng/core/AppEngBase.java:91://? if (>=1.21.4) {
+src/main/java/appeng/core/AppEngBase.java:93://? }
+src/main/java/appeng/core/AppEngBase.java:131:        //? if (>=1.21.4) {
+src/main/java/appeng/core/AppEngBase.java:133:        //? }
+src/main/java/appeng/datagen/AE2BiomeModifierProvider.java:1://? if (>=1.21.4) {
+src/main/java/appeng/datagen/AE2BiomeModifierProvider.java:57://? }
+src/main/java/appeng/datagen/AE2WorldgenProvider.java:1://? if (>=1.21.4) {
+src/main/java/appeng/datagen/AE2WorldgenProvider.java:85://? }
+src/main/java/appeng/client/AE2ClientSetup.java:3://? if (>=1.21.4) {
+src/main/java/appeng/client/AE2ClientSetup.java:5://? } else {
+src/main/java/appeng/client/AE2ClientSetup.java:7://? }
+src/main/java/appeng/client/AE2ClientSetup.java:33:        //? if (>=1.21.4) {
+src/main/java/appeng/client/AE2ClientSetup.java:35:        //? } else {
+src/main/java/appeng/client/AE2ClientSetup.java:37:        //? }
+src/main/java/appeng/client/AE2ClientSetup.java:41:        //? if (>=1.21.4) {
+src/main/java/appeng/client/AE2ClientSetup.java:50:        //? } else {
+src/main/java/appeng/client/AE2ClientSetup.java:59:        //? }
+src/main/java/appeng/capability/AE2Capabilities.java:3://? if (>=1.21.4) {
+src/main/java/appeng/capability/AE2Capabilities.java:7://? } else {
+src/main/java/appeng/capability/AE2Capabilities.java:11://? }
+src/main/java/appeng/capability/AE2Capabilities.java:26:    //? if (>=1.21.4) {
+src/main/java/appeng/capability/AE2Capabilities.java:43:    //? } else {
+src/main/java/appeng/capability/AE2Capabilities.java:54:    //? }
+src/main/java/appeng/worldgen/AE2Features.java:12:    //? if (>=1.21.4) {
+src/main/java/appeng/worldgen/AE2Features.java:24:    //? } else {
+src/main/java/appeng/worldgen/AE2Features.java:36:    //? }
+src/main/java/appeng/capabilities/AE2Capabilities.java:3://? if (>=1.21.4) {
+src/main/java/appeng/capabilities/AE2Capabilities.java:7://? } else {
+src/main/java/appeng/capabilities/AE2Capabilities.java:11://? }
+src/main/java/appeng/capabilities/AE2Capabilities.java:17:    //? if (>=1.21.4) {
+src/main/java/appeng/capabilities/AE2Capabilities.java:20:    //? } else {
+src/main/java/appeng/capabilities/AE2Capabilities.java:23:    //? }
+src/main/java/appeng/data/AE2DataGen.java:20://? if (>=1.21.4) {
+src/main/java/appeng/data/AE2DataGen.java:23://? }
+src/main/java/appeng/data/AE2DataGen.java:50:            //? if (>=1.21.4) {
+src/main/java/appeng/data/AE2DataGen.java:53:            //? }
+src/main/java/appeng/data/providers/AELootModifierProvider.java:1://? if (>=1.21.4) {
+src/main/java/appeng/data/providers/AELootModifierProvider.java:30://? }
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipeSerializer.java:5://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipeSerializer.java:8://? } else {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipeSerializer.java:11://? }
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipeSerializer.java:21://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipeSerializer.java:32://? } else {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipeSerializer.java:37://? }
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:10://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:12://? } else {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:14://? }
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:33://? if (<=1.21.1) {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:37://? }
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:46://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:55://? } else {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipe.java:63://? }
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipeSerializer.java:5://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipeSerializer.java:8://? } else {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipeSerializer.java:11://? }
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipeSerializer.java:21://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipeSerializer.java:32://? } else {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipeSerializer.java:37://? }
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipeSerializer.java:5://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipeSerializer.java:8://? } else {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipeSerializer.java:11://? }
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipeSerializer.java:21://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipeSerializer.java:32://? } else {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipeSerializer.java:37://? }
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipe.java:9://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipe.java:11://? } else {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipe.java:13://? }
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipe.java:43://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipe.java:46://? } else {
+src/main/java/appeng/recipes/game/RemoveItemUpgradeRecipe.java:49://? }
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipeSerializer.java:5://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipeSerializer.java:8://? } else {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipeSerializer.java:11://? }
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipeSerializer.java:21://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipeSerializer.java:32://? } else {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipeSerializer.java:37://? }
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:8://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:10://? } else {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:12://? }
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:32://? if (<=1.21.1) {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:36://? }
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:45://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:54://? } else {
+src/main/java/appeng/recipes/game/CraftingUnitTransformRecipe.java:62://? }
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipe.java:10://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipe.java:12://? } else {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipe.java:14://? }
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipe.java:60://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipe.java:69://? } else {
+src/main/java/appeng/recipes/game/StorageCellUpgradeRecipe.java:77://? }
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipe.java:7://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipe.java:9://? } else {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipe.java:11://? }
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipe.java:40://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipe.java:43://? } else {
+src/main/java/appeng/recipes/game/AddItemUpgradeRecipe.java:46://? }
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipeSerializer.java:5://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipeSerializer.java:8://? } else {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipeSerializer.java:11://? }
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipeSerializer.java:21://? if (<=1.21.4) {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipeSerializer.java:32://? } else {
+src/main/java/appeng/recipes/game/StorageCellDisassemblyRecipeSerializer.java:37://? }
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmoSerializer.java:23://? if (<=1.21.4) {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmoSerializer.java:26://? } else {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmoSerializer.java:29://? }
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmoSerializer.java:39://? if (<=1.21.4) {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmoSerializer.java:49://? } else {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmoSerializer.java:54://? }
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:31://? if (<=1.21.4) {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:33://? } else {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:35://? }
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:60://? if (<=1.21.1) {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:67://? }
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:76://? if (<=1.21.4) {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:84://? } else {
+src/main/java/appeng/recipes/mattercannon/MatterCannonAmmo.java:91://? }
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:8://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:10://? } else {
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:12://? }
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:28://? if (<=1.21.1) {
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:34://? }
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:47://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:55://? } else {
+src/main/java/appeng/recipes/handlers/ChargerRecipe.java:62://? }
+src/main/java/appeng/recipes/handlers/ChargerRecipeSerializer.java:5://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/ChargerRecipeSerializer.java:8://? } else {
+src/main/java/appeng/recipes/handlers/ChargerRecipeSerializer.java:11://? }
+src/main/java/appeng/recipes/handlers/ChargerRecipeSerializer.java:20://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/ChargerRecipeSerializer.java:31://? } else {
+src/main/java/appeng/recipes/handlers/ChargerRecipeSerializer.java:36://? }
+src/main/java/appeng/recipes/handlers/InscriberRecipeSerializer.java:23://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/InscriberRecipeSerializer.java:26://? } else {
+src/main/java/appeng/recipes/handlers/InscriberRecipeSerializer.java:29://? }
+src/main/java/appeng/recipes/handlers/InscriberRecipeSerializer.java:39://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/InscriberRecipeSerializer.java:50://? } else {
+src/main/java/appeng/recipes/handlers/InscriberRecipeSerializer.java:55://? }
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:29://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:31://? } else {
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:33://? }
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:70://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:80://? } else {
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:89://? }
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:91://? if (<=1.21.1) {
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:98://? }
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:205://? if (<=1.21.4) {
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:218://? } else {
+src/main/java/appeng/recipes/handlers/InscriberRecipe.java:231://? }
+src/main/java/appeng/recipes/transform/TransformRecipe.java:9://? if (<=1.21.4) {
+src/main/java/appeng/recipes/transform/TransformRecipe.java:11://? } else {
+src/main/java/appeng/recipes/transform/TransformRecipe.java:13://? }
+src/main/java/appeng/recipes/transform/TransformRecipe.java:32://? if (<=1.21.1) {
+src/main/java/appeng/recipes/transform/TransformRecipe.java:38://? }
+src/main/java/appeng/recipes/transform/TransformRecipe.java:57://? if (<=1.21.4) {
+src/main/java/appeng/recipes/transform/TransformRecipe.java:67://? } else {
+src/main/java/appeng/recipes/transform/TransformRecipe.java:76://? }
+src/main/java/appeng/recipes/transform/TransformCircumstance.java:18://? if (>=1.21.5) {
+src/main/java/appeng/recipes/transform/TransformCircumstance.java:20://? }
+src/main/java/appeng/recipes/transform/TransformCircumstance.java:43://? if (<=1.21.4) {
+src/main/java/appeng/recipes/transform/TransformCircumstance.java:48://? } else {
+src/main/java/appeng/recipes/transform/TransformCircumstance.java:52://? }
+src/main/java/appeng/recipes/transform/TransformRecipeSerializer.java:23://? if (<=1.21.4) {
+src/main/java/appeng/recipes/transform/TransformRecipeSerializer.java:26://? } else {
+src/main/java/appeng/recipes/transform/TransformRecipeSerializer.java:29://? }
+src/main/java/appeng/recipes/transform/TransformRecipeSerializer.java:39://? if (<=1.21.4) {
+src/main/java/appeng/recipes/transform/TransformRecipeSerializer.java:50://? } else {
+src/main/java/appeng/recipes/transform/TransformRecipeSerializer.java:55://? }
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:13://? if (<=1.21.4) {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:15://? } else {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:17://? }
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:39://? if (<=1.21.1) {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:43://? }
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:59://? if (<=1.21.4) {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:78://? } else {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipe.java:96://? }
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipeSerializer.java:5://? if (<=1.21.4) {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipeSerializer.java:8://? } else {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipeSerializer.java:11://? }
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipeSerializer.java:20://? if (<=1.21.4) {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipeSerializer.java:31://? } else {
+src/main/java/appeng/recipes/quartzcutting/QuartzCuttingRecipeSerializer.java:36://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipeSerializer.java:23://? if (<=1.21.4) {
+src/main/java/appeng/recipes/entropy/EntropyRecipeSerializer.java:26://? } else {
+src/main/java/appeng/recipes/entropy/EntropyRecipeSerializer.java:29://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipeSerializer.java:39://? if (<=1.21.4) {
+src/main/java/appeng/recipes/entropy/EntropyRecipeSerializer.java:49://? } else {
+src/main/java/appeng/recipes/entropy/EntropyRecipeSerializer.java:54://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:36://? if (<=1.21.4) {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:38://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:39://? if (>=1.21.5) {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:41://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:75://? if (<=1.21.4) {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:77://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:78://? if (>=1.21.5) {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:80://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:82://? if (<=1.21.1) {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:89://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:290://? if (<=1.21.4) {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:303://? }
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:306://? if (<=1.21.4) {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:388://? } else {
+src/main/java/appeng/recipes/entropy/EntropyRecipe.java:470://? }
+src/main/java/appeng/loot/AE2CertusLootModifier.java:1://? if (>=1.21.4) {
+src/main/java/appeng/loot/AE2CertusLootModifier.java:57://? }
+src/main/java/appeng/loot/AE2PressLootModifier.java:1://? if (>=1.21.4) {
+src/main/java/appeng/loot/AE2PressLootModifier.java:76://? }
