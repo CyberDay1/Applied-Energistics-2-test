@@ -18,11 +18,6 @@ val neoForgeVersion = neoForgeVersionProvider.orNull?.takeUnless { it.isEmpty() 
     ?: error("Missing NEOFORGE version")
 val modId = project.findProperty("modid")?.toString() ?: error("Missing modid property")
 val accessTransformerFile = rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")
-val hasAccessTransformers = accessTransformerFile.exists() &&
-    accessTransformerFile.readLines().any { line ->
-        val trimmed = line.trim()
-        trimmed.isNotEmpty() && !trimmed.startsWith("#") && !trimmed.startsWith("//")
-    }
 
 neoForge {
     version = neoForgeVersion
@@ -41,9 +36,7 @@ neoForge {
             programArguments.addAll(listOf("--mod", modId, "--all"))
         }
     }
-    if (hasAccessTransformers) {
-        accessTransformers.from(accessTransformerFile)
-    }
+    accessTransformers.from(accessTransformerFile)
 }
 
 dependencies {
