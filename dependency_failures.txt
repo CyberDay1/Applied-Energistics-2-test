@@ -1,0 +1,20 @@
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+> Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
+Cause 1: java.io.UncheckedIOException: Could not read workspace metadata from /root/.gradle/caches/8.13/kotlin-dsl/accessors/5ed520835f28d806370e74829287c6bd/metadata.bin
