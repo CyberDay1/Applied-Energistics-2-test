@@ -73,4 +73,4 @@ public class AE2PressLootModifier extends LootModifier {
         generatedLoot.add(press);
     }
 }
-//? endif
+//? }

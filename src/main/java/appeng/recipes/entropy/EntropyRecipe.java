@@ -35,10 +35,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//? endif
+//? }
 //? if (>=1.21.5) {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? endif
+//? }
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -74,10 +74,10 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
 
 //? if (<=1.21.4) {
     public static final StreamCodec<FriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
-//? endif
+//? }
 //? if (>=1.21.5) {
     public static final StreamCodec<RegistryFriendlyByteBuf, EntropyRecipe> STREAM_CODEC = createEntropyStreamCodec();
-//? endif
+//? }
 
 //? if (<=1.21.1) {
     @Deprecated(forRemoval = true, since = "1.21.1")
@@ -86,7 +86,7 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<EntropyRecipe> TYPE = new RecipeType<>() {
     };
-//? endif
+//? }
 
     private final EntropyMode mode;
     private final Input input;
@@ -300,7 +300,7 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
             var properties = buffer.readMap(FriendlyByteBuf::readUtf, fbb -> fbb.readUtf());
             return new FluidOutput(fluid, keepProperties, properties);
         }
-//? endif
+//? }
     }
 
 //? if (<=1.21.4) {
@@ -385,7 +385,7 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 FluidOutput::properties,
                 FluidOutput::new);
     }
-//? else {
+//? } else {
     private static final StreamCodec<RegistryFriendlyByteBuf, BlockInput> BLOCK_INPUT_STREAM_CODEC = createBlockInputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, FluidInput> FLUID_INPUT_STREAM_CODEC = createFluidInputStreamCodec();
     private static final StreamCodec<RegistryFriendlyByteBuf, BlockOutput> BLOCK_OUTPUT_STREAM_CODEC = createBlockOutputStreamCodec();
@@ -467,5 +467,5 @@ public class EntropyRecipe implements Recipe<RecipeInput> {
                 FluidOutput::properties,
                 FluidOutput::new);
     }
-//? endif
+//? }
 }

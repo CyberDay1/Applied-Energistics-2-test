@@ -12,9 +12,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? endif
+//? }
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +40,7 @@ public class QuartzCuttingRecipe implements CraftingRecipe {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<QuartzCuttingRecipe> TYPE = new RecipeType<>() {
     };
-//? endif
+//? }
     public static final MapCodec<QuartzCuttingRecipe> CODEC = RecordCodecBuilder.mapCodec((builder) -> builder.group(
             ItemStack.STRICT_CODEC.fieldOf("result").forGetter(QuartzCuttingRecipe::getResult),
             Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").flatXmap((r) -> {
@@ -75,7 +75,7 @@ public class QuartzCuttingRecipe implements CraftingRecipe {
                     }),
             QuartzCuttingRecipe::getIngredients,
             QuartzCuttingRecipe::new);
-//? else {
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, QuartzCuttingRecipe> STREAM_CODEC = StreamCodec.composite(
             ItemStack.STREAM_CODEC, QuartzCuttingRecipe::getResult,
             StreamCodec.of(
@@ -93,7 +93,7 @@ public class QuartzCuttingRecipe implements CraftingRecipe {
                     }),
             QuartzCuttingRecipe::getIngredients,
             QuartzCuttingRecipe::new);
-//? endif
+//? }
 
     final ItemStack result;
     final NonNullList<Ingredient> ingredients;

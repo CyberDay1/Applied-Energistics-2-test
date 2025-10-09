@@ -54,4 +54,4 @@ public class AE2BiomeModifierProvider extends DatapackBuiltinEntriesProvider {
             GenerationStep.Decoration.SURFACE_STRUCTURES));
     }
 }
-//? endif
+//? }

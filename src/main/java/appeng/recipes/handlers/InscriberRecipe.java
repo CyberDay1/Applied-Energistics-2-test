@@ -28,9 +28,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? endif
+//? }
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -77,7 +77,7 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
             NeoForgeStreamCodecs.enumCodec(InscriberProcessType.class),
             InscriberRecipe::getProcessType,
             InscriberRecipe::new);
-//? else {
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, InscriberRecipe> STREAM_CODEC = StreamCodec.composite(
             INGREDIENTS_STREAM_CODEC,
             InscriberRecipe::getSerializedIngredients,
@@ -86,7 +86,7 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
             NeoForgeStreamCodecs.enumCodec(InscriberProcessType.class),
             InscriberRecipe::getProcessType,
             InscriberRecipe::new);
-//? endif
+//? }
 
 //? if (<=1.21.1) {
     @Deprecated(forRemoval = true, since = "1.21.1")
@@ -95,7 +95,7 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
     @Deprecated(forRemoval = true, since = "1.21.1")
     public static final RecipeType<InscriberRecipe> TYPE = new RecipeType<>() {
     };
-//? endif
+//? }
 
     private final Ingredient middleInput;
     private final Ingredient topOptional;
@@ -215,7 +215,7 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
                 Ingredients::bottom,
                 Ingredients::new);
     }
-//? else {
+//? } else {
     private static final StreamCodec<RegistryFriendlyByteBuf, Ingredients> INGREDIENTS_STREAM_CODEC = createIngredientsStreamCodec();
 
     private static StreamCodec<RegistryFriendlyByteBuf, Ingredients> createIngredientsStreamCodec() {
@@ -228,6 +228,6 @@ public class InscriberRecipe implements Recipe<RecipeInput> {
                 Ingredients::bottom,
                 Ingredients::new);
     }
-//? endif
+//? }
 
 }

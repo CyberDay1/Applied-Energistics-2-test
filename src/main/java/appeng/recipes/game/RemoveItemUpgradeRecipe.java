@@ -8,9 +8,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
-//? endif
+//? }
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -43,10 +43,10 @@ public class RemoveItemUpgradeRecipe extends CustomRecipe {
 //? if (<=1.21.4) {
     // TODO(stonecutter): Exercise FriendlyByteBuf stream for <= 1.21.4 remove-upgrade recipe.
     public static final StreamCodec<FriendlyByteBuf, RemoveItemUpgradeRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
-//? else {
+//? } else {
     public static final StreamCodec<RegistryFriendlyByteBuf, RemoveItemUpgradeRecipe> STREAM_CODEC = StreamCodec
             .unit(INSTANCE);
-//? endif
+//? }
 
     @Override
     public NonNullList<Ingredient> getIngredients() {

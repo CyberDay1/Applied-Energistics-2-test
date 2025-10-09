@@ -82,4 +82,4 @@ public class AE2WorldgenProvider extends DatapackBuiltinEntriesProvider {
         context.register(AE2Features.METEORITE_PLACED, new PlacedFeature(meteorite, meteoritePlacement));
     }
 }
-//? endif
+//? }

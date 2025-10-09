@@ -90,7 +90,7 @@ import appeng.spatial.SpatialStorageChunkGenerator;
 import appeng.spatial.SpatialStorageDimensionIds;
 //? if (>=1.21.4) {
 import appeng.registry.AE2LootModifiers;
-//? endif
+//? }
 import appeng.registry.AE2Registries;
 
 /**
@@ -130,7 +130,7 @@ public abstract class AppEngBase implements AppEng {
         AE2Registries.FEATURES.register(modEventBus);
         //? if (>=1.21.4) {
         AE2LootModifiers.init();
-        //? endif
+        //? }
         AE2RecipeSerializers.init();
         AE2RecipeTypes.init();
         AE2Conditions.init();

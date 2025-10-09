@@ -27,4 +27,4 @@ public final class AELootModifierProvider extends GlobalLootModifierProvider {
                 LootItemRandomChanceCondition.randomChance(0.35f).build() }));
     }
 }
-//? endif
+//? }

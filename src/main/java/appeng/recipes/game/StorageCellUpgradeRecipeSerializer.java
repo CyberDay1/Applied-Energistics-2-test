@@ -5,10 +5,10 @@ import com.mojang.serialization.MapCodec;
 //? if (<=1.21.4) {
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-//? else {
+//? } else {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-//? endif
+//? }
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class StorageCellUpgradeRecipeSerializer implements RecipeSerializer<StorageCellUpgradeRecipe> {
@@ -29,10 +29,10 @@ public class StorageCellUpgradeRecipeSerializer implements RecipeSerializer<Stor
     public void toNetwork(FriendlyByteBuf buffer, StorageCellUpgradeRecipe recipe) {
         StorageCellUpgradeRecipe.STREAM_CODEC.encode(buffer, recipe);
     }
-//? else {
+//? } else {
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, StorageCellUpgradeRecipe> streamCodec() {
         return StorageCellUpgradeRecipe.STREAM_CODEC;
     }
-//? endif
+//? }
 }
