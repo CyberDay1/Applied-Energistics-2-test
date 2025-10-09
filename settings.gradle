@@ -25,10 +25,44 @@ plugins {
 def stonecutterConfigFile = file("stonecutter.json")
 def stonecutterConfig = new JsonSlurper().parse(stonecutterConfigFile)
 
-def stonecutterVersions = (stonecutterConfig.versions ?: []) as List<String>
-def stonecutterProjects = stonecutterVersions.collect { version ->
-    new StonecutterProject(version, version)
+def rawStonecutterVersions = stonecutterConfig.versions
+List<StonecutterProject> stonecutterProjects
+Map<String, Map<String, ?>> stonecutterTargets
+
+if (rawStonecutterVersions instanceof Map) {
+    Map<String, ?> versionsMap = (Map<String, ?>) rawStonecutterVersions
+    stonecutterProjects = versionsMap.entrySet().collect { entry ->
+        new StonecutterProject(entry.key, entry.key)
+    }
+    stonecutterTargets = versionsMap.collectEntries { version, dataObj ->
+        Map<?, ?> data = dataObj instanceof Map ? (Map<?, ?>) dataObj : [:]
+        [
+                (version): [
+                        MC         : (data.MC ?: version)?.toString(),
+                        NEOFORGE   : data.NEOFORGE?.toString(),
+                        PACK_FORMAT: data.PACK_FORMAT?.toString()
+                ]
+        ]
+    }
+} else {
+    List<String> stonecutterVersions = (rawStonecutterVersions ?: []) as List<String>
+    stonecutterProjects = stonecutterVersions.collect { version ->
+        new StonecutterProject(version, version)
+    }
+    def legacyTargets = ((stonecutterConfig.targets ?: [:]) as Map<String, ?>)
+    stonecutterTargets = legacyTargets.collectEntries { key, value ->
+        Map<?, ?> data = value instanceof Map ? (Map<?, ?>) value : [:]
+        [
+                (key): [
+                        MC         : (data.MC ?: key)?.toString(),
+                        NEOFORGE   : data.NEOFORGE?.toString(),
+                        PACK_FORMAT: data.PACK_FORMAT?.toString()
+                ]
+        ]
+    }
 }
+
+stonecutterTargets = stonecutterTargets ?: [:]
 
 stonecutter.shared {
     versions(stonecutterProjects)
@@ -47,17 +81,6 @@ stonecutter {
     centralScript = 'stonecutter.gradle.kts'
 }
 
-def stonecutterTargets = ((stonecutterConfig.targets ?: [:]) as Map<String, ?>)
-        .collectEntries { key, value ->
-            Map<?, ?> data = value instanceof Map ? (Map<?, ?>) value : [:]
-            [
-                    (key): [
-                            MC      : (data.MC ?: key),
-                            NEOFORGE: data.NEOFORGE
-                    ]
-            ]
-        }
-
 gradle.rootProject { root ->
     root.extensions.extraProperties.set("stonecutterVersionMatrix", stonecutterTargets)
 
@@ -66,6 +89,7 @@ gradle.rootProject { root ->
 
     def mcVersion = providers.gradleProperty("MC").getOrElse(defaults.MC ?: defaultVersion)
     def neoForgeVersion = providers.gradleProperty("NEOFORGE").getOrElse(defaults.NEOFORGE ?: '')
+    def packFormat = providers.gradleProperty("PACK_FORMAT").getOrElse(defaults.PACK_FORMAT ?: '')
 
     allprojects { proj ->
         if (mcVersion) {
@@ -76,6 +100,9 @@ gradle.rootProject { root ->
             proj.extensions.extraProperties.set("NEOFORGE", neoForgeVersion)
             proj.extensions.extraProperties.set("neoforge_version", neoForgeVersion)
             proj.extensions.extraProperties.set("neoforge_version_range", "[${neoForgeVersion},)")
+        }
+        if (packFormat) {
+            proj.extensions.extraProperties.set("PACK_FORMAT", packFormat)
         }
     }
 }
